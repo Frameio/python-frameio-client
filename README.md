@@ -54,7 +54,7 @@ client = FrameioClient("TOKEN")
 filesize = os.path.getsize("sample.mp4")
 
 # Create a new asset.
-asset = client.create(
+asset = client.create_asset(
   parent_asset_id="1234abcd",
   name="MyVideo.mp4",
   type="file",
