@@ -9,7 +9,7 @@ class FrameioClient(object):
     url = 'https://api.dev.frame.io/v2{}'.format(endpoint)
     
     headers = {
-      'Authorization': 'AccessToken {}'.format(self.token)
+      'Authorization': 'Bearer {}'.format(self.token)
     }
 
     r = requests.request(
