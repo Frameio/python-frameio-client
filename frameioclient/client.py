@@ -2,11 +2,12 @@ from .upload import FrameioUploader
 import requests
 
 class FrameioClient(object):
-  def __init__(self, token):
+  def __init__(self, token, host='https://api.frame.io'):
     self.token = token
+    self.host = host
 
   def _api_call(self, method, endpoint, payload={}):
-    url = 'https://api.dev.frame.io/v2{}'.format(endpoint)
+    url = '{}/v2{}'.format(self.host, endpoint)
     
     headers = {
       'Authorization': 'Bearer {}'.format(self.token)
