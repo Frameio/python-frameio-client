@@ -43,7 +43,7 @@ print(me['id'])
 
 ### Create and Upload Asset
 
-Create a new asset and upload a file. For more information on how assets work, check out [our docs](#).
+Create a new asset and upload a file. For more information on how assets work, check out [our docs](https://docs.frame.io).
 
 ```python
 from frameioclient import FrameioClient
