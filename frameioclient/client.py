@@ -50,6 +50,21 @@ class FrameioClient(object):
     endpoint = '/teams/{}/projects'.format(team_id)
     return self._api_call('get', endpoint)
   
+  def create_project(self, **kwargs):
+    """
+    Create a project.
+
+    :Kwargs:
+      (optional) kwargs: additional request parameters.
+
+      Example::
+
+        client.create_project(
+          team_id="123",
+          name="My Awesome Project",
+        )
+    """
+    return self._api_call('post', '/projects', payload=kwargs)
   def get_project(self, project_id):
     """
     Get a project by id.
