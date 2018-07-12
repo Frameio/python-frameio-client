@@ -6,11 +6,7 @@ Official Python client for the Frame.io API.
 
 ### Installation
 
-via Pip
-
-```
-$ pip install frameioclient
-```
+~~via Pip~~
 
 via Source
 
