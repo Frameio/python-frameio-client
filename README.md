@@ -6,13 +6,15 @@ Official Python client for the Frame.io API.
 
 ### Installation
 
-~~via Pip~~
+via Pip
+```
+$ pip install frameioclient
+```
 
 via Source
-
 ```
 $ git clone https://github.com/frameio/python-frameio-client
-$ pip install -r requirements.txt
+$ pip install .
 ```
 
 ## Documentation
