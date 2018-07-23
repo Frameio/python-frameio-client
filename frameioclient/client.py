@@ -65,6 +65,7 @@ class FrameioClient(object):
         )
     """
     return self._api_call('post', '/projects', payload=kwargs)
+
   def get_project(self, project_id):
     """
     Get a project by id.
@@ -87,7 +88,7 @@ class FrameioClient(object):
   
   def get_asset_children(self, asset_id):
     """
-    Get an assets children.
+    Get an asset's children.
 
     :Args:
       asset_id (string): The asset id.
@@ -131,3 +132,61 @@ class FrameioClient(object):
     """
     uploader = FrameioUploader(asset, file)
     uploader.upload()
+  
+  def get_comments(self, asset_id):
+    """
+    Get an asset's comments.
+
+    :Args:
+      asset_id (string): The asset id.
+    """
+    endpoint = '/assets/{}/comments'.format(asset_id)
+    return self._api_call('get', endpoint)
+
+  def create_comment(self, asset_id, **kwargs):
+    """
+    Create a comment.
+
+    :Args:
+      asset_id (string): The asset id.
+    :Kwargs:
+      (optional) kwargs: additional request parameters.
+
+      Example::
+
+        client.create_comment(
+          asset_id="123abc",
+          text="Hello world"
+        )
+    """
+    endpoint = '/assets/{}/comments'.format(asset_id)
+    return self.api_call('post', endpoint, payload=kwargs)
+  
+  def update_comment(self, comment_id, **kwargs):
+    """
+    Update a comment.
+
+    :Args:
+      comment_id (string): The comment id.
+    :Kwargs:
+      (optional) kwargs: additional request parameters.
+
+      Example::
+
+        client.create_comment(
+          comment_id="123abc",
+          text="Hello world"
+        )
+    """
+    endpoint = '/comments/{}'.format(comment_id)
+    return self.api_call('post', endpoint, payload=kwargs)
+  
+  def delete_comment(self, comment_id):
+    """
+    Delete a comment.
+
+    :Args:
+      comment_id (string): The comment id.
+    """
+    endpoint = '/comments/{}'.format(comment_id)
+    return self.api_call('delete', endpoint)

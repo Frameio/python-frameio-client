@@ -19,7 +19,7 @@ $ pip install .
 
 ## Documentation
 
-TODO
+[Frame.io API Documentation](https://docs.frame.io)
 
 ## Usage
 
