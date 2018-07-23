@@ -5,7 +5,7 @@ with open("README.md", "r") as f:
 
 setuptools.setup(
   name='frameioclient',
-  version='0.0.1',
+  version='0.2.0',
   description='Client library for the Frame.io API',
   long_description=long_description,
   long_description_content_type="text/markdown",
