@@ -61,6 +61,6 @@ asset = client.create_asset(
 )
 
 # Upload the file at the target asset.
-file = open('sample.mp4')
+file = open("sample.mp4", "rb")
 client.upload(asset, file)
 ```
