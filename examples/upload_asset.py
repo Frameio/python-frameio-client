@@ -14,7 +14,7 @@ def main():
     filesize=filesize
   )
 
-  file = open('demo.mov')
+  file = open("demo.mov", "rb")
   client.upload(asset, file)
 
 if __name__ == "__main__":
