@@ -25,7 +25,7 @@ class FrameioUploader(object):
 
     total_size = self.asset['filesize']
     upload_urls = self.asset['upload_urls']
-    size = int(math.floor(total_size / len(upload_urls)))
+    size = int(math.ceil(total_size / len(upload_urls)))
 
     for i, chunk in enumerate(self._read_chunk(self.file, size)):
       proc = Process(target=self._upload_chunk, args=(upload_urls[i], chunk,))
