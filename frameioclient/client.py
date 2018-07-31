@@ -50,10 +50,12 @@ class FrameioClient(object):
     endpoint = '/teams/{}/projects'.format(team_id)
     return self._api_call('get', endpoint)
   
-  def create_project(self, **kwargs):
+  def create_project(self, team_id, **kwargs):
     """
     Create a project.
 
+    :Args:
+      team_id (string): The team id.
     :Kwargs:
       (optional) kwargs: additional request parameters.
 
@@ -64,7 +66,8 @@ class FrameioClient(object):
           name="My Awesome Project",
         )
     """
-    return self._api_call('post', '/projects', payload=kwargs)
+    endpoint = '/teams/{}/projects'.format(team_id)
+    return self._api_call('post', endpoint, payload=kwargs)
 
   def get_project(self, project_id):
     """
@@ -160,7 +163,7 @@ class FrameioClient(object):
         )
     """
     endpoint = '/assets/{}/comments'.format(asset_id)
-    return self.api_call('post', endpoint, payload=kwargs)
+    return self._api_call('post', endpoint, payload=kwargs)
   
   def update_comment(self, comment_id, **kwargs):
     """
@@ -179,7 +182,7 @@ class FrameioClient(object):
         )
     """
     endpoint = '/comments/{}'.format(comment_id)
-    return self.api_call('post', endpoint, payload=kwargs)
+    return self._api_call('post', endpoint, payload=kwargs)
   
   def delete_comment(self, comment_id):
     """
@@ -189,4 +192,4 @@ class FrameioClient(object):
       comment_id (string): The comment id.
     """
     endpoint = '/comments/{}'.format(comment_id)
-    return self.api_call('delete', endpoint)
+    return self._api_call('delete', endpoint)
