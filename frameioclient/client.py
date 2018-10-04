@@ -267,4 +267,4 @@ class FrameioClient(object):
         )
     """
     endpoint = '/review_links/{}/items'.format(link_id)
-    return self._api_call('get', endpoint, payload=kwargs)
+    return self._api_call('get', endpoint)
