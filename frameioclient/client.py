@@ -236,7 +236,7 @@ class FrameioClient(object):
 
   def update_review_link_assets(self, link_id, **kwargs):
     """
-    Add or update assets to review link.
+    Add or update assets for a review link.
 
     :Args:
       link_id (string): The review link id.
