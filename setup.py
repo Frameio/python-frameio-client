@@ -9,7 +9,7 @@ setuptools.setup(
   description='Client library for the Frame.io API',
   long_description=long_description,
   long_description_content_type="text/markdown",
-  url='https://github.com/Frameio/python-frameio-client',
+  url='https://github.com/frameio/python-frameio-client',
   packages=setuptools.find_packages(),
   author='Frame.io, Inc.',
   author_email='platform@frame.io',
