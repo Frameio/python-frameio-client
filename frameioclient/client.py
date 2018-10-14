@@ -41,14 +41,14 @@ class FrameioClient(object):
     endpoint = '/accounts/{}/teams'.format(account_id)
     return self._api_call('get', endpoint)
   
-  def get_all_teams(self, account_id):
+  def get_all_teams(self):
     """
-    Get all teams owned by the account.
+    Get all teams for the authenticated user.
 
     :Args:
       account_id (string): The account id.
     """
-    endpoint = '/teams/{}'.format(account_id)
+    endpoint = '/teams'
     return self._api_call('get', endpoint)
   
   def get_projects(self, team_id):
