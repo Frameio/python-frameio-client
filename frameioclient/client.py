@@ -32,12 +32,23 @@ class FrameioClient(object):
 
   def get_teams(self, account_id):
     """
-    Get teams owned by the account.
-
+    Get teams owned by the account. 
+    (To return all teams, use get_all_teams())
+    
     :Args:
       account_id (string): The account id.
     """
     endpoint = '/accounts/{}/teams'.format(account_id)
+    return self._api_call('get', endpoint)
+  
+  def get_all_teams(self, account_id):
+    """
+    Get all teams owned by the account.
+
+    :Args:
+      account_id (string): The account id.
+    """
+    endpoint = '/teams/{}'.format(account_id)
     return self._api_call('get', endpoint)
   
   def get_projects(self, team_id):
