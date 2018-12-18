@@ -9,10 +9,11 @@ def stream(func, page=1, page_size=20):
         Example:: 
             stream(lambda pagination: client.get_collaborators(project_id, **pagination))
     """
-    result_list = func(page=page, page_size=page_size)
-    while result_list:
+    total_pages = page
+    while page <= total_pages:
+        result_list = func(page=page, page_size=page_size)
+        total_pages = result_list.total_pages
         for res in result_list:
             yield res
 
         page += 1
-        result_list = func(page=page, page_size=page_size)
