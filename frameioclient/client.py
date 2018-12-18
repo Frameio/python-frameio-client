@@ -2,7 +2,8 @@ from .upload import FrameioUploader
 import requests
 
 class PaginatedResponse(object):
-  def __init__(results, page=0, page_size=0, total=0, total_pages=0):
+  def __init__(self, results=[], page=0, page_size=0, total=0, total_pages=0):
+    super(PaginatedResponse, self).__init__()
     self.results = results
     self.page = int(page)
     self.page_size = int(page_size)
@@ -33,9 +34,10 @@ class FrameioClient(object):
 
     if r.ok:
       if r.headers.get('page-number'):
-        return PaginatedResponse(r.json(), 
+        return PaginatedResponse(
+          results=r.json(), 
           page=r.headers['page-number'], 
-          page_size=r.headers['page-size'],
+          page_size=r.headers['per-page'],
           total_pages=r.headers['total-pages'],
           total=r.headers['total']
         )
