@@ -1,6 +1,17 @@
 from .upload import FrameioUploader
 import requests
 
+class PaginatedResponse(object):
+  def __init__(results, page=0, page_size=0, total=0, total_pages=0):
+    self.results = results
+    self.page = int(page)
+    self.page_size = int(page_size)
+    self.total = int(total)
+    self.total_pages = int(total_pages)
+  
+  def __iter__(self):
+    return iter(self.results)
+
 class FrameioClient(object):
   def __init__(self, token, host='https://api.frame.io'):
     self.token = token
@@ -21,6 +32,14 @@ class FrameioClient(object):
     )
 
     if r.ok:
+      if r.headers.get('page-number'):
+        return PaginatedResponse(r.json(), 
+          page=r.headers['page-number'], 
+          page_size=r.headers['page-size'],
+          total_pages=r.headers['total-pages'],
+          total=r.headers['total']
+        )
+
       return r.json()
     return r.raise_for_status()
 
@@ -30,7 +49,7 @@ class FrameioClient(object):
     """
     return self._api_call('get', '/me')
 
-  def get_teams(self, account_id):
+  def get_teams(self, account_id, **kwargs):
     """
     Get teams owned by the account. 
     (To return all teams, use get_all_teams())
@@ -39,9 +58,19 @@ class FrameioClient(object):
       account_id (string): The account id.
     """
     endpoint = '/accounts/{}/teams'.format(account_id)
+    return self._api_call('get', endpoint, kwargs)
+  
+  def get_team(self, team_id):
+    """
+    Get's a team by id
+
+    :Args:
+      team_id (string): the team's id
+    """
+    endpoint  = '/teams/{}'.format(team_id)
     return self._api_call('get', endpoint)
 
-  def get_all_teams(self):
+  def get_all_teams(self, **kwargs):
     """
     Get all teams for the authenticated user.
 
@@ -49,9 +78,9 @@ class FrameioClient(object):
       account_id (string): The account id.
     """
     endpoint = '/teams'
-    return self._api_call('get', endpoint)
+    return self._api_call('get', endpoint, kwargs)
 
-  def get_projects(self, team_id):
+  def get_projects(self, team_id, **kwargs):
     """
     Get projects owned by the team.
 
@@ -59,7 +88,37 @@ class FrameioClient(object):
       team_id (string): The team id.
     """
     endpoint = '/teams/{}/projects'.format(team_id)
+    return self._api_call('get', endpoint, kwargs)
+  
+  def get_project(self, project_id):
+    """
+    Get an individual project
+
+    :Args:
+      project_id (string): the project's id
+    """
+    endpoint = '/projects/{}'.format(project_id)
     return self._api_call('get', endpoint)
+  
+  def get_collaborators(self, project_id, **kwargs):
+    """
+    Get collaborators for a project
+
+    :Args:
+      project_id (string): the project's id
+    """
+    endpoint = "/projects/{}/collaborators".format(project_id)
+    return self._api_call('get', endpoint, kwargs)
+
+  def get_pending_collaborators(self, project_id, **kwargs):
+    """
+    Get pending collaborators for a project
+
+    :Args:
+      project_id (string): the project's id
+    """
+    endpoint = "/projects/{}/pending_collaborators".format(project_id)
+    return self._api_call('get', endpoint, kwargs)
 
   def create_project(self, team_id, **kwargs):
     """
@@ -100,7 +159,7 @@ class FrameioClient(object):
     endpoint = '/assets/{}'.format(asset_id)
     return self._api_call('get', endpoint)
 
-  def get_asset_children(self, asset_id):
+  def get_asset_children(self, asset_id, **kwargs):
     """
     Get an asset's children.
 
@@ -108,7 +167,7 @@ class FrameioClient(object):
       asset_id (string): The asset id.
     """
     endpoint = '/assets/{}/children'.format(asset_id)
-    return self._api_call('get', endpoint)
+    return self._api_call('get', endpoint, kwargs)
 
   def create_asset(self, parent_asset_id, **kwargs):
     """
@@ -131,6 +190,21 @@ class FrameioClient(object):
     """
     endpoint = '/assets/{}/children'.format(parent_asset_id)
     return self._api_call('post', endpoint, payload=kwargs)
+  
+  def update_asset(self, asset_id, **kwargs):
+    """
+    Updates an asset
+
+    :Args:
+      asset_id (string): the asset's id
+    :Kwargs:
+      the fields to update
+
+      Example::
+        client.update_asset("adeffee123342", name="updated_filename.mp4")
+    """
+    endpoint = '/assets/{}/children'.format(asset_id)
+    return self._api_call('put', endpoint, kwargs)
 
   def upload(self, asset, file):
     """
@@ -147,7 +221,7 @@ class FrameioClient(object):
     uploader = FrameioUploader(asset, file)
     uploader.upload()
 
-  def get_comments(self, asset_id):
+  def get_comments(self, asset_id, **kwargs):
     """
     Get an asset's comments.
 
@@ -155,7 +229,7 @@ class FrameioClient(object):
       asset_id (string): The asset id.
     """
     endpoint = '/assets/{}/comments'.format(asset_id)
-    return self._api_call('get', endpoint)
+    return self._api_call('get', endpoint, **kwargs)
 
   def create_comment(self, asset_id, **kwargs):
     """
