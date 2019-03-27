@@ -222,6 +222,16 @@ class FrameioClient(object):
     """
     uploader = FrameioUploader(asset, file)
     uploader.upload()
+    
+  def get_comment(self, comment_id, **kwargs):
+    """
+    Get a comment.
+
+    :Args:
+      comment_id (string): The comment id.
+    """
+    endpoint = '/comments/{id}'.format(comment_id)
+    return self._api_call('get', endpoint, **kwargs)
 
   def get_comments(self, asset_id, **kwargs):
     """
