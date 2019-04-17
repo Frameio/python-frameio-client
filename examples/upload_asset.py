@@ -1,4 +1,5 @@
 from frameioclient import FrameioClient
+import mimetypes
 import os
 
 def main():
@@ -10,7 +11,7 @@ def main():
     parent_asset_id="PARENT_ASSET_ID",
     name="Test123.mov",
     type="file",
-    filetype="video/quicktime",
+    filetype=mimetypes.read_mime_types("demo.mov"),
     filesize=filesize
   )
 
