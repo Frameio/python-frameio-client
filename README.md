@@ -1,6 +1,9 @@
 # python-frameio-client
 
-Official Python client for the Frame.io API.
+<img width="1644" alt="artboard_small" src="https://user-images.githubusercontent.com/19295862/66240171-ba8dd280-e6b0-11e9-9ccf-573a4fc5961f.png">
+
+# Frame.io 
+Frame.io is a cloud-based collaboration hub that allows video professionals to share files, comment on clips real-time, and compare different versions and edits of a clip. 
 
 ## Overview
 
