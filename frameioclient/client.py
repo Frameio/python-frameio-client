@@ -171,61 +171,6 @@ class FrameioClient(object):
     endpoint = '/assets/{}/children'.format(asset_id)
     return self._api_call('get', endpoint, kwargs)
 
-  def all_comments(client, asset_id, comment_list):
-    
-    """
-    Get all comments for an asset. They come back as a 
-    list of lists. This function is used inside the get_all_project_comments function. 
-    Use that function rather than this one. 
-    """
-    
-    files = client.get_asset_children(asset_id)
-
-    for asset in files:
-        if asset['type'] == "file":
-            if asset['comment_count'] > 0:
-                asset_parent_id = asset['parent_id']
-                asset_name = asset['name']
-                comments = client.get_comments(asset['id'])
-                my_comment_list = [comment for comment in comments.results]
-                for object in my_comment_list:
-                    object.update({'parent_id':asset_parent_id})
-                    object.update({'name':asset_name})
-                comment_list.append(my_comment_list)
-
-        if asset['type'] == "folder":
-            if asset['item_count'] > 0:
-                all_comments(client, asset['id'], comment_list)
-
-        if asset['type'] == "version_stack":
-            asset_name = asset['name']
-            parent_id = asset['parent_id']
-            vfiles = client.get_asset_children(asset['id'])
-
-            for asset in vfiles.results:
-                asset_name = asset['name']
-                parent_id = asset['parent_id']
-                if asset['type'] == "file":
-                    if asset['comment_count'] > 0:
-                        comments = client.get_comments(asset['id'])
-                        my_comment_list = [comment for comment in comments.results]
-                        for object in my_comment_list:
-                            object.update({'parent_id':parent_id})
-                            object.update({'name':asset_name})
-                        comment_list.append(my_comment_list)
-
-  def get_all_project_comments(root_asset_id, token):
-    """
-    Get all project comments for an asset. 
-    """ 
-    
-    comment_list = []
-    client = FrameioClient(token)
-
-    all_comments(client, root_asset_id, comment_list)
-
-    return comment_list
-
   def create_asset(self, parent_asset_id, **kwargs):
     """
     Create an asset.
