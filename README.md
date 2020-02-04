@@ -44,7 +44,7 @@ print(me['id'])
 
 ### Create and Upload Asset
 
-Create a new asset and upload a file. For more information on how assets work, check out [our docs](https://docs.frame.io).
+Create a new asset and upload a file. For `parent_asset_id` you must have the root asset ID for the project, or an ID for a folder in the project. For more information on how assets work, check out [our docs](https://docs.frame.io/docs/uploading-assets).
 
 ```python
 from frameioclient import FrameioClient
