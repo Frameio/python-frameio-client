@@ -20,6 +20,8 @@ $ git clone https://github.com/frameio/python-frameio-client
 $ pip install .
 ```
 
+_Note: The Frame.io Python client may not work correctly in Python 3.8+_
+
 ## Documentation
 
 [Frame.io API Documentation](https://docs.frame.io)
