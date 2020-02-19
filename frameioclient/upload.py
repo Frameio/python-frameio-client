@@ -1,6 +1,11 @@
-from multiprocessing import Process
 import requests
 import math
+import sys
+
+if sys.version_info.major == 3 and sys.version_info.minor == 8:
+  from multiprocessing_on_dill import Process
+else:
+  from multiprocessing import Process
 
 class FrameioUploader(object):
   def __init__(self, asset, file):
