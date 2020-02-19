@@ -6,6 +6,9 @@ with open("README.md", "r") as f:
 setuptools.setup(
   name='frameioclient',
   version='0.6.0',
+  install_requires=[
+      "multiprocessing_on_dill",
+  ],
   description='Client library for the Frame.io API',
   long_description=long_description,
   long_description_content_type="text/markdown",
