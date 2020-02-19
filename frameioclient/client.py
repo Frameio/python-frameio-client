@@ -1,4 +1,6 @@
 from .upload import FrameioUploader
+from ratelimit import RateLimitException
+from backoff import on_exception, expo
 import requests
 
 class PaginatedResponse(object):
@@ -18,6 +20,7 @@ class FrameioClient(object):
     self.token = token
     self.host = host
 
+  @on_exception(expo, RateLimitException, max_tries=10)
   def _api_call(self, method, endpoint, payload={}):
     url = '{}/v2{}'.format(self.host, endpoint)
 
@@ -43,6 +46,10 @@ class FrameioClient(object):
         )
 
       return r.json()
+
+    if r.status_code == "429":
+      raise RateLimitException
+
     return r.raise_for_status()
 
   def get_me(self):

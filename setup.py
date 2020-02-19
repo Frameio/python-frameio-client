@@ -7,6 +7,11 @@ setuptools.setup(
   name='frameioclient',
   python_requires='>=2.6, !=3.8.*, <4',
   version='0.6.0',
+  install_requires=[
+      "requests",
+      "ratelimit",
+      "backoff",
+  ],
   description='Client library for the Frame.io API',
   long_description=long_description,
   long_description_content_type="text/markdown",
