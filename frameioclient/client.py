@@ -23,7 +23,7 @@ class FrameioClient(object):
         total=3,
         backoff_factor=1,
         status_forcelist=[429],
-        method_whitelist=["POST", "OPTIONS"]
+        method_whitelist=["POST", "OPTIONS", "GET"]
     )
 
   def _api_call(self, method, endpoint, payload={}):
