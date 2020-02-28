@@ -1,7 +1,7 @@
-from .upload import FrameioUploader
-from ratelimit import RateLimitException
-from backoff import on_exception, expo
 import requests
+from .upload import FrameioUploader
+from requests.adapters import HTTPAdapter
+from requests.packages.urllib3.util.retry import Retry
 
 class PaginatedResponse(object):
   def __init__(self, results=[], page=0, page_size=0, total=0, total_pages=0):
@@ -19,8 +19,13 @@ class FrameioClient(object):
   def __init__(self, token, host='https://api.frame.io'):
     self.token = token
     self.host = host
+    self.retry_strategy = Retry(
+        total=3,
+        backoff_factor=1,
+        status_forcelist=[429],
+        method_whitelist=["POST", "OPTIONS"]
+    )
 
-  @on_exception(expo, RateLimitException, max_tries=10)
   def _api_call(self, method, endpoint, payload={}):
     url = '{}/v2{}'.format(self.host, endpoint)
 
@@ -28,7 +33,12 @@ class FrameioClient(object):
       'Authorization': 'Bearer {}'.format(self.token)
     }
 
-    r = requests.request(
+    adapter = HTTPAdapter(max_retries=self.retry_strategy)
+
+    http = requests.Session()
+    http.mount("https://", adapter)
+
+    r = http.request(
       method,
       url,
       json=payload,
@@ -46,9 +56,6 @@ class FrameioClient(object):
         )
 
       return r.json()
-
-    if r.status_code == "429":
-      raise RateLimitException
 
     return r.raise_for_status()
 

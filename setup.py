@@ -9,8 +9,7 @@ setuptools.setup(
   version='0.6.0',
   install_requires=[
       "requests",
-      "ratelimit",
-      "backoff",
+      "urllib3",
   ],
   description='Client library for the Frame.io API',
   long_description=long_description,
