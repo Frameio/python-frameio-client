@@ -243,6 +243,16 @@ class FrameioClient(object):
     endpoint = '/assets/{}/comments'.format(asset_id)
     return self._api_call('get', endpoint, **kwargs)
 
+  def get_replies(self, comment_id, **kwargs):
+    """
+    Get replies for the comment.
+
+    :Args:
+      comment_id (string): The comment id.
+    """
+    endpoint = '/comments/{comment_id}/replies'.format(comment_id=comment_id)
+    return self._api_call('get', endpoint, **kwargs)
+  
   def create_comment(self, asset_id, **kwargs):
     """
     Create a comment.
