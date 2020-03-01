@@ -230,7 +230,7 @@ class FrameioClient(object):
     :Args:
       comment_id (string): The comment id.
     """
-    endpoint = '/comments/{id}'.format(comment_id)
+    endpoint = '/comments/{comment_id}/replies'.format(comment_id=comment_id)
     return self._api_call('get', endpoint, **kwargs)
 
   def get_comments(self, asset_id, **kwargs):
@@ -241,6 +241,16 @@ class FrameioClient(object):
       asset_id (string): The asset id.
     """
     endpoint = '/assets/{}/comments'.format(asset_id)
+    return self._api_call('get', endpoint, **kwargs)
+
+  def get_replies(self, comment_id, **kwargs):
+    """
+    Get replies.
+
+    :Args:
+      comment_id (string): The comment id.
+    """
+    endpoint = '/comments/{comment_id}/replies'.format(comment_id=comment_id)
     return self._api_call('get', endpoint, **kwargs)
 
   def create_comment(self, asset_id, **kwargs):
