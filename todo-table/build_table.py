@@ -4,9 +4,12 @@ import json
 
 
 def main():
-    client = FrameioClient("fio-u-dRujJIgcBN_-wMV3mMuN2iRxMVi9arIr8wKQUshPTl6cf_sTvkofr-vJFQZUfotb")
+    client = FrameioClient(open('token.txt').read())
     me = client.get_me()
     print('--- Account', me['account_id'])
+
+    me = client.get_comments('bacac75a-1234-40aa-ae22-9b6c665dba97')
+    print('Total comments', me.total)
 
     table = []
 
@@ -27,11 +30,10 @@ def main():
         else:
             comments[i]['replies'] = []
 
-        assigned = ''
+        assigned = []
+        if 'МОНТАЖ' in comments[i]['text']:
+            assigned.append('Монтажер')
         for sub in comments[i]['replies']:
-            assigned = []
-            if 'МОНТАЖ' in comments[i]['text']:
-                assigned.append('Max')
             if 'misha' in sub['text'].lower():
                 assigned.append('Misha')
             if 'max' in sub['text'].lower():
@@ -42,16 +44,27 @@ def main():
                 assigned.append('Raf')
             print('--- ASS', assigned)
 
+        frame = comments[i]['frame']
+        if frame is None:
+            continue  # it's a reply to root comment, skip it
+        else:
+            total = frame / 25.0
+            minute = int(total / 60)
+            sec = total - minute * 60
+
         table.append({
-            'task': comments[i]['text'],
+            'desc': comments[i]['text'],
             'image': comments[i]['thumb'],
             'assigned': assigned,
             'completed': comments[i]['completed'],
             'frame': comments[i]['frame'],
+            'time': total,
+            'timestamp': '{0:02.0f}'.format(minute) + ':' + '{0:02.0f}'.format(int(sec))
         })
 
+    table = sorted(table, key=lambda k: k['frame'])
     json.dump(comments, open('cache_all.json', 'w'))
-    json.dump(table, open('table.json', 'w'))
+    json.dump(table, open('web/table.json', 'w'))
 
 
 if __name__ == "__main__":

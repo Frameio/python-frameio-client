@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <title>Tasks</title>
+  <meta content="width=device-width, initial-scale=0.66" name="viewport">
+  <!-- <link rel="shortcut icon" href="images/favicon.ico"/> -->
+
+  <link href="semantic-ui/semantic.min.css" rel="stylesheet" type="text/css"/>
+
+  <script src="js/vue.js"></script>
+  <script src="js/jquery-3.3.1.min.js"></script>
+
+  <script src="semantic-ui/semantic.min.js"></script>
+  <script src="semantic-ui/semantic-ui-vue.min.js"></script>
+
+  <script src="js/mobileAndTabletCheck.js"></script>
+  <script src="js/helpers.js?v2"></script>
+
+  <style>
+    .page {
+      max-width: 900px;
+    }
+
+    .shot {
+      width: 25%;
+    }
+
+    .desc {
+      width: 15%;
+    }
+
+    .assigned {
+      width: 10%;
+    }
+
+    .completed {
+      width: 5%;
+    }
+
+    .title {
+      font-size: 150%;
+    }
+  </style>
+</head>
+
+<body>
+<div id="app" class="ui page container">
+  <!-- <h1>Overall</h1>
+  Total tasks: <div class="ui label">{{table.length}}</div><br/>
+
+  Tasks by workers:
+  <div :class="'ui label ' + get_color(name)" v-for="value, name in get_assigned_stats()">
+    {{name}} <div class="detail">{{value}}</div>
+  </div>
+
+  <h1>Shots</h1> --->
+
+  <table class="todo ui table stackable">
+    <thead>
+    <tr>
+      <th class="shot">Shot</th>
+      <th class="desc">Desc</th>
+      <th class="assigned">Assigned to</th>
+      <th class="completed">Completed?</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    <tr v-for="(item, index) in table">
+      <td>
+        <span class="title"><span class="ui label">{{index}}</span> {{item.timestamp}}</span>
+        <img :src="item.image" width="100%">
+      </td>
+      <td v-html="get_desc(item.desc)"></td>
+      <td>
+        <div class="ui labels">
+          <div :class="'ui label ' + get_color(name)" v-for="name in item.assigned">{{name}}</div>
+        </div>
+      </td>
+      <td><i v-if="!item.completed" class="icon check"></i></td>
+    </tr>
+    </tbody>
+
+  </table>
+</div>
+
+<script>
+  Vue.use(SemanticUIVue);
+  const api_data = 'table.json';
+
+  // VUE
+  const app = new Vue({
+    el: '#app',
+
+    data() {
+      return {
+        loading: true,
+        table: null
+      }
+    },
+
+    methods: {
+      reset() {
+        Object.assign(this.$data, this.$options.data.apply(this));
+      },
+
+      load_data() {
+        let root = this;
+        $.ajax({
+          url: api_data
+        }).done((response, textStatus, xhr) => {
+          // assign data to sensor
+          Vue.set(root, 'table', response);
+          console.log('data has been loaded')
+        }).fail(() => {
+          alert("Can't load data for table");
+        })
+      },
+
+      get_desc(desc) {
+        return desc.replaceAll('\n', '<br>')
+      },
+
+      get_color(name) {
+        const colors = {
+          'Misha': 'blue',
+          'Max': 'green',
+          'Raf': 'orange',
+          'Vlad': 'red'
+        };
+        return colors[name];
+      },
+
+      get_assigned_stats() {
+        let stats = {};
+        let table = this.table;
+        table.forEach(i => {
+          i['assigned'].forEach(name => {
+            if (name in stats)
+              stats[name]++;
+            else
+              stats[name] = 1;
+          })
+        });
+        return stats;
+      }
+
+    },
+
+    mounted() {
+      this.load_data();
+    }
+
+  });
+</script>
+
+</body>
+</html>
+
+

@@ -19,10 +19,10 @@ class FrameioClient(object):
     self.host = host
 
   def _api_call(self, method, endpoint, payload={}):
-    url = '{}/v2{}'.format(self.host, endpoint)
+    url = '{}/v2{}?page_size=10000'.format(self.host, endpoint)
 
     headers = {
-      'Authorization': 'Bearer {}'.format(self.token)
+      'Authorization': 'Bearer {}'.format(self.token),
     }
 
     r = requests.request(
