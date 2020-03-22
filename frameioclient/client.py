@@ -1,4 +1,5 @@
 from .upload import FrameioUploader
+from .download import FrameioDownloader
 import requests
 
 class PaginatedResponse(object):
@@ -218,11 +219,26 @@ class FrameioClient(object):
 
       Example::
 
-        client.upload(asset, open('example.mp4'))
+        client.upload(asset, open('example.mp4')) // TODO fix this example (bad way of opening file)
     """
     uploader = FrameioUploader(asset, file)
     uploader.upload()
-    
+  
+  def download(self, asset, download_folder):
+    """
+    Download an asset. The method will exit once the file is downloaded.
+
+    :Args:
+      asset (object): The asset object.
+      download_folder (path): The location to download the file to.
+
+      Example::
+
+        client.download(asset, "~./Downloads")
+    """
+    downloader = FrameioDownloader(asset, download_folder)
+    downloader.download()
+
   def get_comment(self, comment_id, **kwargs):
     """
     Get a comment.
