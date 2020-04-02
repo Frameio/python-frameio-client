@@ -1,6 +1,9 @@
-from multiprocessing import Process
 import requests
 import math
+import concurrent.futures
+import threading
+
+thread_local = threading.local()
 
 class FrameioUploader(object):
   def __init__(self, asset, file):
@@ -14,23 +17,31 @@ class FrameioUploader(object):
         break
       yield data
 
-  def _upload_chunk(self, url, chunk):
-    requests.put(url, data=chunk, headers={
+  def _get_session(self):
+    if not hasattr(thread_local, "session"):
+        thread_local.session = requests.Session()
+    return thread_local.session
+
+  def _upload_chunk(self, task):
+    url = task[0]
+    chunk = task[1]
+    session = self._get_session()
+
+    session.put(url, data=chunk, headers={
       'content-type': self.asset['filetype'],
       'x-amz-acl': 'private'
     })
 
   def upload(self):
-    procs = []
-
     total_size = self.asset['filesize']
     upload_urls = self.asset['upload_urls']
     size = int(math.ceil(total_size / len(upload_urls)))
 
-    for i, chunk in enumerate(self._read_chunk(self.file, size)):
-      proc = Process(target=self._upload_chunk, args=(upload_urls[i], chunk,))
-      procs.append(proc)
-      proc.start()
+    tasks = []
 
-    for proc in procs:
-      proc.join()
+    with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
+      for i, chunk in enumerate(self._read_chunk(self.file, size)):
+        task = (upload_urls[i], chunk)
+        tasks.append(task)
+
+      executor.map(self._upload_chunk, tasks)
