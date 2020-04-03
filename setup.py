@@ -5,8 +5,12 @@ with open("README.md", "r") as f:
 
 setuptools.setup(
   name='frameioclient',
+  version='0.7.0',
   python_requires='>=2.6, !=3.8.*, <4',
-  version='0.6.0',
+  install_requires=[
+      "requests",
+      "urllib3",
+  ],
   description='Client library for the Frame.io API',
   long_description=long_description,
   long_description_content_type="text/markdown",
