@@ -364,6 +364,28 @@ class FrameioClient(object):
     endpoint = '/review_links/{}/assets'.format(link_id)
     return self._api_call('post', endpoint, payload=kwargs)
 
+  def update_review_link(self, link_id, **kwargs):
+    """
+    Updates review link settings.
+
+    :Args:
+      link_id (string): The review link id.
+    :Kwargs:
+      kwargs: additional request parameters.
+
+      Example::
+
+        client.update_review_link(
+          link_id,
+          expires_at="2020-04-08T12:00:00+00:00",
+          is_active=False,
+          name="Review Link 123",
+          password="my_fun_password",
+        )
+    """
+    endpoint = '/review_links/{}'.format(link_id)
+    return self._api_call('put', endpoint, payload=kwargs)
+
   def get_review_link_items(self, link_id):
     """
     Get items from a single review link.
