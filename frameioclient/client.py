@@ -25,12 +25,23 @@ class FrameioClient(object):
         status_forcelist=[429],
         method_whitelist=["POST", "OPTIONS", "GET"]
     )
+    self.client_version = self._get_version()
+
+  def _get_version(self):
+    try:
+        from importlib import metadata
+    except ImportError:
+        # Running on pre-3.8 Python; use importlib-metadata package
+        import importlib_metadata as metadata
+
+    return metadata.version('frameioclient')
 
   def _api_call(self, method, endpoint, payload={}):
     url = '{}/v2{}'.format(self.host, endpoint)
 
     headers = {
-      'Authorization': 'Bearer {}'.format(self.token)
+      'Authorization': 'Bearer {}'.format(self.token),
+      'x-frameio-client': 'python/{}'.format(self.client_version)
     }
 
     adapter = HTTPAdapter(max_retries=self.retry_strategy)
