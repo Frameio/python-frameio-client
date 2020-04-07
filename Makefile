@@ -1,7 +1,7 @@
 #!/bin/sh
 
 install-dev:
-	pip3 install bump2version
+	pip3 install -e .[dev]
 
 bump-minor:
 	bump2version minor
