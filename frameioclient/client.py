@@ -220,7 +220,7 @@ class FrameioClient(object):
 
         client.upload(asset, open('example.mp4'))
     """
-    uploader = FrameioUploader(asset, file)
+    uploader = FrameioUploader(asset, file, self.token)
     uploader.upload()
     
   def get_comment(self, comment_id, **kwargs):
