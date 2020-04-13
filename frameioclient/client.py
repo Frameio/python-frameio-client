@@ -208,7 +208,7 @@ class FrameioClient(object):
     endpoint = '/assets/{}/children'.format(asset_id)
     return self._api_call('put', endpoint, kwargs)
 
-  def upload(self, asset, file):
+  def upload(self, asset, upload_file):
     """
     Upload an asset. The method will exit once the file is uploaded.
 
@@ -220,7 +220,7 @@ class FrameioClient(object):
 
         client.upload(asset, open('example.mp4'))
     """
-    uploader = FrameioUploader(asset, file, self.token)
+    uploader = FrameioUploader(self.token, self.get_me(), asset, file)
     uploader.upload()
     
   def get_comment(self, comment_id, **kwargs):

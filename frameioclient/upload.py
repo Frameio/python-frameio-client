@@ -3,25 +3,24 @@ import math
 import concurrent.futures
 import threading
 import websockets
-import asyncio
 import json
-import uuid
-import json
+from socket_service import FIOWebsocket
 
 thread_local = threading.local()
 
 class FrameioUploader(object):
-  def __init__(self, asset, file, token):
-    self.asset = asset
-    self.file = file
+  def __init__(self, token, user_id, project, asset, file):
     self.token = token
-    self.bytes_sent = 0 
-    self.ws_event = 0
-    self.connection_uuid = str(uuid.uuid1())
-    self.project = "1ff2708c-acf0-42c1-8b06-d477b7819189"
+    self.user = user_id
+    self.project = asset['project_id']
+    self.asset = asset
 
-    # Start socket update event loop
-    asyncio.get_event_loop().run_until_complete(self.update_socket())
+    self.socket = FIOWebsocket(token, user_id, asset['project_id'], con_type="project", event_type="UploadProgressClient")
+    
+    self.file = file
+    self.upload_urls = asset['upload_urls']
+    self.bytes_total = asset['filesize']
+    self.bytes_sent = 0
 
   def _read_chunk(self, file, size):
     while True:
@@ -44,39 +43,12 @@ class FrameioUploader(object):
       'content-type': self.asset['filetype'],
       'x-amz-acl': 'private'
     })
-
-    self.bytes_sent += len(chunk) # Increment bytes_sent after each chunk
-    self.ws_event += 1 # auto-increment
-
-    self.update_socket() # Update socket event when chunk completed
-
-  async def update_socket(self):
-    uri = "wss://sockets.frame.io/socket/websocket"
-
-    room_id = f"projects:{self.project}"
-    event_dict = {
-      "connection_id": self.connection_uuid,
-      "type": "UploadProgressClient",
-      "data": {
-        "asset_id": self.asset['id'],
-        "sent_bytes": self.bytes_sent,
-        "total_bytes": self.asset['filesize'],
-        "version": "1.0.0"
-      }
-    }
-
-    print(json.dumps(event_dict))
-
-    message = f"""["3", {self.ws_event}, {room_id}, "UploadProgressClient", {json.dumps(event_dict)}]"""
-
-    async with websockets.connect(uri, ssl=True) as websocket:
-        print("connected to socket")
-        await websocket.send(message)
+    
+    self.socket.update_progress(self.bytes_sent) # Update socket event when chunk completed
 
   def upload(self):
-    total_size = self.asset['filesize']
     upload_urls = self.asset['upload_urls']
-    size = int(math.ceil(total_size / len(upload_urls)))
+    size = int(math.ceil(self.bytes_total / len(upload_urls)))
 
     tasks = []
 

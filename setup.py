@@ -9,7 +9,7 @@ setuptools.setup(
   install_requires=[
       "requests",
       "urllib3",
-      "websockets",
+      "websocket-client",
   ],
   description='Client library for the Frame.io API',
   long_description=long_description,
