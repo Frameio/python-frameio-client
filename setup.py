@@ -4,7 +4,7 @@ import setuptools
 
 from setuptools.command.install import install
 
-version='0.6.0'
+version='0.7.0'
 
 with open("README.md", "r") as f:
   long_description = f.read()
