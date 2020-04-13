@@ -4,18 +4,51 @@ orbs:
   python: circleci/python@0.2.1
 
 jobs:
-  build-and-test:
-    executor: python/default
-    steps:
-      - checkout
-      - python/load-cache
-      - python/install-deps
-      - python/save-cache
-      - run:
-          command: ./manage.py test
-          name: Test
+  build:
+    - run:
+      name: verify git tag vs. version
+      command: |
+        python3 -m venv venv
+        . venv/bin/activate
+        python setup.py verify
+    - run:
+      name: init .pypirc
+      command: |
+        echo -e "[pypi]" >> ~/.pypirc
+        echo -e "username = $PYPI_USERNAME" >> ~/.pypirc
+        echo -e "password = $PYPI_PASSWORD" >> ~/.pypirc
+    - run:
+      name: upload to pypi
+      command: |
+        . venv/bin/activate
+        twine upload dist/*
 
 workflows:
-  main:
+  version: 2
+  build_accept_deploy:
     jobs:
-      - build-and-test
+      - build
+      - python_2_7:
+          requires:
+            - build
+      - python_2_8:
+          requires:
+            - build
+      - python_3_6:
+          requires:
+            - build
+      - python_3_7:
+          requires:
+            - build
+      - python_3_8:
+          requires:
+            - build
+    
+      - deploy:
+          requires:
+            - python_2_7
+            - python_2_8
+            - python_3_6
+            - python_3_8
+          tags:
+            only: /[0-9]+(\.[0-9]+)*/

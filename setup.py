@@ -1,11 +1,30 @@
+import sys
+import os
 import setuptools
 
-with open('README.md', 'r') as f:
+from setuptools.command.install import install
+
+version='0.6.0'
+
+with open("README.md", "r") as f:
   long_description = f.read()
+
+class VerifyVersionCommand(install):
+    """Custom command to verify that the git tag matches our version"""
+    description = 'verify that the git tag matches our version'
+
+    def run(self):
+        tag = os.getenv('CIRCLE_TAG')
+
+        if tag != version:
+            info = "Git tag: {0} does not match the version of this app: {1}".format(
+                tag, version
+            )
+            sys.exit(info)
 
 setuptools.setup(
   name='frameioclient',
-  version='0.7.0',
+  version=version,
   python_requires='>=2.6, !=3.8.*, <4',
   install_requires=[
     'requests',
@@ -24,5 +43,8 @@ setuptools.setup(
   packages=setuptools.find_packages(),
   author='Frame.io, Inc.',
   author_email='platform@frame.io',
-  license='MIT'
+  license='MIT',
+  cmdclass={
+    'verify': VerifyVersionCommand,
+  }
 )
