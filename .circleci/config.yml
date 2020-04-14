@@ -3,52 +3,120 @@ version: 2.1
 orbs:
   python: circleci/python@0.2.1
 
-jobs:
-  build:
-    - run:
-      name: verify git tag vs. version
-      command: |
-        python3 -m venv venv
-        . venv/bin/activate
-        python setup.py verify
-    - run:
-      name: init .pypirc
-      command: |
-        echo -e "[pypi]" >> ~/.pypirc
-        echo -e "username = $PYPI_USERNAME" >> ~/.pypirc
-        echo -e "password = $PYPI_PASSWORD" >> ~/.pypirc
-    - run:
-      name: upload to pypi
-      command: |
-        . venv/bin/activate
-        twine upload dist/*
-
 workflows:
   version: 2
-  build_accept_deploy:
+  build_test_deploy:
     jobs:
       - build
-      - python_2_7:
+
+      - windows_py_27:
           requires:
             - build
-      - python_2_8:
-          requires:
-            - build
-      - python_3_6:
-          requires:
-            - build
-      - python_3_7:
-          requires:
-            - build
-      - python_3_8:
-          requires:
-            - build
-    
+
+      # - mac_py_27:
+      #     requires:
+      #       - build
+
+      # - windows_py_38:
+      #     requires:
+      #       - build
+      # - mac_py_38:
+      #     requires:
+      #       - build
+
       - deploy:
           requires:
-            - python_2_7
-            - python_2_8
-            - python_3_6
-            - python_3_8
-          tags:
-            only: /[0-9]+(\.[0-9]+)*/
+            - windows_py_27
+            # - mac_py_27
+            # - windows_py_38
+            # - mac_py_38
+          filters:
+            branches:
+              only:
+                - master
+            tags:
+              only: /[0-9]+(\.[0-9]+)*/
+
+jobs:
+  build:
+    docker:
+      - image: circleci/python:latest
+    steps:
+      - checkout
+
+      # - run:
+      #     name: verify git tag vs. version
+      #     command: |
+      #       python3 -m venv venv
+      #       . venv/bin/activate
+      #       python setup.py verify
+
+      - run:
+          name: build package
+          command: |
+            echo -e "Running sdist"
+            python setup.py sdist
+            echo -e "Creating wheel"
+            python setup.py bdist_wheel
+
+      - persist_to_workspace:
+          # Must be an absolute path, or relative path from working_directory.
+          # This is a directory on the container which is
+          # taken to be the root directory of the workspace.
+          root: /home/circleci/project/
+          paths:
+            - build
+            - dist
+
+  windows_py_27:
+    docker:
+      - image: circleci/python:2.7.17
+
+    steps:
+      - attach_workspace:
+          at: /tmp/dist
+          name: Attach build artifact
+
+      - run:
+          name: Install package
+          command: |
+            pip install '/tmp/build'
+
+      - run:
+          name: Run integration test
+          command: |
+            python tests/integration.py
+
+  deploy:
+    docker:
+    - image: circleci/python:latest
+
+    steps:
+      - attach_workspace:
+          at: /tmp/dist
+          name: Attach build artifact
+
+      - run:
+          name: Install dependencies
+          command: |
+            pip install setuptools wheel twine
+
+      - run:
+          name: init .pypirc
+          command: |
+            echo -e "[pypi]" >> ~/.pypirc
+            echo -e "username = $TWINE_USERNAME" >> ~/.pypirc
+            echo -e "password = $TWINE_PASSWORD" >> ~/.pypirc
+
+      # - run:
+      #     name: Upload to pypi
+      #     command: |
+      #       . venv/bin/activate
+      #       twine upload dist/*
+
+      - run:
+          name: Pretend to upload to pypi
+          command: |
+            echo -e "Pretending to send to PyPi"
+
+
