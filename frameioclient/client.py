@@ -59,13 +59,14 @@ class FrameioClient(object):
 
     if r.ok:
       if r.headers.get('page-number'):
-        return PaginatedResponse(
-          results=r.json(), 
-          page=r.headers['page-number'], 
-          page_size=r.headers['per-page'],
-          total_pages=r.headers['total-pages'],
-          total=r.headers['total']
-        )
+        if int(r.headers.get('total-pages')) > 1:
+          return PaginatedResponse(
+            results=r.json(), 
+            page=r.headers['page-number'], 
+            page_size=r.headers['per-page'],
+            total_pages=r.headers['total-pages'],
+            total=r.headers['total']
+          )
 
       return r.json()
 

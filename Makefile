@@ -2,6 +2,7 @@
 
 install-dev:
 	pip3 install -e .[dev]
+	curl -fLSs https://raw.githubusercontent.com/CircleCI-Public/circleci-cli/master/install.sh | bash
 
 bump-minor:
 	bump2version minor

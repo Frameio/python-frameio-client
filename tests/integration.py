@@ -21,16 +21,26 @@ def init_client():
     return client
 
 # Download files using the download function and then re-upload them to a folder next to this one
-def test_download(client): 
-    print("Testing download function")
-
+def test_download(client):
+    print("Testing download function...")
     os.mkdir('downloads')
-    os.chdir('downloads')
-    
+
+    asset_list = client.get_asset_children(
+        download_asset_id,
+        page=1,
+        page_size=40,
+        include="children"
+    )
+
+    print("Downloading {} files.".format(len(asset_list)))
+    for asset in asset_list:
+        client.download(asset, 'downloads')
+
+    return True
         
 def test_upload(client):
     # Create new parent asset
-    project_info = client.get_asset(project_id)
+    project_info = client.get_project(project_id)
     root_asset_id = project_info['root_asset_id']
     
     new_folder = client.create_asset(
@@ -42,12 +52,13 @@ def test_upload(client):
     new_parent_id = new_folder['id']
 
     # Upload all the files we downloaded earlier
-    dled_files = os.listdir('.')
+    dled_files = os.listdir('downloads')
 
     for fn in dled_files:
-        filesize = os.path.getsize(fn)
-        filename = os.path.basename(fn)
-        filemime = mimetypes.guess_type(fn)[0]
+        abs_path = os.path.join(os.curdir, 'downloads', fn)
+        filesize = os.path.getsize(abs_path)
+        filename = os.path.basename(abs_path)
+        filemime = mimetypes.guess_type(abs_path)[0]
 
         asset = client.create_asset(
             parent_asset_id=new_parent_id,  
@@ -57,7 +68,8 @@ def test_upload(client):
             filesize=filesize
         )
 
-        with open(fn, "rb") as ul_file:
+
+        with open(abs_path, "rb") as ul_file:
             client.upload(asset, ul_file)
     
     return new_parent_id
@@ -108,6 +120,7 @@ if __name__ == "__main__":
 
     client = init_client()
     test_download(client)
+
     upload_folder_id = test_upload(client)
 
     check_upload_completion(client, download_asset_id, upload_folder_id)
