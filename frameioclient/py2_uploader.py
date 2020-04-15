@@ -28,9 +28,14 @@ class FrameioUploader(object):
     size = int(math.ceil(total_size / len(upload_urls)))
 
     for i, chunk in enumerate(self._read_chunk(self.file, size)):
-      proc = Process(target=self._upload_chunk, args=(upload_urls[i], chunk,))
-      procs.append(proc)
-      proc.start()
+      try:
+        proc = Process(target=self._upload_chunk, args=(upload_urls[i], chunk))
+        procs.append(proc)
+        proc.start()
+      except IndexError:
+        # In python 2.7 the _read_chunk function sometimes keeps going \
+        # past where it should, this prevents that.
+        pass
 
     for proc in procs:
       proc.join()

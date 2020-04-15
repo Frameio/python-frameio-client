@@ -9,27 +9,39 @@ workflows:
     jobs:
       - build
 
-      - windows_py_27:
+      - linux_py_27:
           requires:
             - build
 
-      # - mac_py_27:
-      #     requires:
-      #       - build
+      - linux_py_37:
+          requires:
+            - build
+
+      - linux_py_365:
+          requires:
+            - build
+
+      - linux_py_latest:
+          requires:
+            - build
 
       # - windows_py_38:
       #     requires:
       #       - build
+
       # - mac_py_38:
       #     requires:
       #       - build
 
       - deploy:
           requires:
-            - windows_py_27
-            # - mac_py_27
+            - linux_py_27
+            - linux_py_365
+            - linux_py_37
+            - linux_py_latest
             # - windows_py_38
             # - mac_py_38
+
           filters:
             branches:
               only:
@@ -58,7 +70,7 @@ jobs:
             echo -e "Running sdist"
             python setup.py sdist
             echo -e "Creating wheel"
-            python setup.py bdist_wheel
+            python setup.py bdist_wheel --universal
 
       # - store_artifacts:
       #     path: /home/circleci/project/
@@ -69,7 +81,8 @@ jobs:
           paths:
             - .
 
-  windows_py_27:
+  linux_py_27:
+    description: Linux 2.7.17
     docker:
       - image: circleci/python:2.7.17
 
@@ -87,6 +100,69 @@ jobs:
           name: Run integration test
           command: |
             python /tmp/artifact/tests/integration.py
+
+  linux_py_365:
+    description: Linux 3.6.5
+    docker:
+      - image: circleci/python:3.6.5
+
+    steps:
+      - attach_workspace:
+          at: /tmp/artifact
+          name: Attach build artifact
+
+      - run:
+          name: Install package
+          command: |
+            pip install '/tmp/artifact'
+
+      - run:
+          name: Run integration test
+          command: |
+            python /tmp/artifact/tests/integration.py
+
+
+  linux_py_37:
+    description: Linux 3.7.7
+    docker:
+      - image: circleci/python:3.7.7
+
+    steps:
+      - attach_workspace:
+          at: /tmp/artifact
+          name: Attach build artifact
+
+      - run:
+          name: Install package
+          command: |
+            pip install '/tmp/artifact'
+
+      - run:
+          name: Run integration test
+          command: |
+            python /tmp/artifact/tests/integration.py
+
+
+  linux_py_latest:
+    description: Linux latest
+    docker:
+      - image: circleci/python:latest
+
+    steps:
+      - attach_workspace:
+          at: /tmp/artifact
+          name: Attach build artifact
+
+      - run:
+          name: Install package
+          command: |
+            pip install '/tmp/artifact'
+
+      - run:
+          name: Run integration test
+          command: |
+            python /tmp/artifact/tests/integration.py
+
 
   deploy:
     docker:

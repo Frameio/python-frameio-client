@@ -1,8 +1,13 @@
+import sys
 import requests
-from .upload import FrameioUploader
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
 from .download import FrameioDownloader
+
+if sys.version_info.major >= 3:
+  from .py3_uploader import FrameioUploader
+else:
+  from .py2_uploader import FrameioUploader
 
 class PaginatedResponse(object):
   def __init__(self, results=[], page=0, page_size=0, total=0, total_pages=0):
