@@ -3,6 +3,7 @@ import sys
 import json
 import mimetypes
 import platform
+import time
 
 from frameioclient import FrameioClient
 
@@ -83,6 +84,11 @@ def test_upload(client):
     
         print("Done uploading file {} of {}".format((count+1), len(dled_files)))
 
+        print("Sleeping for 5 seconds to allow uploads to finish...")
+        time.sleep(5)
+
+        print("Continuing...")
+        
     return new_parent_id
 
 # Flatten asset children and pull out important info for comparison
