@@ -162,15 +162,16 @@ def clean_up(client, asset_to_delete):
 
     return True
 
-if __name__ == "__main__":
+def run_test():
     print("Beginning Integration test...")
 
     client = init_client()
-
     test_download(client)
-
     upload_folder_id = test_upload(client)
-
     check_upload_completion(client, download_asset_id, upload_folder_id)
-
     clean_up(client, upload_folder_id)
+
+    print("Test complete, exiting...")
+
+if __name__ == "__main__":
+    run_test()
