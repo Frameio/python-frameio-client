@@ -22,8 +22,8 @@ class FrameioUploader(object):
         thread_local.session = requests.Session()
     return thread_local.session
 
-  def _upload_chunk(self, task):
-    print("Starting next task...")
+  def _upload_chunk(self, task, i, total):
+    print(f"Starting chunk upload {i}/{total}")
     url = task[0]
     chunk = task[1]
     session = self._get_session()
@@ -33,14 +33,14 @@ class FrameioUploader(object):
       'x-amz-acl': 'private'
     })
 
+    print(f"Completed chunk {i}/{total}")
+
   def upload(self):
     total_size = self.asset['filesize']
     upload_urls = self.asset['upload_urls']
     size = int(math.ceil(total_size / len(upload_urls)))
 
-    tasks = []
-
     with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
       for i, chunk in enumerate(self._read_chunk(self.file, size)):
         task = (upload_urls[i], chunk)
-        executor.submit(self._upload_chunk, task)
+        executor.submit(self._upload_chunk, task, i, len(upload_urls))
