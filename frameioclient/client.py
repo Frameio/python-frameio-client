@@ -277,7 +277,7 @@ class FrameioClient(object):
     :Args:
       comment_id (string): The comment id.
     """
-    endpoint = '/comments/{id}'.format(comment_id)
+    endpoint = '/comments/{}'.format(comment_id)
     return self._api_call('get', endpoint, **kwargs)
 
   def get_comments(self, asset_id, **kwargs):
