@@ -152,18 +152,10 @@ def check_upload_completion(client, download_folder_id, upload_folder_id):
 
 
 def clean_up(client, asset_to_delete):
-    print("Removing files from test")
-
-    payload = {
-        "batch": [
-            {
-                "id": asset_to_delete
-            }
-        ]
-    }
+    print("Removing files from test...")
 
     try:
-        client._api_call('delete', '/assets/id', json.dumps(payload))
+        client._api_call('delete', '/assets/{}'.format(asset_to_delete))
         print("Managed to cleanup!")
     except Exception as e:
         print(e)
