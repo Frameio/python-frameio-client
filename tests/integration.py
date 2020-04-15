@@ -64,7 +64,7 @@ def test_upload(client):
     # Upload all the files we downloaded earlier
     dled_files = os.listdir('downloads')
 
-    for count, fn in enumerate(dled_files):
+    for count, fn in enumerate(dled_files, start=1):
         print("Uploading {}".format(fn))
         abs_path = os.path.join(os.curdir, 'downloads', fn)
         filesize = os.path.getsize(abs_path)
@@ -82,13 +82,13 @@ def test_upload(client):
         with open(abs_path, "rb") as ul_file:
             client.upload(asset, ul_file)
     
-        print("Done uploading file {} of {}".format((count+1), len(dled_files)))
+        print("Done uploading file {} of {}".format((count), len(dled_files)))
 
         print("Sleeping for 5 seconds to allow uploads to finish...")
         time.sleep(5)
 
         print("Continuing...")
-        
+
     return new_parent_id
 
 # Flatten asset children and pull out important info for comparison
@@ -162,11 +162,11 @@ def clean_up(client, asset_to_delete):
         ]
     }
 
-    try:
-        client._api_call('delete', '/batch/assets', json.dumps(payload))
-        print("Managed to cleanup!")
-    except Exception as e:
-        print(e)
+    # try:
+    #     client._api_call('delete', '/assets/id', json.dumps(payload))
+    #     print("Managed to cleanup!")
+    # except Exception as e:
+    #     print(e)
 
     return True
 
