@@ -237,7 +237,7 @@ class FrameioClient(object):
       Example::
         client.update_asset("adeffee123342", name="updated_filename.mp4")
     """
-    endpoint = '/assets/{}/children'.format(asset_id)
+    endpoint = '/assets/{}'.format(asset_id)
     return self._api_call('put', endpoint, kwargs)
 
   def upload(self, asset, file):
