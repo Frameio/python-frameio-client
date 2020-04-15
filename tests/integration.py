@@ -87,7 +87,7 @@ def test_upload(client):
     print("Sleeping for 5 seconds to allow uploads to finish...")
     time.sleep(5)
 
-        print("Continuing...")
+    print("Continuing...")
 
     return new_parent_id
 
