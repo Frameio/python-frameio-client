@@ -250,7 +250,7 @@ class FrameioClient(object):
     :Args:
       comment_id (string): The comment id.
     """
-    endpoint = '/comments/{comment_id}/replies'.format(comment_id=comment_id)
+    endpoint = '/comments/{}/replies'.format(comment_id)
     return self._api_call('get', endpoint, **kwargs)
   
   def create_comment(self, asset_id, **kwargs):
