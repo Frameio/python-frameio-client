@@ -23,6 +23,7 @@ class FrameioUploader(object):
     return thread_local.session
 
   def _upload_chunk(self, task):
+    print("Starting next task...")
     url = task[0]
     chunk = task[1]
     session = self._get_session()
@@ -42,6 +43,4 @@ class FrameioUploader(object):
     with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
       for i, chunk in enumerate(self._read_chunk(self.file, size)):
         task = (upload_urls[i], chunk)
-        tasks.append(task)
-
-      executor.map(self._upload_chunk, tasks)
+        executor.submit(self._upload_chunk, task)
