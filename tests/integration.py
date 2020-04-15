@@ -162,11 +162,11 @@ def clean_up(client, asset_to_delete):
         ]
     }
 
-    # try:
-    #     client._api_call('delete', '/assets/id', json.dumps(payload))
-    #     print("Managed to cleanup!")
-    # except Exception as e:
-    #     print(e)
+    try:
+        client._api_call('delete', '/assets/id', json.dumps(payload))
+        print("Managed to cleanup!")
+    except Exception as e:
+        print(e)
 
     return True
 
