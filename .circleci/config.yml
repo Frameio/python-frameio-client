@@ -21,21 +21,11 @@ workflows:
           requires:
             - build
 
-      # - windows_py_38:
-      #     requires:
-      #       - build
-
-      # - mac_py_38:
-      #     requires:
-      #       - build
-
       - deploy:
           requires:
             - linux_py_27
             - linux_py_37
             - linux_py_latest
-            # - windows_py_38
-            # - mac_py_38
 
           filters:
             branches:
@@ -52,12 +42,12 @@ jobs:
       - checkout:
           name: Checkout Git
 
-      # - run:
-      #     name: verify git tag vs. version
-      #     command: |
-      #       python3 -m venv venv
-      #       . venv/bin/activate
-      #       python setup.py verify
+      - run:
+          name: verify git tag vs. version
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            python setup.py verify
 
       - run:
           name: Build Package
@@ -161,15 +151,11 @@ jobs:
             echo -e "username = $TWINE_USERNAME" >> ~/.pypirc
             echo -e "password = $TWINE_PASSWORD" >> ~/.pypirc
 
-      # - run:
-      #     name: Upload to pypi
-      #     command: |
-      #       . venv/bin/activate
-      #       twine upload dist/*
-
       - run:
-          name: Pretend to upload to pypi
+          name: Upload to pypi
           command: |
-            echo -e "Pretending to send to PyPi"
+            cd /tmp/artifact
+            . venv/bin/activate
+            twine upload dist/
 
 
