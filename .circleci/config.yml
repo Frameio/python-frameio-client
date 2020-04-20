@@ -125,7 +125,7 @@ jobs:
   linux_py_27_17:
     description: Linux 2.7.17
     docker:
-      - image: circleci/python:2.7.18
+      - image: circleci/python:2.7.17
 
     steps:
       - attach_workspace:
