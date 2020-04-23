@@ -10,11 +10,6 @@ workflows:
     jobs:
       - build
 
-
-      - linux_py_27_16:
-          requires:
-            - build
-
       - linux_py_27_17:
           requires:
             - build
@@ -33,7 +28,6 @@ workflows:
 
       - deploy:
           requires:
-            - linux_py_27_16
             - linux_py_27_17
             - linux_py_27_latest
             - linux_py_37
@@ -77,26 +71,6 @@ jobs:
           root: /home/circleci/project/
           paths:
             - .
-
-  linux_py_27_16:
-    description: Linux 2.7.16
-    docker:
-      - image: circleci/python:2.7.16
-
-    steps:
-      - attach_workspace:
-          at: /tmp/artifact
-          name: Attach build artifact
-
-      - run:
-          name: Install package
-          command: |
-            pip install '/tmp/artifact'
-
-      - run:
-          name: Run integration test
-          command: |
-            python /tmp/artifact/tests/integration.py
 
   linux_py_27_17:
     description: Linux 2.7.17
