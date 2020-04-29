@@ -48,13 +48,6 @@ jobs:
       - checkout:
           name: Checkout Git
 
-      # - run:
-      #     name: verify git tag vs. version
-      #     command: |
-      #       python3 -m venv venv
-      #       . venv/bin/activate
-      #       python setup.py verify
-
       - run:
           name: Build Package
           command: |
@@ -62,10 +55,6 @@ jobs:
             python setup.py sdist
             echo -e "Creating wheel"
             python setup.py bdist_wheel --universal
-
-      # - store_artifacts:
-      #     path: /home/circleci/project/
-      #     destination: artifact
 
       - persist_to_workspace:
           root: /home/circleci/project/
