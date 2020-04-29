@@ -168,7 +168,6 @@ jobs:
           name: Upload to pypi
           command: |
             cd /tmp/artifact
-            . venv/bin/activate
             twine upload dist/
 
 
