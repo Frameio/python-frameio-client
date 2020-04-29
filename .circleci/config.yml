@@ -54,10 +54,6 @@ jobs:
             echo -e "Running sdist"
             python setup.py sdist
 
-      - store_artifacts:
-          path: /home/circleci/project/
-          destination: artifact
-
       - persist_to_workspace:
           root: /home/circleci/project/
           paths:
@@ -170,4 +166,4 @@ jobs:
           name: Upload to pypi
           command: |
             cd /tmp/artifact
-            twine upload dist/
+            twine upload dist/*
