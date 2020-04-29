@@ -32,7 +32,7 @@ _Note: The Frame.io Python client may not work correctly in Python 3.8+_
 
 ## Usage
 
-_Note: A valid token is required to make requests to Frame.io. Please contact platform@frame.io to get setup._
+_Note: A valid token is required to make requests to Frame.io. Go to our [Developer Portal](https://developer.frame.io/) to get a token!_
 
 In addition to the snippets below, examples are included in [/examples](/examples).
 

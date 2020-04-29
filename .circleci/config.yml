@@ -1,0 +1,174 @@
+version: 2.1
+
+orbs:
+  python: circleci/python@0.2.1
+  win: circleci/windows@2.2.0
+
+workflows:
+  version: 2
+  build_test_deploy:
+    jobs:
+      - build
+
+      - linux_py_27_17:
+          requires:
+            - build
+
+      - linux_py_27_latest:
+          requires:
+            - build
+
+      - linux_py_37:
+          requires:
+            - build
+
+      - linux_py_latest:
+          requires:
+            - build
+
+      - deploy:
+          requires:
+            - linux_py_27_17
+            - linux_py_27_latest
+            - linux_py_37
+            - linux_py_latest
+
+          filters:
+            branches:
+              only:
+                - master
+            tags:
+              only: /[0-9]+(\.[0-9]+)*/
+
+jobs:
+  build:
+    docker:
+      - image: circleci/python:latest
+    steps:
+      - checkout:
+          name: Checkout Git
+
+      - run:
+          name: Build Package
+          command: |
+            echo -e "Running sdist"
+            python setup.py sdist
+            echo -e "Creating wheel"
+            python setup.py bdist_wheel --universal
+
+      - persist_to_workspace:
+          root: /home/circleci/project/
+          paths:
+            - .
+
+  linux_py_27_17:
+    description: Linux 2.7.17
+    docker:
+      - image: circleci/python:2.7.17
+
+    steps:
+      - attach_workspace:
+          at: /tmp/artifact
+          name: Attach build artifact
+
+      - run:
+          name: Install package
+          command: |
+            pip install '/tmp/artifact'
+
+      - run:
+          name: Run integration test
+          command: |
+            python /tmp/artifact/tests/integration.py
+
+  linux_py_27_latest:
+    description: Linux 2.7.18
+    docker:
+      - image: circleci/python:2.7.18
+
+    steps:
+      - attach_workspace:
+          at: /tmp/artifact
+          name: Attach build artifact
+
+      - run:
+          name: Install package
+          command: |
+            pip install '/tmp/artifact'
+
+      - run:
+          name: Run integration test
+          command: |
+            python /tmp/artifact/tests/integration.py
+
+  linux_py_37:
+    description: Linux 3.7.7
+    docker:
+      - image: circleci/python:3.7.7
+
+    steps:
+      - attach_workspace:
+          at: /tmp/artifact
+          name: Attach build artifact
+
+      - run:
+          name: Install package
+          command: |
+            pip install '/tmp/artifact'
+
+      - run:
+          name: Run integration test
+          command: |
+            python /tmp/artifact/tests/integration.py
+
+  linux_py_latest:
+    description: Linux latest
+    docker:
+      - image: circleci/python:latest
+
+    steps:
+      - attach_workspace:
+          at: /tmp/artifact
+          name: Attach build artifact
+
+      - run:
+          name: Install package
+          command: |
+            pip install '/tmp/artifact'
+
+      - run:
+          name: Run integration test
+          command: |
+            python /tmp/artifact/tests/integration.py
+
+
+  deploy:
+    docker:
+    - image: circleci/python:latest
+
+    steps:
+      - attach_workspace:
+          at: /tmp/artifact
+          name: Attach build artifact
+
+      - run:
+          name: Install dependencies
+          command: |
+            pip install setuptools wheel twine
+
+      - run:
+          name: init .pypirc
+          command: |
+            cd /tmp/artifact
+            echo -e "[pypi]" >> ~/.pypirc
+            echo -e "username = $TWINE_USERNAME" >> ~/.pypirc
+            echo -e "password = $TWINE_PASSWORD" >> ~/.pypirc
+
+      - run:
+          name: Upload to pypi
+          command: |
+            cd /tmp/artifact
+            . venv/bin/activate
+            twine upload dist/
+
+

@@ -1,8 +1,13 @@
+import sys
 import requests
-from .upload import FrameioUploader
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
 from .download import FrameioDownloader
+
+if sys.version_info.major >= 3:
+  from .py3_uploader import FrameioUploader
+else:
+  from .py2_uploader import FrameioUploader
 
 class PaginatedResponse(object):
   def __init__(self, results=[], page=0, page_size=0, total=0, total_pages=0):
@@ -26,12 +31,23 @@ class FrameioClient(object):
         status_forcelist=[429],
         method_whitelist=["POST", "OPTIONS", "GET"]
     )
+    self.client_version = self._get_version()
+
+  def _get_version(self):
+    try:
+        from importlib import metadata
+    except ImportError:
+        # Running on pre-3.8 Python; use importlib-metadata package
+        import importlib_metadata as metadata
+
+    return metadata.version('frameioclient')
 
   def _api_call(self, method, endpoint, payload={}):
     url = '{}/v2{}'.format(self.host, endpoint)
 
     headers = {
-      'Authorization': 'Bearer {}'.format(self.token)
+      'Authorization': 'Bearer {}'.format(self.token),
+      'x-frameio-client': 'python/{}'.format(self.client_version)
     }
 
     adapter = HTTPAdapter(max_retries=self.retry_strategy)
@@ -48,13 +64,14 @@ class FrameioClient(object):
 
     if r.ok:
       if r.headers.get('page-number'):
-        return PaginatedResponse(
-          results=r.json(), 
-          page=r.headers['page-number'], 
-          page_size=r.headers['per-page'],
-          total_pages=r.headers['total-pages'],
-          total=r.headers['total']
-        )
+        if int(r.headers.get('total-pages')) > 1:
+          return PaginatedResponse(
+            results=r.json(), 
+            page=r.headers['page-number'], 
+            page_size=r.headers['per-page'],
+            total_pages=r.headers['total-pages'],
+            total=r.headers['total']
+          )
 
       return r.json()
 
@@ -220,7 +237,7 @@ class FrameioClient(object):
       Example::
         client.update_asset("adeffee123342", name="updated_filename.mp4")
     """
-    endpoint = '/assets/{}/children'.format(asset_id)
+    endpoint = '/assets/{}'.format(asset_id)
     return self._api_call('put', endpoint, kwargs)
 
   def upload(self, asset, file):
@@ -260,7 +277,7 @@ class FrameioClient(object):
     :Args:
       comment_id (string): The comment id.
     """
-    endpoint = '/comments/{id}'.format(comment_id)
+    endpoint = '/comments/{}'.format(comment_id)
     return self._api_call('get', endpoint, **kwargs)
 
   def get_comments(self, asset_id, **kwargs):
