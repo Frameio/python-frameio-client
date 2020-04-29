@@ -53,8 +53,6 @@ jobs:
           command: |
             echo -e "Running sdist"
             python setup.py sdist
-            echo -e "Creating wheel"
-            python setup.py sdist
 
       - store_artifacts:
           path: /home/circleci/project/
