@@ -104,3 +104,7 @@ venv.bak/
 .mypy_cache/
 
 .DS_Store
+
+# Pipenv
+Pipfile
+Pipfile.lock
