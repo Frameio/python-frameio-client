@@ -434,3 +434,18 @@ class FrameioClient(object):
     """
     endpoint = '/review_links/{}/items'.format(link_id)
     return self._api_call('get', endpoint)
+
+  def get_audit_logs(self, account_id):
+    """
+    Get audit logs for your account.
+
+    :Args:
+
+      Example::
+
+        client.get_asset_logs(
+          account_id="6bdcb4d9-9a2e-a765-4548-ae6b27a6c024"
+        )
+    """
+    endpoint = '/accounts/{}/audit_logs'.format(account_id)
+    return self._api_call('get', endpoint)
