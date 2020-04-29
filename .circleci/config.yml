@@ -54,7 +54,7 @@ jobs:
             echo -e "Running sdist"
             python setup.py sdist
             echo -e "Creating wheel"
-            python setup.py bdist_wheel --universal
+            python setup.py sdist_wheel --universal
 
       - persist_to_workspace:
           root: /home/circleci/project/
