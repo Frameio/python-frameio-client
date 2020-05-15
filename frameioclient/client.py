@@ -173,16 +173,6 @@ class FrameioClient(object):
     endpoint = '/teams/{}/projects'.format(team_id)
     return self._api_call('post', endpoint, payload=kwargs)
 
-  def get_project(self, project_id):
-    """
-    Get a project by id.
-
-    :Args:
-      project_id (string): The project id.
-    """
-    endpoint = '/projects/{}'.format(project_id)
-    return self._api_call('get', endpoint)
-
   def get_asset(self, asset_id):
     """
     Get an asset by id.
