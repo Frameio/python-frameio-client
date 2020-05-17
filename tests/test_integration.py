@@ -18,7 +18,7 @@ upload_folder_id = os.getenv('UPLOAD_FOLDER_ID')
 # Test download functionality
 def test_download(setup_client):
     client = setup_client
-    
+
     print("Testing download function...")
     with pytest.raises(FileExistsError):
         os.mkdir('downloads')
@@ -36,6 +36,33 @@ def test_download(setup_client):
     print("Done downloading files")
 
     return True
+
+# Test uploading a single .txt file
+def test_upload_single_file(setup_client, tmpdir):
+    client = setup_client
+    testdir = tmpdir.mkdir('single_file_upload')
+    file = testdir.join('file.txt')
+    file.write('file body')
+    print(file)
+
+    # python-frameio-client only supports uploads in asset form (see library for details)
+    upload_asset = client.create_asset(
+        parent_asset_id=upload_folder_id,
+        name="file.txt",
+        type="file",
+        filetype="text/plain",
+        filesize="10"
+    )
+
+    # Expect FileNotFound exception becaucse it's not a real file
+    with pytest.raises(FileNotFoundError):
+        with open('file.txt', 'rb') as upload_file:        
+                client.upload(upload_asset, upload_file)
+
+    assert file.read() == 'file body'
+    assert upload_asset['name'] == 'file.txt'
+    assert upload_asset['project_id'] == project_id
+    assert upload_asset['parent_id'] == upload_folder_id
 
 # Test upload functionality       
 def test_upload(setup_client):
