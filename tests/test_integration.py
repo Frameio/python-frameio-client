@@ -20,8 +20,10 @@ def test_download(setup_client):
     client = setup_client
 
     print("Testing download function...")
-    with pytest.raises(FileExistsError):
+    try:
         os.mkdir('downloads')
+    except FileExistsError:
+        print("Directory already exists, moving on...")
     asset_list = client.get_asset_children(
         download_asset_id,
         page=1,
