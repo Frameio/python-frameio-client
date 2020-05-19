@@ -1,5 +1,6 @@
 import sys
 import requests
+import warnings
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
 from .download import FrameioDownloader
@@ -83,10 +84,6 @@ class FrameioClient(object):
     """
     return self._api_call('get', '/me')
 
-
-
-  '{"admin_only_actions":{"lifecycle":false},"dark_theme":false,"email_branding":{"image":{"type":"image/jpeg","uploaded":false}},"image":{"type":"image/jpeg","uploaded":false},"solo":false,"watermark":{"image":{"alpha":0.5,"image":{"type":"image/jpeg","uploaded":false},"position":"top_left"},"text":{"alpha":0.5,"position":"top"}}}'
-
   def create_team(self, account_id, **kwargs):
     """
     Create a Team.
@@ -98,14 +95,14 @@ class FrameioClient(object):
 
       Example::
 
-        client.create_project(
+        client.create_team(
           account_id="6bdcb4d9-4548-4548-4548-27a6c024ae6b",
           name="My Awesome Project",
         )
     """
+    warnings.warn('You will need to make sure your token supports team.create scopes.')
     endpoint = '/accounts/{}/teams'.format(account_id)
     return self._api_call('post', endpoint, payload=kwargs)
-
 
   def get_teams(self, account_id, **kwargs):
     """
