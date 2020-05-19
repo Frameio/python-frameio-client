@@ -235,9 +235,9 @@ class FrameioClient(object):
     Copy an asset
 
     :Args:
-      asset_id (string): The asset_id you want to copy
+      destination_folder_id (string): The id of the folder you want to copy into.
     :Kwargs:
-      id (string): The id of the folder you want to put it into
+      id (string): The id of the asset you want to copy.
 
       Example::
         client.copy_asset("adeffee123342", id="7ee008c5-49a2-f8b5-997d-8b64de153c30")
