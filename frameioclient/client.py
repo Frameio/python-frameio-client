@@ -230,6 +230,21 @@ class FrameioClient(object):
     endpoint = '/assets/{}'.format(asset_id)
     return self._api_call('put', endpoint, kwargs)
 
+  def copy_asset(self, destination_folder_id, **kwargs):
+    """
+    Copy an asset
+
+    :Args:
+      asset_id (string): The asset_id you want to copy
+    :Kwargs:
+      id (string): The id of the folder you want to put it into
+
+      Example::
+        client.copy_asset("adeffee123342", id="7ee008c5-49a2-f8b5-997d-8b64de153c30")
+    """
+    endpoint = '/assets/{}/copy'.format(destination_folder_id)
+    return self._api_call('post', endpoint, kwargs)
+
   def delete_asset(self, asset_id):
     """
     Delete an asset
