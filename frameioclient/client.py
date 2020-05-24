@@ -10,16 +10,45 @@ else:
   from .py2_uploader import FrameioUploader
 
 class PaginatedResponse(object):
-  def __init__(self, results=[], page=0, page_size=0, total=0, total_pages=0):
+  def __init__(self, results=[], page=0, page_size=0, total=0, total_pages=0,
+               client=None, endpoint=None):
     super(PaginatedResponse, self).__init__()
     self.results = results
     self.page = int(page)
     self.page_size = int(page_size)
     self.total = int(total)
     self.total_pages = int(total_pages)
-  
+
+    self.client = client
+    self.endpoint = endpoint
+
+    self.result_index = 0
+    self.asset_index = 0
+    self.current_page = 1
+
   def __iter__(self):
-    return iter(self.results)
+    return self
+
+  def __next__(self):
+    if self.result_index < 50 and self.asset_index < self.total:
+      self.result_index += 1
+      self.asset_index += 1
+      return self.results[self.result_index - 1]
+
+    if self.current_page < self.total_pages:
+      self.current_page = self.current_page + 1
+      self.result_index = 1
+      self.asset_index += 1
+
+      self.results = self.client.get_specific_page(
+        self.endpoint, self.current_page).results
+
+      return self.results[self.result_index - 1]
+
+    raise StopIteration
+
+  def next(self):  # Python 2
+    return self.__next__()
 
 class FrameioClient(object):
   def __init__(self, token, host='https://api.frame.io'):
@@ -70,12 +99,25 @@ class FrameioClient(object):
             page=r.headers['page-number'], 
             page_size=r.headers['per-page'],
             total_pages=r.headers['total-pages'],
-            total=r.headers['total']
+            total=r.headers['total'],
+            endpoint=endpoint,
+            client=self
           )
 
       return r.json()
 
     return r.raise_for_status()
+
+  def get_specific_page(self, endpoint, page):
+    """
+    Gets a specific page for that endpoint, used by Pagination Class
+
+    :Args:
+      endpoint (string): With asset ID already baked in
+      page (int): What page to get
+    """
+    endpoint = '{}?page={}'.format(endpoint, page)
+    return self._api_call('get', endpoint)
 
   def get_me(self):
     """
