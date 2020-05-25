@@ -230,6 +230,16 @@ class FrameioClient(object):
     endpoint = '/assets/{}'.format(asset_id)
     return self._api_call('put', endpoint, kwargs)
 
+  def delete_asset(self, asset_id):
+    """
+    Delete an asset
+
+    :Args:
+      asset_id (string): the asset's id
+    """
+    endpoint = '/assets/{}'.format(asset_id)
+    return self._api_call('delete', endpoint)
+
   def upload(self, asset, file):
     """
     Upload an asset. The method will exit once the file is uploaded.
