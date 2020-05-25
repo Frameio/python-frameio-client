@@ -37,7 +37,7 @@ workflows:
           filters:
             branches:
               only:
-                - master
+                - develop
 
       - deploy:
           requires:
