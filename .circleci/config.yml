@@ -26,7 +26,8 @@ workflows:
           requires:
             - build
 
-      - hold_for_approval:
+      - hold:
+          type: approval
           requires:
             - linux_py_27_17
             - linux_py_27_latest
@@ -42,8 +43,9 @@ workflows:
           requires:
             - hold
 
-          tags:
-              only: /[0-9]+(\.[0-9]+)*/
+          filters:
+            tags:
+                only: /[0-9]+(\.[0-9]+)*/
 
 jobs:
   build:
