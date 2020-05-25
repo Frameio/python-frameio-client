@@ -100,7 +100,7 @@ class FrameioClient(object):
           name="My Awesome Project",
         )
     """
-    warnings.warn('You will need to make sure your token supports team.create scopes.')
+    warnings.warn('Note: Your token must support team.create scopes')
     endpoint = '/accounts/{}/teams'.format(account_id)
     return self._api_call('post', endpoint, payload=kwargs)
 
