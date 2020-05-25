@@ -219,6 +219,25 @@ class FrameioClient(object):
     endpoint = '/assets/{}/children'.format(asset_id)
     return self._api_call('get', endpoint, kwargs)
 
+  def move_asset(self, destination_folder, id)
+    """
+    Move an asset.
+
+    :Args:
+      asset_id (string): The asset you're trying to move.
+    :Kwargs:
+      destination_folder (string): The destination folder you're moving the file into
+
+      Example::
+
+        client.move_asset(
+          destination_folder="123abc",
+          id="123abc",
+        )
+    """
+    endpoint = '/assets/{}/children'.format(destination_folder)
+    return self._api_call('post', endpoint, payload=kwargs)
+
   def create_asset(self, parent_asset_id, **kwargs):
     """
     Create an asset.
