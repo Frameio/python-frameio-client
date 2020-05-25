@@ -443,7 +443,7 @@ class FrameioClient(object):
 
       Example::
 
-        client.get_asset_logs(
+        client.get_audit_logs(
           account_id="6bdcb4d9-9a2e-a765-4548-ae6b27a6c024"
         )
     """
