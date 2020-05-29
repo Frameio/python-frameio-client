@@ -411,6 +411,26 @@ class FrameioClient(object):
     endpoint = '/projects/{}/review_links'.format(project_id)
     return self._api_call('get', endpoint)
 
+  def create_presentation_link(self, asset_id, **kwargs):
+    """
+    Create a presentation link.
+
+    :Args:
+      asset_id (string): The asset id.
+    :Kwargs:
+      kwargs: additional request parameters.
+
+      Example::
+
+        client.create_presentation_link(
+          asset_id="9cee7966-4066-b326-7db1-f9e6f5e929e4",
+          title="My fresh presentation",
+          password="abc123"
+        )
+    """
+    endpoint = '/assets/{}/presentations'.format(asset_id)
+    return self._api_call('post', endpoint, payload=kwargs)
+
   def create_review_link(self, project_id, **kwargs):
     """
     Create a review link.
