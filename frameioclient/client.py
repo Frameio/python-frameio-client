@@ -230,6 +230,48 @@ class FrameioClient(object):
     endpoint = '/assets/{}'.format(asset_id)
     return self._api_call('put', endpoint, kwargs)
 
+  def copy_asset(self, destination_folder_id, **kwargs):
+    """
+    Copy an asset
+
+    :Args:
+      destination_folder_id (string): The id of the folder you want to copy into.
+    :Kwargs:
+      id (string): The id of the asset you want to copy.
+
+      Example::
+        client.copy_asset("adeffee123342", id="7ee008c5-49a2-f8b5-997d-8b64de153c30")
+    """
+    endpoint = '/assets/{}/copy'.format(destination_folder_id)
+    return self._api_call('post', endpoint, kwargs)
+
+  def bulk_copy_assets(self, destination_folder_id, asset_list=[], copy_comments=False):
+    """
+    Bulk copy assets
+
+    :Args:
+      destination_folder_id (string): The id of the folder you want to copy into.
+    :Kwargs:
+      asset_list (list): A list of the asset IDs you want to copy.
+      copy_comments (boolean): Whether or not to copy comments: True or False.
+
+      Example::
+        client.bulk_copy_assets("adeffee123342", asset_list=["7ee008c5-49a2-f8b5-997d-8b64de153c30", \ 
+        "7ee008c5-49a2-f8b5-997d-8b64de153c30"], copy_comments=True)
+    """
+    
+    payload = {"batch": []}
+    new_list = list()
+
+    if copy_comments:
+      payload['copy_comments'] = "all"
+
+    for asset in asset_list:
+      payload['batch'].append({"id": asset})
+
+    endpoint = '/batch/assets/{}/copy'.format(destination_folder_id)
+    return self._api_call('post', endpoint, payload)
+
   def delete_asset(self, asset_id):
     """
     Delete an asset
