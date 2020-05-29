@@ -219,7 +219,7 @@ class FrameioClient(object):
     endpoint = '/assets/{}/children'.format(asset_id)
     return self._api_call('get', endpoint, kwargs)
 
-  def move_asset(self, destination_folder, id)
+  def move_asset(self, destination_folder, **kwargs):
     """
     Move an asset.
 
@@ -235,8 +235,33 @@ class FrameioClient(object):
           id="123abc",
         )
     """
-    endpoint = '/assets/{}/children'.format(destination_folder)
+    endpoint = '/assets/{}/move'.format(destination_folder)
     return self._api_call('post', endpoint, payload=kwargs)
+
+  def bulk_move_assets(self, destination_folder_id, asset_list=[]):
+    """
+    Bulk copy assets
+
+    :Args:
+      destination_folder_id (string): The id of the folder you want to move your assets into.
+    :Kwargs:
+      asset_list (list): A list of the asset IDs you want to move.
+
+      Example::
+        client.bulk_copy_assets("adeffee123342", asset_list=["7ee008c5-49a2-f8b5-997d-8b64de153c30", \ 
+        "7ee008c5-49a2-f8b5-997d-8b64de153c30"])
+    """
+    
+    payload = {"batch": []}
+    new_list = list()
+
+    for asset in asset_list:
+      payload['batch'].append({"id": asset})
+
+    print(payload)
+
+    endpoint = '/batch/assets/{}/move'.format(destination_folder_id)
+    return self._api_call('post', endpoint, payload)
 
   def create_asset(self, parent_asset_id, **kwargs):
     """
