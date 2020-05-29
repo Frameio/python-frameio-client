@@ -437,7 +437,7 @@ class FrameioClient(object):
 
   def get_audit_logs(self, account_id):
     """
-    Get audit logs for your account.
+    Get audit logs for the currently authenticated account.
 
     :Args:
 
