@@ -8,7 +8,7 @@ from .download import FrameioDownloader
 from .exceptions import PresentationException
 
 if sys.version_info.major >= 3:
-  from .py3_uploader import FrameioUploader
+  from .next_uploader import FrameioUploader
 else:
   from .py2_uploader import FrameioUploader
 
