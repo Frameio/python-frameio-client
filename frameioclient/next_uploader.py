@@ -1,0 +1,71 @@
+import math
+import requests
+import threading
+import concurrent.futures
+
+thread_local = threading.local()
+
+class FrameioUploader(object):
+  def __init__(self, asset, file):
+    self.asset = asset
+    self.file = file
+    self.chunk_size = None
+
+  def _calculate_chunks(self, total_size, chunk_count):
+    self.chunk_size = int(math.ceil(total_size / chunk_count))
+
+    chunk_offsets = list()
+
+    for index in range(chunk_count):
+      offset_amount = index * self.chunk_size
+      chunk_offsets.append(offset_amount)
+
+    return chunk_offsets
+
+  def _get_session(self):
+    if not hasattr(thread_local, "session"):
+        thread_local.session = requests.Session()
+    return thread_local.session
+
+  def _smart_read_chunk(self, chunk_offset):
+    self.file.seek(chunk_offset, 0)
+    data = self.file.read(self.chunk_size)
+    return data
+
+  def _upload_chunk(self, task):
+    url = task[0]
+    chunk_offset = task[1]
+    index = task[2] + 1
+    chunks_total = len(self.asset['upload_urls'])
+    
+    session = self._get_session()
+
+    chunk_data = self._smart_read_chunk(chunk_offset)
+
+    print(f"Chunk {index}/{chunks_total}: Offset= {chunk_offset}")
+    print(f"Length of chunk: {len(chunk_data)}")
+
+    try:
+      session.put(url, data=chunk_data, headers={
+        'content-type': self.asset['filetype'],
+        'x-amz-acl': 'private'
+      })
+      print(f"Completed chunk {index}/{chunks_total}")
+    except Exception as e:
+      print(e)
+
+  def upload(self):
+    total_size = self.asset['filesize']
+    upload_urls = self.asset['upload_urls']
+
+    chunk_offsets = self._calculate_chunks(total_size, chunk_count=len(upload_urls))
+
+    print(f"Total Bytes: {total_size}")
+
+    with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
+      for i in range(len(upload_urls)):
+        url = upload_urls[i]
+        chunk_offset = chunk_offsets[i]
+        
+        task = (url, chunk_offset, i)
+        executor.submit(self._upload_chunk, task)
