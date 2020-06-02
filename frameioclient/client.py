@@ -1,9 +1,11 @@
+import re
 import sys
 import requests
 import warnings
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
 from .download import FrameioDownloader
+from .exceptions import PresentationException
 
 if sys.version_info.major >= 3:
   from .py3_uploader import FrameioUploader
@@ -75,6 +77,9 @@ class FrameioClient(object):
           )
 
       return r.json()
+    
+    if r.status_code == 422 and "presentation" in endpoint:
+      raise PresentationException
 
     return r.raise_for_status()
 
@@ -410,6 +415,26 @@ class FrameioClient(object):
     """
     endpoint = '/projects/{}/review_links'.format(project_id)
     return self._api_call('get', endpoint)
+
+  def create_presentation_link(self, asset_id, **kwargs):
+    """
+    Create a presentation link.
+
+    :Args:
+      asset_id (string): The asset id.
+    :Kwargs:
+      kwargs: additional request parameters.
+
+      Example::
+
+        client.create_presentation_link(
+          asset_id="9cee7966-4066-b326-7db1-f9e6f5e929e4",
+          title="My fresh presentation",
+          password="abc123"
+        )
+    """
+    endpoint = '/assets/{}/presentations'.format(asset_id)
+    return self._api_call('post', endpoint, payload=kwargs)
 
   def create_review_link(self, project_id, **kwargs):
     """
