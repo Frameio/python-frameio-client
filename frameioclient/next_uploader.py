@@ -35,22 +35,17 @@ class FrameioUploader(object):
   def _upload_chunk(self, task):
     url = task[0]
     chunk_offset = task[1]
-    index = task[2] + 1
     chunks_total = len(self.asset['upload_urls'])
     
     session = self._get_session()
 
     chunk_data = self._smart_read_chunk(chunk_offset)
 
-    print(f"Chunk {index}/{chunks_total}: Offset= {chunk_offset}")
-    print(f"Length of chunk: {len(chunk_data)}")
-
     try:
       session.put(url, data=chunk_data, headers={
         'content-type': self.asset['filetype'],
         'x-amz-acl': 'private'
       })
-      print(f"Completed chunk {index}/{chunks_total}")
     except Exception as e:
       print(e)
 
@@ -60,12 +55,10 @@ class FrameioUploader(object):
 
     chunk_offsets = self._calculate_chunks(total_size, chunk_count=len(upload_urls))
 
-    print(f"Total Bytes: {total_size}")
-
     with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
       for i in range(len(upload_urls)):
         url = upload_urls[i]
         chunk_offset = chunk_offsets[i]
         
-        task = (url, chunk_offset, i)
+        task = (url, chunk_offset)
         executor.submit(self._upload_chunk, task)
