@@ -1,9 +1,11 @@
+import re
 import sys
 import requests
 import warnings
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
 from .download import FrameioDownloader
+from .exceptions import PresentationException
 
 if sys.version_info.major >= 3:
   from .py3_uploader import FrameioUploader
@@ -75,6 +77,9 @@ class FrameioClient(object):
           )
 
       return r.json()
+    
+    if r.status_code == 422 and "presentation" in endpoint:
+      raise PresentationException
 
     return r.raise_for_status()
 
