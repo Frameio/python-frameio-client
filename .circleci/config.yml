@@ -26,7 +26,8 @@ workflows:
           requires:
             - build
 
-      - deploy:
+      - hold:
+          type: approval
           requires:
             - linux_py_27_17
             - linux_py_27_latest
@@ -38,7 +39,11 @@ workflows:
               only:
                 - master
             tags:
-              only: /[0-9]+(\.[0-9]+)*/
+                only: /[0-9]+(\.[0-9]+)*/
+
+      - deploy:
+          requires:
+            - hold
 
 jobs:
   build:
