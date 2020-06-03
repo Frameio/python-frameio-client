@@ -258,8 +258,6 @@ class FrameioClient(object):
     for asset in asset_list:
       payload['batch'].append({"id": asset})
 
-    print(payload)
-
     endpoint = '/batch/assets/{}/move'.format(destination_folder_id)
     return self._api_call('post', endpoint, payload)
 
