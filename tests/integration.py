@@ -110,6 +110,10 @@ def check_for_checksums(asset_children):
         try:
             asset['checksums']['xx_hash']
         except TypeError:
+            print("Checksum dict \n")
+            pprint(asset['checksums'])
+            print("Asset ID: {}".format(asset['id']))
+            print("Asset Name: {}".format(asset['name']))
             print("Checksums not yet calculated, sleeping for 10 seconds.")
             time.sleep(10)
             check_for_checksums(asset_children)
