@@ -132,7 +132,7 @@ def check_upload_completion(client, download_folder_id, upload_folder_id):
 
     for asset in ul_asset_children:
         try:
-            asset.get('checksums')
+            asset['checksums']['xx_hash']
         except TypeError:
             print("Checksums not yet calculated, sleeping")
             time.sleep(10)
