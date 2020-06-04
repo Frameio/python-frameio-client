@@ -5,6 +5,7 @@ import mimetypes
 import platform
 import time
 
+from pprint import pprint
 from frameioclient import FrameioClient
 
 token = os.getenv("FRAMEIO_TOKEN")
@@ -96,7 +97,7 @@ def flatten_asset_children(asset_children):
     flat_dict = dict()
 
     for asset in asset_children:
-        size_name = "{}-{}".format(asset['name'],'size')
+        size_name = "{}-{}".format(asset['name'], 'size')
         flat_dict[size_name] = asset['filesize']
 
         xxhash_name = "{}-{}".format(asset['name'], 'xxHash')
@@ -104,6 +105,16 @@ def flatten_asset_children(asset_children):
 
     return flat_dict
 
+def check_for_checksums(asset_children):
+    for asset in ul_asset_children:
+        try:
+            asset['checksums']['xx_hash']
+        except TypeError:
+            print("Checksums not yet calculated, sleeping for 10 seconds.")
+            time.sleep(10)
+            check_for_checksums(asset_children)
+
+    return True
 
 def check_upload_completion(client, download_folder_id, upload_folder_id):
     # Do a comparison against filenames and filesizes here to make sure they match
@@ -130,18 +141,19 @@ def check_upload_completion(client, download_folder_id, upload_folder_id):
 
     print("Got asset children for uploaded folder")
 
-    for asset in ul_asset_children:
-        try:
-            asset['checksums']['xx_hash']
-        except TypeError:
-            print("Checksums not yet calculated, sleeping")
-            time.sleep(10)
-            check_upload_completion(client, download_folder_id, upload_folder_id)
+    print("Making sure checksums are calculated before verifying")
+    check_for_checksums(ul_asset_children)
 
     dl_items = flatten_asset_children(dl_asset_children)
     ul_items = flatten_asset_children(ul_asset_children)
 
     print("Running comparison...")
+
+    print("DL Items: \n")
+    pprint(dl_items)
+
+    print("\nUL Items: \n")
+    pprint(ul_items)
 
     if sys.version_info.major >= 3:
         import operator
