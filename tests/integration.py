@@ -106,7 +106,7 @@ def flatten_asset_children(asset_children):
     return flat_dict
 
 def check_for_checksums(asset_children):
-    for asset in ul_asset_children:
+    for asset in asset_children:
         try:
             asset['checksums']['xx_hash']
         except TypeError:
