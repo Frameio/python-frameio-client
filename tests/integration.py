@@ -110,25 +110,26 @@ def flatten_asset_children(asset_children):
 
 
 def check_for_checksums(asset_children):
-    for i in range(10):
-        while i <= 10:
-            for asset in asset_children:
-                try:
-                    asset['checksums']['xx_hash']
-                    print("Success..")
-                    print("Checksum dict: ")
-                    pprint(asset['checksums'])
-                    print("\n")
-                except TypeError:
-                    print("Failure...")
-                    print("Checksum dict \n")
-                    pprint(asset['checksums'])
-                    print("Asset ID: {}".format(asset['id']))
-                    print("Asset Name: {}".format(asset['name']))
-                    print("Checksums not yet calculated, sleeping for 10 seconds.")
-                    time.sleep(5)
-                    i += 1
-                    continue
+    while i <= 10:
+        for asset in asset_children:
+            try:
+                asset['checksums']['xx_hash']
+                print("Success..")
+                print("Asset ID: {}".format(asset['id']))
+                print("Asset Name: {}".format(asset['name']))
+                print("Checksum dict: ")
+                pprint(asset['checksums'])
+                print("\n")
+            except TypeError:
+                print("Failure...")
+                print("Checksum dict:")
+                pprint(asset['checksums'])
+                print("Asset ID: {}".format(asset['id']))
+                print("Asset Name: {}".format(asset['name']))
+                print("Checksums not yet calculated, sleeping for 5 seconds.")
+                time.sleep(5)
+                i += 1
+                continue
 
     return True
 
