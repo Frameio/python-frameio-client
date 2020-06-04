@@ -3,7 +3,7 @@ import sys
 import json
 import time
 import socket
-import xxhash
+# import xxhash
 import platform
 import mimetypes
 
