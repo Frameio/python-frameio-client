@@ -151,6 +151,7 @@ def flatten_asset_children(asset_children):
 
 def check_for_checksums(asset_children):
     global retries
+    print("Checking for checksums attempt #{}".format(retries+1))
     if retries < 4:
         for asset in asset_children:
             try:
@@ -165,11 +166,10 @@ def check_for_checksums(asset_children):
                 print("Checksum dict: {}".format(asset['checksums']))
                 print("Asset ID: {}".format(asset['id']))
                 print("Asset Name: {}".format(asset['name']))
-                print("Checksums not yet calculated, sleeping for 5 seconds.")
+                print("Checksums not yet calculated, sleeping for 15 seconds.")
                 time.sleep(15)
                 retries += 1
                 check_for_checksums(asset_children)
-
         return True
     else:
         return False
