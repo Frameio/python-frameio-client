@@ -27,10 +27,12 @@ class FrameioUploader(object):
     chunk = task[1]
     session = self._get_session()
 
-    session.put(url, data=chunk, headers={
+    r = session.put(url, data=chunk, headers={
       'content-type': self.asset['filetype'],
       'x-amz-acl': 'private'
     })
+
+    r.raise_for_status()
 
   def upload(self):
     total_size = self.asset['filesize']
