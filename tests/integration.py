@@ -111,7 +111,7 @@ def flatten_asset_children(asset_children):
 
 def check_for_checksums(asset_children):
     for i in range(10):
-        while True:
+        while i <= 10:
             for asset in asset_children:
                 try:
                     asset['checksums']['xx_hash']
@@ -127,8 +127,8 @@ def check_for_checksums(asset_children):
                     print("Asset Name: {}".format(asset['name']))
                     print("Checksums not yet calculated, sleeping for 10 seconds.")
                     time.sleep(5)
+                    i += 1
                     continue
-                break
 
     return True
 
