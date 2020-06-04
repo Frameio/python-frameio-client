@@ -96,7 +96,11 @@ def flatten_asset_children(asset_children):
     flat_dict = dict()
 
     for asset in asset_children:
-        flat_dict[asset['name']] = asset['filesize']
+        size_name = "{}-{}".format(asset['name'],'size')
+        flat_dict[size_name] = asset['filesize']
+
+        xxhash_name = "{}-{}".format(asset['name'], 'xxHash')
+        flat_dict[xxhash_name] = asset['checksums']['xx_hash']
 
     return flat_dict
 
@@ -125,6 +129,14 @@ def check_upload_completion(client, download_folder_id, upload_folder_id):
     )
 
     print("Got asset children for uploaded folder")
+
+    for asset in ul_asset_children:
+        try:
+            asset.get('checksums')
+        except TypeError:
+            print("Checksums not yet calculated, sleeping")
+            time.sleep(10)
+            check_upload_completion(client, download_folder_id, upload_folder_id)
 
     dl_items = flatten_asset_children(dl_asset_children)
     ul_items = flatten_asset_children(ul_asset_children)
