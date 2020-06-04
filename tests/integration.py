@@ -97,30 +97,38 @@ def flatten_asset_children(asset_children):
     flat_dict = dict()
 
     for asset in asset_children:
-        size_name = "{}-{}".format(asset['name'], 'size')
-        flat_dict[size_name] = asset['filesize']
+        try:
+            size_name = "{}-{}".format(asset['name'], 'size')
+            flat_dict[size_name] = asset['filesize']
 
-        xxhash_name = "{}-{}".format(asset['name'], 'xxHash')
-        flat_dict[xxhash_name] = asset['checksums']['xx_hash']
+            xxhash_name = "{}-{}".format(asset['name'], 'xxHash')
+            flat_dict[xxhash_name] = asset['checksums']['xx_hash']
+        except TypeError:
+            continue
 
     return flat_dict
 
+
 def check_for_checksums(asset_children):
-    for asset in asset_children:
-        try:
-            asset['checksums']['xx_hash']
-            print("Success..")
-            print("Checksum dict \n")
-            pprint(asset['checksums'])
-        except TypeError:
-            print("Failure...")
-            print("Checksum dict \n")
-            pprint(asset['checksums'])
-            print("Asset ID: {}".format(asset['id']))
-            print("Asset Name: {}".format(asset['name']))
-            print("Checksums not yet calculated, sleeping for 10 seconds.")
-            time.sleep(10)
-            check_for_checksums(asset_children)
+    for i in range(10):
+        while True:
+            for asset in asset_children:
+                try:
+                    asset['checksums']['xx_hash']
+                    print("Success..")
+                    print("Checksum dict: ")
+                    pprint(asset['checksums'])
+                    print("\n")
+                except TypeError:
+                    print("Failure...")
+                    print("Checksum dict \n")
+                    pprint(asset['checksums'])
+                    print("Asset ID: {}".format(asset['id']))
+                    print("Asset Name: {}".format(asset['name']))
+                    print("Checksums not yet calculated, sleeping for 10 seconds.")
+                    time.sleep(5)
+                    continue
+                break
 
     return True
 
@@ -154,6 +162,9 @@ def check_upload_completion(client, download_folder_id, upload_folder_id):
 
     dl_items = flatten_asset_children(dl_asset_children)
     ul_items = flatten_asset_children(ul_asset_children)
+
+    print("Valid uploads: {}/{}".format(len(ul_items), len(dl_items)))
+    print("Percentage uploads valid: {:.2%}".format(len(ul_items)/len(dl_items)))
 
     print("Running comparison...")
 
