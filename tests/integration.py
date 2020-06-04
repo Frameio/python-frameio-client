@@ -109,7 +109,11 @@ def check_for_checksums(asset_children):
     for asset in asset_children:
         try:
             asset['checksums']['xx_hash']
+            print("Success..")
+            print("Checksum dict \n")
+            pprint(asset['checksums'])
         except TypeError:
+            print("Failure...")
             print("Checksum dict \n")
             pprint(asset['checksums'])
             print("Asset ID: {}".format(asset['id']))
