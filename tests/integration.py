@@ -16,6 +16,7 @@ token = os.getenv("FRAMEIO_TOKEN")
 project_id = os.getenv("PROJECT_ID")
 download_asset_id = os.getenv("DOWNLOAD_FOLDER_ID")
 
+retries = 0
 
 # Initialize the client
 def init_client():
@@ -125,8 +126,8 @@ def test_upload(client):
 
         print("{}/{} Upload completed in {:.2f}s @ {}".format((count), len(dled_files), upload_time, upload_speed))
 
-    print("Sleeping for 30 seconds to allow upload and media analysis to finish...")
-    time.sleep(30)
+    print("Sleeping for 10 seconds to allow upload and media analysis to finish...")
+    time.sleep(10)
 
     print("Continuing...")
 
@@ -149,22 +150,29 @@ def flatten_asset_children(asset_children):
     return flat_dict
 
 def check_for_checksums(asset_children):
-    for asset in asset_children:
-        try:
-            asset['checksums']['xx_hash']
-            print("Success..")
-            print("Asset ID: {}".format(asset['id']))
-            print("Asset Name: {}".format(asset['name']))
-            print("Checksum dict: {}".format(asset['checksums']))
-        except TypeError as e:
-            print(e)
-            print("Failure...")
-            print("Checksum dict: {}".format(asset['checksums']))
-            print("Asset ID: {}".format(asset['id']))
-            print("Asset Name: {}".format(asset['name']))
-            print("Checksums not yet calculated, sleeping for 5 seconds.")
+    global retries
+    if retries < 4:
+        for asset in asset_children:
+            try:
+                asset['checksums']['xx_hash']
+                print("Success...")
+                print("Asset ID: {}".format(asset['id']))
+                print("Asset Name: {}".format(asset['name']))
+                print("Checksum dict: {}".format(asset['checksums']))
+            except TypeError as e:
+                # print(e)
+                print("Failure...")
+                print("Checksum dict: {}".format(asset['checksums']))
+                print("Asset ID: {}".format(asset['id']))
+                print("Asset Name: {}".format(asset['name']))
+                print("Checksums not yet calculated, sleeping for 5 seconds.")
+                time.sleep(15)
+                retries += 1
 
-    return True
+        return True
+    else:
+        return False
+
 
 def check_upload_completion(client, download_folder_id, upload_folder_id):
     # Do a comparison against filenames and filesizes here to make sure they match
