@@ -168,6 +168,7 @@ def check_for_checksums(asset_children):
                 print("Checksums not yet calculated, sleeping for 5 seconds.")
                 time.sleep(15)
                 retries += 1
+                check_for_checksums(asset_children)
 
         return True
     else:
