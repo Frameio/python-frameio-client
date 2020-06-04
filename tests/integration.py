@@ -125,8 +125,8 @@ def test_upload(client):
 
         print("{}/{} Upload completed in {:.2f}s @ {}".format((count), len(dled_files), upload_time, upload_speed))
 
-    print("Sleeping for 5 seconds to allow uploads to finish...")
-    time.sleep(5)
+    print("Sleeping for 30 seconds to allow upload and media analysis to finish...")
+    time.sleep(30)
 
     print("Continuing...")
 

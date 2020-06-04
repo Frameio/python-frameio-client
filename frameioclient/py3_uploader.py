@@ -28,7 +28,6 @@ class FrameioUploader(object):
     session = self._get_session()
 
     try:
-        
       r = session.put(url, data=chunk, headers={
         'content-type': self.asset['filetype'],
         'x-amz-acl': 'private'
