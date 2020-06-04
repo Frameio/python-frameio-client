@@ -27,10 +27,16 @@ class FrameioUploader(object):
     chunk = task[1]
     session = self._get_session()
 
-    r = session.put(url, data=chunk, headers={
-      'content-type': self.asset['filetype'],
-      'x-amz-acl': 'private'
-    })
+    try:
+        
+      r = session.put(url, data=chunk, headers={
+        'content-type': self.asset['filetype'],
+        'x-amz-acl': 'private'
+      })
+
+    except Exception as e:
+      print(e)
+      r.raise_for_status()
 
     r.raise_for_status()
 
