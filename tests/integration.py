@@ -12,9 +12,9 @@ from pprint import pprint
 from datetime import datetime
 from frameioclient import FrameioClient
 
-token = os.getenv("FRAMEIO_TOKEN")
-project_id = os.getenv("PROJECT_ID")
-download_asset_id = os.getenv("DOWNLOAD_FOLDER_ID")
+token = os.getenv("FRAMEIO_TOKEN") # Your Frame.io token
+project_id = os.getenv("PROJECT_ID") # Project you want to upload files back into
+download_asset_id = os.getenv("DOWNLOAD_FOLDER_ID") # Source folder on Frame.io (to then verify against)
 
 retries = 0
 
