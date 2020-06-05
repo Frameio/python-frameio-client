@@ -75,7 +75,7 @@ def format_bytes(size):
     # 2**10 = 1024
     power = 2**10
     n = 0
-    power_labels = {0 : '', 1: 'KB/s', 2: 'MB/s', 3: 'GB/s', 4: 'TB/s'}
+    power_labels = {0 : 'B/s', 1: 'KB/s', 2: 'MB/s', 3: 'GB/s', 4: 'TB/s'}
     while size > power:
         size /= power
         n += 1
