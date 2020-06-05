@@ -3,7 +3,6 @@ import sys
 import json
 import time
 import socket
-# import xxhash
 import platform
 import mimetypes
 
@@ -11,6 +10,8 @@ from math import ceil
 from pprint import pprint
 from datetime import datetime
 from frameioclient import FrameioClient
+from frameioclient.utils import format_bytes, calculate_hash, KB, MB
+
 
 token = os.getenv("FRAMEIO_TOKEN") # Your Frame.io token
 project_id = os.getenv("PROJECT_ID") # Project you want to upload files back into
@@ -29,19 +30,33 @@ def init_client():
 
     return client
 
+
 # Verify local and source
-def verify_local(dl_children):
+def verify_local(client, dl_children):
     # Compare remote filenames and hashes
+    flat_dict = dict()
 
     # Iterate over local directory and get filenames and hashes
     dled_files = os.listdir('downloads')
-    for count, fn in enumerate(dled_files):
+    for count, fn in enumerate(dled_files, start=1):
         print("{}/{} Generating hash for: {}".format(count, len(dled_files), fn))
+        dl_file_path = os.path.join(os.path.abspath(os.path.curdir), 'downloads', fn)
+        print("Path to downloaded file for hashing: {}".format(dl_file_path))
+        xxhash = calculate_hash(dl_file_path)
+        xxhash_name = "{}_{}".format(fn, 'xxHash')
+        flat_dict[xxhash_name] = xxhash
 
+
+    # If verification fails here, try downloading again.
+    test_download(client, override=True)
 
 # Test download functionality
-def test_download(client):
+def test_download(client, override=False):
     print("Testing download function...")
+    if override:
+        # Clearing download directory
+        os.rmdir('downloads')
+
     if os.path.isdir('downloads'):
         print("Local downloads folder detected...")
         return True
@@ -69,17 +84,11 @@ def test_download(client):
 
     print("Done downloading files")
 
-    return True
+    # Verify downloads
+    if verify_local(client, asset_list):
+        print("Download verification passed")
 
-def format_bytes(size):
-    # 2**10 = 1024
-    power = 2**10
-    n = 0
-    power_labels = {0 : 'B/s', 1: 'KB/s', 2: 'MB/s', 3: 'GB/s', 4: 'TB/s'}
-    while size > power:
-        size /= power
-        n += 1
-    return " ".join((str(round(size, 2)), power_labels[n]))
+    return True
 
 # Test upload functionality       
 def test_upload(client):
@@ -217,20 +226,7 @@ def check_upload_completion(client, download_folder_id, upload_folder_id):
     print("\nUL Items Check: \n")
     pprint(ul_items)
 
-    if sys.version_info.major >= 3:
-        import operator
-        comparison = operator.eq(dl_items, ul_items)
-        
-        if comparison == False:
-            print("File mismatch between upload and download")
-            sys.exit(1)
-
-    else:
-        # Use different comparsion function in < Py3
-        comparison = cmp(dl_items, ul_items)
-        if comparison != 0:
-            print("File mismatch between upload and download")
-            sys.exit(1)
+    compare_items(dl_items, ul_items)
 
     print("Verification complete for {}/{} uploaded assets.".format(int(len(ul_items)), int(len(dl_items))))
     print("Integration test passed!")
