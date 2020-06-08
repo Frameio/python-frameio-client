@@ -5,17 +5,19 @@ import time
 import socket
 import platform
 import mimetypes
+import shutil
 
 from math import ceil
 from pprint import pprint
 from datetime import datetime
 from frameioclient import FrameioClient
-from frameioclient.utils import format_bytes, calculate_hash, KB, MB
+from frameioclient.utils import format_bytes, compare_items, calculate_hash, KB, MB
 
 
 token = os.getenv("FRAMEIO_TOKEN") # Your Frame.io token
 project_id = os.getenv("PROJECT_ID") # Project you want to upload files back into
 download_asset_id = os.getenv("DOWNLOAD_FOLDER_ID") # Source folder on Frame.io (to then verify against)
+environment = os.getenv("ENVIRONMENT", default="PRODUCTION")
 
 retries = 0
 
@@ -25,8 +27,13 @@ def init_client():
         print("Bad token, exiting test.")
         sys.exit(1)
     
-    client = FrameioClient(token)
-    print("Client connection initialized.")
+    if environment == "PRODUCTION":
+        client = FrameioClient(token)
+        print("Client connection initialized.")
+
+    else:
+        client = FrameioClient(token, host='https://api.dev.frame.io')
+        print("Client connection initialized.")
 
     return client
 
@@ -47,15 +54,15 @@ def verify_local(client, dl_children):
         flat_dict[xxhash_name] = xxhash
 
 
-    # If verification fails here, try downloading again.
-    test_download(client, override=True)
+    # # If verification fails here, try downloading again.
+    # test_download(client, override=True)
 
 # Test download functionality
 def test_download(client, override=False):
     print("Testing download function...")
     if override:
         # Clearing download directory
-        os.rmdir('downloads')
+        shutil.rmtree('/downloads')
 
     if os.path.isdir('downloads'):
         print("Local downloads folder detected...")
@@ -226,10 +233,15 @@ def check_upload_completion(client, download_folder_id, upload_folder_id):
     print("\nUL Items Check: \n")
     pprint(ul_items)
 
-    compare_items(dl_items, ul_items)
+    comparison_check = compare_items(dl_items, ul_items)
 
     print("Verification complete for {}/{} uploaded assets.".format(int(len(ul_items)), int(len(dl_items))))
-    print("Integration test passed!")
+
+    if comparison_check == True:
+        print("Integration test passed! :)")
+    else:
+        print("Integration test failed! :(")
+        sys.exit(1)
 
     return True
 
