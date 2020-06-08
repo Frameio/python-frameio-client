@@ -1,6 +1,9 @@
 import xxhash
 import sys
 
+KB = 1024
+MB = KB * KB
+
 def stream(func, page=1, page_size=20):
     """
     Accepts a lambda of a call to a client list method, and streams the results until
@@ -21,9 +24,6 @@ def stream(func, page=1, page_size=20):
 
         page += 1
 
-KB = 1024
-MB = KB * KB
-
 def format_bytes(size):
     """Convert bytes to KB/MB/GB/TB/s
     """
@@ -31,11 +31,12 @@ def format_bytes(size):
     power = 2**10
     n = 0
     power_labels = {0 : 'B/s', 1: 'KB/s', 2: 'MB/s', 3: 'GB/s', 4: 'TB/s'}
+
     while size > power:
         size /= power
         n += 1
-    return " ".join((str(round(size, 2)), power_labels[n]))
 
+    return " ".join((str(round(size, 2)), power_labels[n]))
 
 def calculate_hash(file_path):
     """Calculate an xx64hash
@@ -56,17 +57,19 @@ def calculate_hash(file_path):
 def compare_items(dict1, dict2):
     """Python 2 and 3 compatible way of comparing 2x dictionaries
     """
+    comparison = None
+
     if sys.version_info.major >= 3:
         import operator
         comparison = operator.eq(dict1, dict2)
         
-        if comparison == False:
-            print("File mismatch between upload and download")
-            sys.exit(1)
-
     else:
         # Use different comparsion function in < Py3
         comparison = cmp(dict1, dict2)
         if comparison != 0:
-            print("File mismatch between upload and download")
-            sys.exit(1)
+            comparison = False # Set it to false so that it matches above ^
+
+    if comparison == False:
+        print("File mismatch between upload and download")
+
+    return comparison
