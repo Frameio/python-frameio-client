@@ -396,6 +396,25 @@ class FrameioClient(object):
     endpoint = '/comments/{}'.format(comment_id)
     return self._api_call('post', endpoint, payload=kwargs)
 
+  def reply_comment(self, comment_id, **kwargs):
+    """
+    Reply to an existing comment.
+
+    :Args:
+      comment_id (string): The comment id.
+    :Kwargs:
+      (optional) kwargs: additional request parameters.
+
+      Example::
+
+        client.reply_comment(
+          comment_id="123abc",
+          text="Hello world"
+        )
+    """
+    endpoint = '/comments/{}/replies'.format(comment_id)
+    return self._api_call('post', endpoint, payload=kwargs)
+
   def delete_comment(self, comment_id):
     """
     Delete a comment.
