@@ -1,7 +1,9 @@
 from frameioclient import FrameioClient
+import os
 
 def main():
-  client = FrameioClient("TOKEN")
+  TOKEN = os.getenv("FRAME_IO_TOKEN")
+  client = FrameioClient(TOKEN)
   me = client.get_me()
   print(me['id'])
 
