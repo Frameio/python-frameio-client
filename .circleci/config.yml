@@ -39,11 +39,28 @@ workflows:
               only:
                 - master
             tags:
-                only: /[0-9]+(\.[0-9]+)*/
+              only: /[0-9]+(\.[0-9]+)*/
 
       - deploy:
           requires:
             - hold
+
+  upload_test:
+    triggers:
+      - schedule:
+          cron: "0,30 * * * *"
+          # cron: "0 0 * * *"
+          filters:
+            branches:
+              only:
+                - jh/use-xxhash-for-integration-test
+
+    jobs:
+      - build
+
+      - linux_py_latest:
+          requires:
+            - build
 
 jobs:
   build:
@@ -144,10 +161,9 @@ jobs:
           command: |
             python /tmp/artifact/tests/integration.py
 
-
   deploy:
     docker:
-    - image: circleci/python:latest
+      - image: circleci/python:latest
 
     steps:
       - attach_workspace:
