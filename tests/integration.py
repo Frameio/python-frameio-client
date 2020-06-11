@@ -6,9 +6,10 @@ import socket
 import platform
 import mimetypes
 import shutil
+import requests
 
 from math import ceil
-from pprint import pprint
+from pprint import pprint, pformat
 from datetime import datetime
 from frameioclient import FrameioClient
 from frameioclient.utils import format_bytes, compare_items, calculate_hash, KB, MB
@@ -18,6 +19,7 @@ token = os.getenv("FRAMEIO_TOKEN") # Your Frame.io token
 project_id = os.getenv("PROJECT_ID") # Project you want to upload files back into
 download_asset_id = os.getenv("DOWNLOAD_FOLDER_ID") # Source folder on Frame.io (to then verify against)
 environment = os.getenv("ENVIRONMENT", default="PRODUCTION")
+slack_webhook_url = os.getenv("SLACK_WEBHOOK_URL")
 
 retries = 0
 
@@ -36,7 +38,6 @@ def init_client():
         print("Client connection initialized.")
 
     return client
-
 
 # Verify local and source
 def verify_local(client, dl_children):
@@ -233,11 +234,13 @@ def check_upload_completion(client, download_folder_id, upload_folder_id):
     print("\nUL Items Check: \n")
     pprint(ul_items)
 
-    comparison_check = compare_items(dl_items, ul_items)
+    pass_fail = compare_items(dl_items, ul_items)
 
     print("Verification complete for {}/{} uploaded assets.".format(int(len(ul_items)), int(len(dl_items))))
 
-    if comparison_check == True:
+    send_to_slack(format_slack_message(pass_fail, ul_items, dl_items))
+
+    if pass_fail == True:
         print("Integration test passed! :)")
     else:
         print("Integration test failed! :(")
@@ -245,6 +248,34 @@ def check_upload_completion(client, download_folder_id, upload_folder_id):
 
     return True
 
+def format_slack_message(pass_fail, ul_items, dl_items):
+    # Format slack message for sending
+    message = "Test Pass/Fail: *{}*\n\n*Download results:* \n{}\n*Upload results:* \n {}\n".format(pass_fail, pformat(dl_items), pformat(ul_items))
+    print(message)
+
+    return message
+
+def send_to_slack(message):
+    # Send Slack message to provided 
+    if len(slack_webhook_url) < 2:
+        print("No Slack webhook ENV var provided, not sending a Slack message...")
+    
+    data = {
+        'text': message,
+        'username': 'Upload Integration Test',
+        'icon_emoji': ':robot_face:'
+    }
+
+    response = requests.post(slack_webhook_url, data=json.dumps(
+        data), headers={'Content-Type': 'application/json'})
+    
+    print('Response: ' + str(response.text))
+    print('Response code: ' + str(response.status_code))
+
+    if response.status_code == 200:
+        return True
+    else:
+        return False
 
 def clean_up(client, asset_to_delete):
     print("Removing files from test...")
