@@ -240,9 +240,9 @@ def check_upload_completion(client, download_folder_id, upload_folder_id):
     print("Verification complete for {}/{} uploaded assets.".format(int(len(ul_items)), int(len(dl_items))))
 
     if ci_job_name is not None:
+        print("CircleCI Job Name: {}".format(ci_job_name))
         if ci_job_name == "upload_test_job":
             send_to_slack(format_slack_message(pass_fail, ul_items, dl_items))
-    
 
     if pass_fail == True:
         print("Integration test passed! :)")
