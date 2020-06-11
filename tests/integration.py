@@ -20,6 +20,7 @@ project_id = os.getenv("PROJECT_ID") # Project you want to upload files back int
 download_asset_id = os.getenv("DOWNLOAD_FOLDER_ID") # Source folder on Frame.io (to then verify against)
 environment = os.getenv("ENVIRONMENT", default="PRODUCTION")
 slack_webhook_url = os.getenv("SLACK_WEBHOOK_URL")
+ci_job_name = os.getenv("CIRCLE_JOB", default=None)
 
 retries = 0
 
@@ -238,7 +239,10 @@ def check_upload_completion(client, download_folder_id, upload_folder_id):
 
     print("Verification complete for {}/{} uploaded assets.".format(int(len(ul_items)), int(len(dl_items))))
 
-    send_to_slack(format_slack_message(pass_fail, ul_items, dl_items))
+    if ci_job_name is not None:
+        if ci_job_name == "upload_test_job":
+            send_to_slack(format_slack_message(pass_fail, ul_items, dl_items))
+    
 
     if pass_fail == True:
         print("Integration test passed! :)")
