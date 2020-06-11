@@ -167,9 +167,18 @@ def flatten_asset_children(asset_children):
 
     return flat_dict
 
-def check_for_checksums(asset_children):
+def check_for_checksums(client, upload_folder_id):
+    # Get asset children for upload folder
+    asset_children = client.get_asset_children(
+        upload_folder_id,
+        page=1,
+        page_size=40,
+        include="children"
+    )
+
     global retries
     print("Checking for checksums attempt #{}".format(retries+1))
+    
     if retries < 4:
         for asset in asset_children:
             try:
@@ -187,7 +196,7 @@ def check_for_checksums(asset_children):
                 print("Checksums not yet calculated, sleeping for 15 seconds.")
                 time.sleep(15)
                 retries += 1
-                check_for_checksums(asset_children)
+                check_for_checksums(client, upload_folder_id)
         return True
     else:
         return False
@@ -219,7 +228,7 @@ def check_upload_completion(client, download_folder_id, upload_folder_id):
     print("Got asset children for uploaded folder")
 
     print("Making sure checksums are calculated before verifying")
-    check_for_checksums(ul_asset_children)
+    check_for_checksums(client, upload_folder_id)
 
     dl_items = flatten_asset_children(dl_asset_children)
     ul_items = flatten_asset_children(ul_asset_children)
