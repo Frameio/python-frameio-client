@@ -267,8 +267,6 @@ def check_upload_completion(client, download_folder_id, upload_folder_id):
 
     print("Verification complete for {}/{} uploaded assets.".format(int(len(ul_items)), int(len(og_items))))
 
-    ci_job_name = "upload_test_job"
-
     if ci_job_name is not None:
         print("CircleCI Job Name: {}".format(ci_job_name))
         if ci_job_name == "upload_test_job":
