@@ -179,7 +179,7 @@ def check_for_checksums(client, upload_folder_id):
     global retries
     print("Checking for checksums attempt #{}".format(retries+1))
     
-    if retries < 16:
+    if retries < 40:
         for asset in asset_children:
             try:
                 asset['checksums']['xx_hash']
