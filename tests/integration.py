@@ -179,7 +179,7 @@ def check_for_checksums(client, upload_folder_id):
     global retries
     print("Checking for checksums attempt #{}".format(retries+1))
     
-    if retries < 40:
+    if retries < 20:
         for asset in asset_children:
             try:
                 asset['checksums']['xx_hash']
@@ -217,6 +217,9 @@ def check_upload_completion(client, download_folder_id, upload_folder_id):
 
     print("Got asset children for original download folder")
 
+    print("Making sure checksums are calculated before verifying")
+    check_for_checksums(client, upload_folder_id)
+
     # Get asset children for upload folder
     ul_asset_children = client.get_asset_children(
         upload_folder_id,
@@ -226,9 +229,6 @@ def check_upload_completion(client, download_folder_id, upload_folder_id):
     )
 
     print("Got asset children for uploaded folder")
-
-    print("Making sure checksums are calculated before verifying")
-    check_for_checksums(client, upload_folder_id)
 
     dl_items = flatten_asset_children(dl_asset_children)
     ul_items = flatten_asset_children(ul_asset_children)
