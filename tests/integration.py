@@ -43,7 +43,8 @@ def init_client():
 # Verify local and source
 def verify_local(client, dl_children):
     # Compare remote filenames and hashes
-    flat_dict = dict()
+    global dl_items
+    dl_items = dict()
 
     # Iterate over local directory and get filenames and hashes
     dled_files = os.listdir('downloads')
@@ -53,18 +54,32 @@ def verify_local(client, dl_children):
         print("Path to downloaded file for hashing: {}".format(dl_file_path))
         xxhash = calculate_hash(dl_file_path)
         xxhash_name = "{}_{}".format(fn, 'xxHash')
-        flat_dict[xxhash_name] = xxhash
+        dl_items[xxhash_name] = xxhash
 
+    print("QCing Downloaded Files...")
 
-    # # If verification fails here, try downloading again.
-    # test_download(client, override=True)
+    print("Original Items Check: \n")
+    og_items = flatten_asset_children(dl_children)
+    pprint(og_items)
+
+    print("Downloaded Items Check: \n")
+    pprint(dl_items)
+
+    pass_fail = compare_items(og_items, dl_items)
+
+    # If verification fails here, try downloading again.
+    if pass_fail == False:
+        print("Mismatch between original and downloaded files, re-downloading...")
+        test_download(client, override=True)
+    else:
+        return True
 
 # Test download functionality
 def test_download(client, override=False):
     print("Testing download function...")
     if override:
         # Clearing download directory
-        shutil.rmtree('/downloads')
+        shutil.rmtree('./downloads')
 
     if os.path.isdir('downloads'):
         print("Local downloads folder detected...")
@@ -230,7 +245,8 @@ def check_upload_completion(client, download_folder_id, upload_folder_id):
 
     print("Got asset children for uploaded folder")
 
-    dl_items = flatten_asset_children(dl_asset_children)
+    global dl_items # Get the global dl_items
+    og_items = flatten_asset_children(dl_asset_children)
     ul_items = flatten_asset_children(ul_asset_children)
 
     print("'Completed' uploads: {}/{}".format(int(len(ul_items)), int(len(dl_items))))
@@ -238,20 +254,25 @@ def check_upload_completion(client, download_folder_id, upload_folder_id):
 
     print("Running verification...")
 
-    print("DL Items Check: \n")
+    print("OG Items Check:")
+    pprint(og_items)
+    
+    print("DL Items Check:")
     pprint(dl_items)
 
-    print("\nUL Items Check: \n")
+    print("UL Items Check:")
     pprint(ul_items)
 
-    pass_fail = compare_items(dl_items, ul_items)
+    pass_fail = compare_items(og_items, ul_items)
 
-    print("Verification complete for {}/{} uploaded assets.".format(int(len(ul_items)), int(len(dl_items))))
+    print("Verification complete for {}/{} uploaded assets.".format(int(len(ul_items)), int(len(og_items))))
+
+    ci_job_name = "upload_test_job"
 
     if ci_job_name is not None:
         print("CircleCI Job Name: {}".format(ci_job_name))
         if ci_job_name == "upload_test_job":
-            send_to_slack(format_slack_message(pass_fail, ul_items, dl_items))
+            send_to_slack(format_slack_message(pass_fail, og_items, dl_items, ul_items))
 
     if pass_fail == True:
         print("Integration test passed! :)")
@@ -261,9 +282,9 @@ def check_upload_completion(client, download_folder_id, upload_folder_id):
 
     return True
 
-def format_slack_message(pass_fail, ul_items, dl_items):
+def format_slack_message(pass_fail, og_items, dl_items, ul_items):
     # Format slack message for sending
-    message = "Test Pass/Fail: *{}*\n\n*Download results:* \n{}\n*Upload results:* \n {}\n".format(pass_fail, pformat(dl_items), pformat(ul_items))
+    message = "Test Pass/Fail: *{}*\n\n*Original assets:* \n{}\n*Downloaded assets:* \n {}\n*Uploaded assets:* \n {}".format(pass_fail, pformat(og_items), pformat(dl_items), pformat(ul_items))
     print(message)
 
     return message
