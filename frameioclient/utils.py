@@ -50,7 +50,7 @@ def calculate_hash(file_path):
             break
         xxh64_hash.update(b[:numread])
 
-    xxh64_digest = xxh64_hash.hexdigest()
+    xxh64_digest = xxh64_hash.hexdigest().encode()
 
     return xxh64_digest
 

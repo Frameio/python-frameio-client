@@ -54,7 +54,7 @@ def verify_local(client, dl_children):
         print("Path to downloaded file for hashing: {}".format(dl_file_path))
         xxhash = calculate_hash(dl_file_path)
         xxhash_name = "{}_{}".format(fn, 'xxHash')
-        dl_items[xxhash_name] = xxhash
+        dl_items[xxhash_name] = xxhash.decode("utf-8")
 
     print("QCing Downloaded Files...")
 
@@ -246,11 +246,14 @@ def check_upload_completion(client, download_folder_id, upload_folder_id):
     print("Got asset children for uploaded folder")
 
     global dl_items # Get the global dl_items
+
+    # if len(dl_items.items) < 1:
+
     og_items = flatten_asset_children(dl_asset_children)
     ul_items = flatten_asset_children(ul_asset_children)
 
-    print("'Completed' uploads: {}/{}".format(int(len(ul_items)), int(len(dl_items))))
-    print("Percentage uploads completed but not verified: {:.2%}".format(len(ul_items)/len(dl_items)))
+    print("'Completed' uploads: {}/{}".format(int(len(ul_items)), int(len(og_items))))
+    print("Percentage uploads completed but not verified: {:.2%}".format(len(ul_items)/len(og_items)))
 
     print("Running verification...")
 
