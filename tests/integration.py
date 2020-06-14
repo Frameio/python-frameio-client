@@ -54,7 +54,7 @@ def verify_local(client, dl_children):
         print("Path to downloaded file for hashing: {}".format(dl_file_path))
         xxhash = calculate_hash(dl_file_path)
         xxhash_name = "{}_{}".format(fn, 'xxHash')
-        dl_items[xxhash_name] = xxhash.decode("utf-8")
+        dl_items[xxhash_name] = xxhash.decode("utf-8").encode("utf-8")
 
     print("QCing Downloaded Files...")
 
@@ -173,7 +173,8 @@ def flatten_asset_children(asset_children):
     for asset in asset_children:
         try:
             xxhash_name = "{}_{}".format(asset['name'], 'xxHash')
-            flat_dict[xxhash_name] = asset['checksums']['xx_hash']
+            flat_dict[xxhash_name] = asset['checksums']['xx_hash'].encode("utf-8")
+
         except TypeError:
             xxhash_name = "{}_{}".format(asset['name'], 'xxHash')
             flat_dict[xxhash_name] = "missing"
