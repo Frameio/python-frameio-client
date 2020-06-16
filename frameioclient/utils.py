@@ -25,7 +25,8 @@ def stream(func, page=1, page_size=20):
         page += 1
 
 def format_bytes(size):
-    """Convert bytes to KB/MB/GB/TB/s
+    """
+    Convert bytes to KB/MB/GB/TB/s
     """
     # 2**10 = 1024
     power = 2**10
@@ -39,7 +40,8 @@ def format_bytes(size):
     return " ".join((str(round(size, 2)), power_labels[n]))
 
 def calculate_hash(file_path):
-    """Calculate an xx64hash
+    """
+    Calculate an xx64hash
     """
     xxh64_hash = xxhash.xxh64()
     b = bytearray(MB * 8)
@@ -55,7 +57,8 @@ def calculate_hash(file_path):
     return xxh64_digest
 
 def compare_items(dict1, dict2):
-    """Python 2 and 3 compatible way of comparing 2x dictionaries
+    """
+    Python 2 and 3 compatible way of comparing 2x dictionaries
     """
     comparison = None
 
