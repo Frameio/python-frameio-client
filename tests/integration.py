@@ -83,6 +83,14 @@ def test_download(client, override=False):
 
     if os.path.isdir('downloads'):
         print("Local downloads folder detected...")
+        asset_list = client.get_asset_children(
+            download_asset_id,
+            page=1,
+            page_size=40,
+            include="children"
+        )
+
+        verify_local(client, asset_list)
         return True
     
     os.mkdir('downloads')
