@@ -11,7 +11,6 @@ __pycache__/
 build/
 develop-eggs/
 dist/
-downloads/
 eggs/
 .eggs/
 lib/
@@ -46,6 +45,9 @@ coverage.xml
 *.cover
 .hypothesis/
 .pytest_cache/
+
+# Local data used for tests
+downloads/
 
 # Translations
 *.mo
@@ -89,6 +91,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+.vscode
 
 # Spyder project settings
 .spyderproject

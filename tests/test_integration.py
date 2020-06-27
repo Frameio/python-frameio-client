@@ -4,30 +4,26 @@ import json
 import mimetypes
 import platform
 import time
+import pytest
 
 from frameioclient import FrameioClient
 
-token = os.getenv("FRAMEIO_TOKEN")
-project_id = os.getenv("PROJECT_ID")
-download_asset_id = os.getenv("DOWNLOAD_FOLDER_ID")
+# .env variables used for test assertions
+project_id = os.getenv('PROJECT_ID')
+root_asset_id = os.getenv('ROOT_ASSET_ID')
+download_asset_id = os.getenv('DOWNLOAD_FOLDER_ID')
+upload_folder_id = os.getenv('UPLOAD_FOLDER_ID')
 
-
-# Initialize the client
-def init_client():
-    if len(token) < 5:
-        print("Bad token, exiting test.")
-        sys.exit(1)
-    
-    client = FrameioClient(token)
-    print("Client connection initialized.")
-
-    return client
 
 # Test download functionality
-def test_download(client):
-    print("Testing download function...")
-    os.mkdir('downloads')
+def test_download(setup_client):
+    client = setup_client
 
+    print("Testing download function...")
+    try:
+        os.mkdir('downloads')
+    except FileExistsError:
+        print("Directory already exists, moving on...")
     asset_list = client.get_asset_children(
         download_asset_id,
         page=1,
@@ -43,12 +39,38 @@ def test_download(client):
 
     return True
 
+# Test uploading a single .txt file
+def test_upload_single_file(setup_client, tmpdir):
+    client = setup_client
+    testdir = tmpdir.mkdir('single_file_upload')
+    file = testdir.join('file.txt')
+    file.write('file body')
+    print(file)
+
+    # python-frameio-client only supports uploads in asset form (see library for details)
+    upload_asset = client.create_asset(
+        parent_asset_id=upload_folder_id,
+        name="file.txt",
+        type="file",
+        filetype="text/plain",
+        filesize="10"
+    )
+
+    # Expect FileNotFound exception becaucse it's not a real file
+    with pytest.raises(FileNotFoundError):
+        with open('file.txt', 'rb') as upload_file:        
+                client.upload(upload_asset, upload_file)
+
+    assert file.read() == 'file body'
+    assert upload_asset['name'] == 'file.txt'
+    assert upload_asset['project_id'] == project_id
+    assert upload_asset['parent_id'] == upload_folder_id
+
 # Test upload functionality       
-def test_upload(client):
+def test_upload(setup_client):
+    client = setup_client
     print("Beginning upload test")
     # Create new parent asset
-    project_info = client.get_project(project_id)
-    root_asset_id = project_info['root_asset_id']
     
     print("Creating new folder to upload to")
     new_folder = client.create_asset(
@@ -101,7 +123,8 @@ def flatten_asset_children(asset_children):
     return flat_dict
 
 
-def check_upload_completion(client, download_folder_id, upload_folder_id):
+def check_upload_completion(setup_client, download_folder_id, upload_folder_id):
+    client = setup_client
     # Do a comparison against filenames and filesizes here to make sure they match
 
     print("Beginning upload comparison check")
@@ -151,7 +174,8 @@ def check_upload_completion(client, download_folder_id, upload_folder_id):
     return True
 
 
-def clean_up(client, asset_to_delete):
+def clean_up(setup_client, asset_to_delete):
+    client = setup_client
     print("Removing files from test...")
 
     try:
@@ -161,17 +185,3 @@ def clean_up(client, asset_to_delete):
         print(e)
 
     return True
-
-def run_test():
-    print("Beginning Integration test...")
-
-    client = init_client()
-    test_download(client)
-    upload_folder_id = test_upload(client)
-    check_upload_completion(client, download_asset_id, upload_folder_id)
-    clean_up(client, upload_folder_id)
-
-    print("Test complete, exiting...")
-
-if __name__ == "__main__":
-    run_test()
