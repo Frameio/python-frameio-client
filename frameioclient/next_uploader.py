@@ -2,6 +2,7 @@ import math
 import requests
 import threading
 import concurrent.futures
+import os
 
 thread_local = threading.local()
 
@@ -28,9 +29,10 @@ class FrameioUploader(object):
     return thread_local.session
 
   def _smart_read_chunk(self, chunk_offset):
-    self.file.seek(chunk_offset, 0)
-    data = self.file.read(self.chunk_size)
-    return data
+    with open(os.path.realpath(self.file.name), "rb") as file:
+      file.seek(chunk_offset, 0)
+      data = file.read(self.chunk_size)
+      return data
 
   def _upload_chunk(self, task):
     url = task[0]
