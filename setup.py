@@ -29,6 +29,7 @@ setuptools.setup(
   install_requires=[
     'requests',
     'urllib3',
+    'xxhash',
     'importlib-metadata ~= 1.0 ; python_version < "3.8"',
   ],
   extras_require={

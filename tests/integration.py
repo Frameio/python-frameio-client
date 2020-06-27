@@ -1,16 +1,28 @@
 import os
 import sys
 import json
-import mimetypes
-import platform
 import time
+import socket
+import platform
+import mimetypes
+import shutil
+import requests
 
+from math import ceil
+from pprint import pprint, pformat
+from datetime import datetime
 from frameioclient import FrameioClient
+from frameioclient.utils import format_bytes, compare_items, calculate_hash, KB, MB
 
-token = os.getenv("FRAMEIO_TOKEN")
-project_id = os.getenv("PROJECT_ID")
-download_asset_id = os.getenv("DOWNLOAD_FOLDER_ID")
 
+token = os.getenv("FRAMEIO_TOKEN") # Your Frame.io token
+project_id = os.getenv("PROJECT_ID") # Project you want to upload files back into
+download_asset_id = os.getenv("DOWNLOAD_FOLDER_ID") # Source folder on Frame.io (to then verify against)
+environment = os.getenv("ENVIRONMENT", default="PRODUCTION")
+slack_webhook_url = os.getenv("SLACK_WEBHOOK_URL")
+ci_job_name = os.getenv("CIRCLE_JOB", default=None)
+
+retries = 0
 
 # Initialize the client
 def init_client():
@@ -18,14 +30,61 @@ def init_client():
         print("Bad token, exiting test.")
         sys.exit(1)
     
-    client = FrameioClient(token)
-    print("Client connection initialized.")
+    if environment == "PRODUCTION":
+        client = FrameioClient(token)
+        print("Client connection initialized.")
+
+    else:
+        client = FrameioClient(token, host='https://api.dev.frame.io')
+        print("Client connection initialized.")
 
     return client
 
+# Verify local and source
+def verify_local(client, dl_children):
+    # Compare remote filenames and hashes
+    global dl_items
+    dl_items = dict()
+
+    # Iterate over local directory and get filenames and hashes
+    dled_files = os.listdir('downloads')
+    for count, fn in enumerate(dled_files, start=1):
+        print("{}/{} Generating hash for: {}".format(count, len(dled_files), fn))
+        dl_file_path = os.path.join(os.path.abspath(os.path.curdir), 'downloads', fn)
+        print("Path to downloaded file for hashing: {}".format(dl_file_path))
+        xxhash = calculate_hash(dl_file_path)
+        xxhash_name = "{}_{}".format(fn, 'xxHash')
+        dl_items[xxhash_name] = xxhash
+
+    print("QCing Downloaded Files...")
+
+    print("Original Items Check: \n")
+    og_items = flatten_asset_children(dl_children)
+    pprint(og_items)
+
+    print("Downloaded Items Check: \n")
+    pprint(dl_items)
+
+    pass_fail = compare_items(og_items, dl_items)
+
+    # If verification fails here, try downloading again.
+    if pass_fail == False:
+        print("Mismatch between original and downloaded files, re-downloading...")
+        test_download(client, override=True)
+    else:
+        return True
+
 # Test download functionality
-def test_download(client):
+def test_download(client, override=False):
     print("Testing download function...")
+    if override:
+        # Clearing download directory
+        shutil.rmtree('./downloads')
+
+    if os.path.isdir('downloads'):
+        print("Local downloads folder detected...")
+        return True
+    
     os.mkdir('downloads')
 
     asset_list = client.get_asset_children(
@@ -36,10 +95,22 @@ def test_download(client):
     )
 
     print("Downloading {} files.".format(len(asset_list)))
-    for asset in asset_list:
+    for count, asset in enumerate(asset_list, start=1):
+        start_time = time.time()
+        print("{}/{} Beginning to download: {}".format(count, len(asset_list), asset['name']))
+        
         client.download(asset, 'downloads')
+        
+        download_time = time.time() - start_time
+        download_speed = format_bytes(ceil(asset['filesize']/(download_time)))
+
+        print("{}/{} Download completed in {:.2f}s @ {}".format((count), len(asset_list), download_time, download_speed))
 
     print("Done downloading files")
+
+    # Verify downloads
+    if verify_local(client, asset_list):
+        print("Download verification passed")
 
     return True
 
@@ -53,19 +124,20 @@ def test_upload(client):
     print("Creating new folder to upload to")
     new_folder = client.create_asset(
             parent_asset_id=root_asset_id,  
-            name="Python {} Upload Test".format(platform.python_version()),
+            name="{}_{}_Py{}_{}".format(socket.gethostname(), platform.system(), platform.python_version(), datetime.now().strftime("%B-%d-%Y")),
             type="folder",
         )
     
     new_parent_id = new_folder['id']
 
-    print("Folder created, id: {}".format(new_parent_id))
+    print("Folder created, id: {}, name: {}".format(new_parent_id, new_folder['name']))
 
     # Upload all the files we downloaded earlier
     dled_files = os.listdir('downloads')
 
     for count, fn in enumerate(dled_files, start=1):
-        print("Uploading {}".format(fn))
+        start_time = time.time()
+        print("{}/{} Beginning to upload: {}".format(count, len(dled_files), fn))
         abs_path = os.path.join(os.curdir, 'downloads', fn)
         filesize = os.path.getsize(abs_path)
         filename = os.path.basename(abs_path)
@@ -81,11 +153,14 @@ def test_upload(client):
 
         with open(abs_path, "rb") as ul_file:
             client.upload(asset, ul_file)
-    
-        print("Done uploading file {} of {}".format((count), len(dled_files)))
 
-    print("Sleeping for 5 seconds to allow uploads to finish...")
-    time.sleep(5)
+        upload_time = time.time() - start_time
+        upload_speed = format_bytes(ceil(filesize/(upload_time)))
+
+        print("{}/{} Upload completed in {:.2f}s @ {}".format((count), len(dled_files), upload_time, upload_speed))
+
+    print("Sleeping for 10 seconds to allow upload and media analysis to finish...")
+    time.sleep(10)
 
     print("Continuing...")
 
@@ -96,9 +171,51 @@ def flatten_asset_children(asset_children):
     flat_dict = dict()
 
     for asset in asset_children:
-        flat_dict[asset['name']] = asset['filesize']
+        try:
+            xxhash_name = "{}_{}".format(asset['name'], 'xxHash')
+            flat_dict[xxhash_name] = asset['checksums']['xx_hash']
+
+        except TypeError:
+            xxhash_name = "{}_{}".format(asset['name'], 'xxHash')
+            flat_dict[xxhash_name] = "missing"
+
+            continue
 
     return flat_dict
+
+def check_for_checksums(client, upload_folder_id):
+    # Get asset children for upload folder
+    asset_children = client.get_asset_children(
+        upload_folder_id,
+        page=1,
+        page_size=40,
+        include="children"
+    )
+
+    global retries
+    print("Checking for checksums attempt #{}".format(retries+1))
+    
+    if retries < 20:
+        for asset in asset_children:
+            try:
+                asset['checksums']['xx_hash']
+                print("Success...")
+                print("Asset ID: {}".format(asset['id']))
+                print("Asset Name: {}".format(asset['name']))
+                print("Checksum dict: {}".format(asset['checksums']))
+            except TypeError as e:
+                # print(e)
+                print("Failure...")
+                print("Checksum dict: {}".format(asset['checksums']))
+                print("Asset ID: {}".format(asset['id']))
+                print("Asset Name: {}".format(asset['name']))
+                print("Checksums not yet calculated, sleeping for 15 seconds.")
+                time.sleep(15)
+                retries += 1
+                check_for_checksums(client, upload_folder_id)
+        return True
+    else:
+        return False
 
 
 def check_upload_completion(client, download_folder_id, upload_folder_id):
@@ -116,6 +233,9 @@ def check_upload_completion(client, download_folder_id, upload_folder_id):
 
     print("Got asset children for original download folder")
 
+    print("Making sure checksums are calculated before verifying")
+    check_for_checksums(client, upload_folder_id)
+
     # Get asset children for upload folder
     ul_asset_children = client.get_asset_children(
         upload_folder_id,
@@ -126,30 +246,72 @@ def check_upload_completion(client, download_folder_id, upload_folder_id):
 
     print("Got asset children for uploaded folder")
 
-    dl_items = flatten_asset_children(dl_asset_children)
+    global dl_items # Get the global dl_items
+
+    # if len(dl_items.items) < 1:
+
+    og_items = flatten_asset_children(dl_asset_children)
     ul_items = flatten_asset_children(ul_asset_children)
 
-    print("Running comparison...")
+    print("'Completed' uploads: {}/{}".format(int(len(ul_items)), int(len(og_items))))
+    print("Percentage uploads completed but not verified: {:.2%}".format(len(ul_items)/len(og_items)))
 
-    if sys.version_info.major >= 3:
-        import operator
-        comparison = operator.eq(dl_items, ul_items)
-        
-        if comparison == False:
-            print("File mismatch between upload and download")
-            sys.exit(1)
+    print("Running verification...")
 
+    print("OG Items Check:")
+    pprint(og_items)
+    
+    print("DL Items Check:")
+    pprint(dl_items)
+
+    print("UL Items Check:")
+    pprint(ul_items)
+
+    pass_fail = compare_items(og_items, ul_items)
+
+    print("Verification complete for {}/{} uploaded assets.".format(int(len(ul_items)), int(len(og_items))))
+
+    if ci_job_name is not None:
+        print("CircleCI Job Name: {}".format(ci_job_name))
+        if ci_job_name == "upload_test_job":
+            send_to_slack(format_slack_message(pass_fail, og_items, dl_items, ul_items))
+
+    if pass_fail == True:
+        print("Integration test passed! :)")
     else:
-        # Use different comparsion function in < Py3
-        comparison = cmp(dl_items, ul_items)
-        if comparison != 0:
-            print("File mismatch between upload and download")
-            sys.exit(1)
-
-    print("Integration test passed!!!")
+        print("Integration test failed! :(")
+        sys.exit(1)
 
     return True
 
+def format_slack_message(pass_fail, og_items, dl_items, ul_items):
+    # Format slack message for sending
+    message = "Test Pass/Fail: *{}*\n\n*Original assets:* \n{}\n*Downloaded assets:* \n {}\n*Uploaded assets:* \n {}".format(pass_fail, pformat(og_items), pformat(dl_items), pformat(ul_items))
+    print(message)
+
+    return message
+
+def send_to_slack(message):
+    # Send Slack message to provided 
+    if len(slack_webhook_url) < 2:
+        print("No Slack webhook ENV var provided, not sending a Slack message...")
+    
+    data = {
+        'text': message,
+        'username': 'Upload Integration Test',
+        'icon_emoji': ':robot_face:'
+    }
+
+    response = requests.post(slack_webhook_url, data=json.dumps(
+        data), headers={'Content-Type': 'application/json'})
+    
+    print('Response: ' + str(response.text))
+    print('Response code: ' + str(response.status_code))
+
+    if response.status_code == 200:
+        return True
+    else:
+        return False
 
 def clean_up(client, asset_to_delete):
     print("Removing files from test...")
@@ -169,7 +331,7 @@ def run_test():
     test_download(client)
     upload_folder_id = test_upload(client)
     check_upload_completion(client, download_asset_id, upload_folder_id)
-    clean_up(client, upload_folder_id)
+    # clean_up(client, upload_folder_id)
 
     print("Test complete, exiting...")
 
