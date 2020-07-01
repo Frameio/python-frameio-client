@@ -44,12 +44,15 @@ class FrameioUploader(object):
     chunk_data = self._smart_read_chunk(chunk_offset)
 
     try:
-      session.put(url, data=chunk_data, headers={
+      r = session.put(url, data=chunk_data, headers={
         'content-type': self.asset['filetype'],
         'x-amz-acl': 'private'
       })
+      print("Completed chunk, status: {}".format(r.status_code))
     except Exception as e:
       print(e)
+
+    r.raise_for_status()
 
   def upload(self):
     total_size = self.asset['filesize']
