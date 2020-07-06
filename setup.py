@@ -25,7 +25,7 @@ class VerifyVersionCommand(install):
 setuptools.setup(
   name='frameioclient',
   version=version,
-  python_requires='>=2.7.17, <4',
+  python_requires='>=2.7.16, <4',
   install_requires=[
     'requests',
     'urllib3',

@@ -145,7 +145,6 @@ def test_upload(client):
 
     for count, fn in enumerate(dled_files, start=1):
         start_time = time.time()
-        print("{}/{} Beginning to upload: {}".format(count, len(dled_files), fn))
         abs_path = os.path.join(os.curdir, 'downloads', fn)
         filesize = os.path.getsize(abs_path)
         filename = os.path.basename(abs_path)
@@ -158,6 +157,8 @@ def test_upload(client):
             filetype=filemime,
             filesize=filesize
         )
+
+        print("{}/{} Beginning to upload: {}, ID: {}".format(count, len(dled_files), fn, asset['id']))
 
         with open(abs_path, "rb") as ul_file:
             client.upload(asset, ul_file)
@@ -181,9 +182,15 @@ def flatten_asset_children(asset_children):
     for asset in asset_children:
         try:
             xxhash_name = "{}_{}".format(asset['name'], 'xxHash')
-            flat_dict[xxhash_name] = asset['checksums']['xx_hash']
+            xxhash_checksum = asset['checksums']['xx_hash']
 
-        except TypeError:
+            if sys.version_info.major < 3: # if Python 2 convert the field
+                xxhash_checksum = str(xxhash_checksum.encode('utf-8'))
+
+            flat_dict[xxhash_name] = xxhash_checksum
+
+        except TypeError as e:
+            print(e)
             xxhash_name = "{}_{}".format(asset['name'], 'xxHash')
             flat_dict[xxhash_name] = "missing"
 

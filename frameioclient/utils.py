@@ -51,7 +51,7 @@ def calculate_hash(file_path):
         if not numread:
             break
         xxh64_hash.update(b[:numread])
-
+    
     xxh64_digest = xxh64_hash.hexdigest()
 
     return xxh64_digest
@@ -67,10 +67,8 @@ def compare_items(dict1, dict2):
         comparison = operator.eq(dict1, dict2)
         
     else:
-        # Use different comparsion function in < Py3
-        comparison = cmp(dict1, dict2)
-        if comparison != 0:
-            comparison = False # Set it to false so that it matches above ^
+        if dict1 == dict2:
+            comparison = True
 
     if comparison == False:
         print("File mismatch between upload and download")
