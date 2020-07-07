@@ -13,16 +13,66 @@ else:
   from .py2_uploader import FrameioUploader
 
 class PaginatedResponse(object):
-  def __init__(self, results=[], page=0, page_size=0, total=0, total_pages=0):
-    super(PaginatedResponse, self).__init__()
+  def __init__(self, results=[], limit=None, page_size=0, total=0,
+               total_pages=0, endpoint=None, method=None, payload={},
+               client=None):
     self.results = results
-    self.page = int(page)
+
+    self.limit = limit
     self.page_size = int(page_size)
     self.total = int(total)
     self.total_pages = int(total_pages)
-  
+
+    self.endpoint = endpoint
+    self.method = method
+    self.payload = payload
+    self.client = client
+
+    self.asset_index = 0   # Index on current page
+    self.returned = 0      # Total returned count
+    self.current_page = 1
+
   def __iter__(self):
-    return iter(self.results)
+    return self
+
+  def __next__(self):
+    # Reset if we've reached end
+    if self.returned == self.limit or self.returned == self.total:
+      self.asset_index = 0
+      self.returned = 0
+      self.current_page = 1
+
+      self.results = self.client.get_specific_page(
+        self.method, self.endpoint, self.payload, page=1).results
+      raise StopIteration
+
+    if self.limit is None or self.returned < self.limit:
+      if self.asset_index < self.page_size and self.returned < self.total:
+        self.asset_index += 1
+        self.returned += 1
+        return self.results[self.asset_index - 1]
+
+      if self.current_page < self.total_pages:
+        self.current_page += 1
+        self.asset_index = 1
+        self.returned += 1
+
+        self.results = self.client.get_specific_page(
+          self.method, self.endpoint, self.payload, self.current_page).results
+
+        return self.results[self.asset_index - 1]
+
+    raise StopIteration
+
+  def next(self):  # Python 2
+    return self.__next__()
+
+  def __len__(self):
+    if self.limit and self.limit < self.total:
+      return self.limit
+
+    return self.total
+
 
 class FrameioClient(object):
   def __init__(self, token, host='https://api.frame.io'):
@@ -45,7 +95,7 @@ class FrameioClient(object):
 
     return metadata.version('frameioclient')
 
-  def _api_call(self, method, endpoint, payload={}):
+  def _api_call(self, method, endpoint, payload={}, limit=None):
     url = '{}/v2{}'.format(self.host, endpoint)
 
     headers = {
@@ -69,19 +119,42 @@ class FrameioClient(object):
       if r.headers.get('page-number'):
         if int(r.headers.get('total-pages')) > 1:
           return PaginatedResponse(
-            results=r.json(), 
-            page=r.headers['page-number'], 
+            results=r.json(),
+            limit=limit,
             page_size=r.headers['per-page'],
             total_pages=r.headers['total-pages'],
-            total=r.headers['total']
+            total=r.headers['total'],
+            endpoint=endpoint,
+            method=method,
+            payload=payload,
+            client=self
           )
-
+      if isinstance(r.json(), list):
+        return r.json()[:limit]
       return r.json()
-    
+
     if r.status_code == 422 and "presentation" in endpoint:
       raise PresentationException
 
     return r.raise_for_status()
+
+  def get_specific_page(self, method, endpoint, payload, page):
+    """
+    Gets a specific page for that endpoint, used by Pagination Class
+
+    :Args:
+      method (string): 'get', 'post'
+      endpoint (string): endpoint ('/accounts/<ACCOUNT_ID>/teams')
+      payload (dict): Request payload
+      page (int): What page to get
+    """
+    if method == 'get':
+      endpoint = '{}?page={}'.format(endpoint, page)
+      return self._api_call(method, endpoint)
+
+    if method == 'post':
+      payload['page'] = page
+      return self._api_call(method, endpoint, payload=payload)
 
   def get_me(self):
     """
