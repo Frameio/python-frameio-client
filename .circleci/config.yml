@@ -10,7 +10,7 @@ workflows:
     jobs:
       - build
 
-      - linux_py_27_17:
+      - linux_py_27_16:
           requires:
             - build
 
@@ -29,7 +29,7 @@ workflows:
       - hold:
           type: approval
           requires:
-            - linux_py_27_17
+            - linux_py_27_16
             - linux_py_27_latest
             - linux_py_37
             - linux_py_latest
@@ -39,11 +39,27 @@ workflows:
               only:
                 - master
             tags:
-                only: /[0-9]+(\.[0-9]+)*/
+              only: /[0-9]+(\.[0-9]+)*/
 
       - deploy:
           requires:
             - hold
+
+  # upload_test:
+  #   triggers:
+  #     - schedule:
+  #         cron: "0,30 * * * *"
+  #         filters:
+  #           branches:
+  #             only:
+  #               - jh/use-xxhash-for-integration-test
+
+  #   jobs:
+  #     - build
+
+  #     - upload_test_job:
+  #         requires:
+  #           - build
 
 jobs:
   build:
@@ -64,10 +80,10 @@ jobs:
           paths:
             - .
 
-  linux_py_27_17:
-    description: Linux 2.7.17
+  linux_py_27_16:
+    description: Linux 2.7.16
     docker:
-      - image: circleci/python:2.7.17
+      - image: circleci/python:2.7.16
 
     steps:
       - attach_workspace:
@@ -77,7 +93,7 @@ jobs:
       - run:
           name: Install package
           command: |
-            pip install '/tmp/artifact'
+            pip install --user '/tmp/artifact'
 
       - run:
           name: Run integration test
@@ -144,10 +160,30 @@ jobs:
           command: |
             python /tmp/artifact/tests/integration.py
 
+  upload_test_job:
+    description: Upload test
+    docker:
+      - image: circleci/python:latest
+
+    steps:
+      - attach_workspace:
+          at: /tmp/artifact
+          name: Attach build artifact
+
+      - run:
+          name: Install package
+          command: |
+            pip install '/tmp/artifact'
+
+      - run:
+          name: Run integration test
+          command: |
+            python /tmp/artifact/tests/integration.py
+
 
   deploy:
     docker:
-    - image: circleci/python:latest
+      - image: circleci/python:latest
 
     steps:
       - attach_workspace:
