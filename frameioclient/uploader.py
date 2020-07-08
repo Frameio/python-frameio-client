@@ -28,27 +28,36 @@ class FrameioUploader(object):
         thread_local.session = requests.Session()
     return thread_local.session
 
-  def _smart_read_chunk(self, chunk_offset):
+  def _smart_read_chunk(self, chunk_offset, is_final_chunk):
     with open(os.path.realpath(self.file.name), "rb") as file:
       file.seek(chunk_offset, 0)
-      data = file.read(self.chunk_size)
+      if is_final_chunk: # If it's the final chunk, we want to just read until the end of the file
+        data = file.read()
+      else: # If it's not the final chunk, we want to ONLY read the specified chunk
+        data = file.read(self.chunk_size)
       return data
 
   def _upload_chunk(self, task):
     url = task[0]
     chunk_offset = task[1]
+    chunk_id = task[2]
     chunks_total = len(self.asset['upload_urls'])
+
+    is_final_chunk = False
+
+    if chunk_id+1 == chunks_total:
+      is_final_chunk = True
     
     session = self._get_session()
 
-    chunk_data = self._smart_read_chunk(chunk_offset)
+    chunk_data = self._smart_read_chunk(chunk_offset, is_final_chunk)
 
     try:
       r = session.put(url, data=chunk_data, headers={
         'content-type': self.asset['filetype'],
         'x-amz-acl': 'private'
       })
-      print("Completed chunk, status: {}".format(r.status_code))
+      # print("Completed chunk, status: {}".format(r.status_code))
     except Exception as e:
       print(e)
 
@@ -65,5 +74,5 @@ class FrameioUploader(object):
         url = upload_urls[i]
         chunk_offset = chunk_offsets[i]
         
-        task = (url, chunk_offset)
+        task = (url, chunk_offset, i)
         executor.submit(self._upload_chunk, task)

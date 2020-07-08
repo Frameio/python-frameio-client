@@ -10,7 +10,7 @@ workflows:
     jobs:
       - build
 
-      - linux_py_27_17:
+      - linux_py_27_16:
           requires:
             - build
 
@@ -29,7 +29,7 @@ workflows:
       - hold:
           type: approval
           requires:
-            - linux_py_27_17
+            - linux_py_27_16
             - linux_py_27_latest
             - linux_py_37
             - linux_py_latest
@@ -80,10 +80,10 @@ jobs:
           paths:
             - .
 
-  linux_py_27_17:
-    description: Linux 2.7.17
+  linux_py_27_16:
+    description: Linux 2.7.16
     docker:
-      - image: circleci/python:2.7.17
+      - image: circleci/python:2.7.16
 
     steps:
       - attach_workspace:
@@ -93,7 +93,7 @@ jobs:
       - run:
           name: Install package
           command: |
-            pip install '/tmp/artifact'
+            pip install --user '/tmp/artifact'
 
       - run:
           name: Run integration test
