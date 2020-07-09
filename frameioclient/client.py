@@ -209,6 +209,16 @@ class FrameioClient(object):
     endpoint = '/teams'
     return self._api_call('get', endpoint, kwargs)
 
+  def get_team_members(self, team_id):
+    """
+    Get the member list for a given team_id.
+
+    :Args:
+      team_id (string): The team id.
+    """
+    endpoint = '/teams/{}/members'.format(team_id)
+    return self._api_call('get', endpoint)  
+
   def get_projects(self, team_id, **kwargs):
     """
     Get projects owned by the team.
@@ -236,7 +246,7 @@ class FrameioClient(object):
     :Args:
       project_id (string): the project's id
     """
-    endpoint = "/projects/{}/collaborators".format(project_id)
+    endpoint = "/projects/{}/collaborators?include=project_role".format(project_id)
     return self._api_call('get', endpoint, kwargs)
 
   def get_pending_collaborators(self, project_id, **kwargs):
