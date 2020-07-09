@@ -12,3 +12,6 @@ bump-major:
 
 bump-patch:
 	bump2version patch
+
+clean:
+	find . -name "*.pyc" -exec rm -f {} \;
