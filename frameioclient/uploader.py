@@ -44,8 +44,7 @@ class FrameioUploader(object):
     chunks_total = len(self.asset['upload_urls'])
 
     is_final_chunk = False
-
-    if chunk_id+1 == chunks_total:
+    if chunk_id + 1 == chunks_total:
       is_final_chunk = True
     
     session = self._get_session()
