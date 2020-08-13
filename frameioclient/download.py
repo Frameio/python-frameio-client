@@ -23,7 +23,7 @@ class FrameioDownloader(object):
               resolution_map.update({
                 resolution: download_url
               })
-          except Exception:
+          except ValueError:
             continue
 
         # Grab the highest resolution now
