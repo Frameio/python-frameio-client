@@ -8,7 +8,7 @@ These are mostly guidelines, not rules. Use your best judgment, and feel free to
 
 1. Ensure any build dependencies or sensitive environment variables are removed before posting your PR.
 2. In the PR summary, note the features you're adding or changes to existing interfaces.
-3. Increase the version numbers ([example commit](https://github.com/Frameio/python-frameio-client/commit/3b6595aae9f8a0df984c937ca9938131afbb82c0)).  The versioning scheme we use is [SemVer](http://semver.org/).
+3. The versioning scheme we use is [SemVer](http://semver.org/).
 4. Please squash-merge commits into your PR -- this keeps our history tidy.
 5. We'd appreciate if your PR follows the [Conventional Commit](https://www.conventionalcommits.org/en/v1.0.0/) spec.
 6. Pull Requests are typically merged once they receive approval from two Frame.io developers.  If you haven't gotten approval, feel free to @mention us or send a reminder.
