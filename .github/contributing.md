@@ -19,44 +19,4 @@ We run tests using [pytest](https://docs.pytest.org/en/stable/).  Tests are admi
 
 ## Report a Bug
 
-Report bugs to Issues in GitHub.  It's okay to report bugs that may not be specific to this library, i.e. if you find a bug core to the API feel free to report it. Try to include info and context that will help us reproduce the problem.  
-
-## Code of Conduct
-
-In the interest of fostering an open and welcoming environment, we as
-contributors and maintainers pledge to making participation in our project and
-our community a harassment-free experience for everyone, regardless of age, body
-size, disability, ethnicity, gender identity and expression, level of experience,
-nationality, personal appearance, race, religion, or sexual identity and
-orientation.
-
-### Our Standards
-
-Examples of behavior that contributes to creating a positive environment
-include:
-
-* Using welcoming and inclusive language
-* Being respectful of differing viewpoints and experiences
-* Gracefully accepting constructive criticism
-* Focusing on what is best for the community
-* Showing empathy towards other community members
-
-Examples of unacceptable behavior by participants include:
-
-* The use of sexualized language or imagery and unwelcome sexual attention or
-advances
-* Trolling, insulting/derogatory comments, and personal or political attacks
-* Public or private harassment
-* Publishing others' private information, such as a physical or electronic
-  address, without explicit permission
-* Other conduct which could reasonably be considered inappropriate in a
-  professional setting
-
-
-### Attribution
-
-This Code of Conduct is adapted from the [Contributor Covenant][homepage], version 1.4,
-available at [http://contributor-covenant.org/version/1/4][version]
-
-[homepage]: http://contributor-covenant.org
-[version]: http://contributor-covenant.org/version/1/4/
+Report bugs to Issues in GitHub.  It's okay to report bugs that may not be specific to this library, i.e. if you find a bug core to the API feel free to report it. Try to include info and context that will help us reproduce the problem.
