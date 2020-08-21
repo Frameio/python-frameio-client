@@ -103,7 +103,7 @@ class FrameioDownloader(object):
     chunk_list = list(range(self.chunks))
     for chunk in chunk_list:
       self.chunk_manager.update({
-        chunk: False
+        chunk: None
       })
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=8) as executor:
@@ -143,4 +143,3 @@ class FrameioDownloader(object):
     print("Completed chunk {}/{}".format(chunk_number + 1, self.chunks))
 
     return True
-    
