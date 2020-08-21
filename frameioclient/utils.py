@@ -24,20 +24,26 @@ def stream(func, page=1, page_size=20):
 
         page += 1
 
-def format_bytes(size):
+def format_bytes(size, type="speed"):
     """
     Convert bytes to KB/MB/GB/TB/s
     """
     # 2**10 = 1024
     power = 2**10
     n = 0
-    power_labels = {0 : 'B/s', 1: 'KB/s', 2: 'MB/s', 3: 'GB/s', 4: 'TB/s'}
+    power_labels = {0 : 'B', 1: 'KB', 2: 'MB', 3: 'GB', 4: 'TB'}
 
     while size > power:
         size /= power
         n += 1
 
-    return " ".join((str(round(size, 2)), power_labels[n]))
+    formatted = " ".join((str(round(size, 2)), power_labels[n]))
+
+    if type == "speed":
+        return formatted + "/s"
+        
+    elif type == "size":
+        return formatted
 
 def calculate_hash(file_path):
     """
