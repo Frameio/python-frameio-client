@@ -401,21 +401,22 @@ class FrameioClient(object):
     """
     uploader = FrameioUploader(asset, file)
     uploader.upload()
-  
-  def download(self, asset, download_folder):
-    """
-    Download an asset. The method will exit once the file is downloaded.
 
-    :Args:
-      asset (object): The asset object.
-      download_folder (path): The location to download the file to.
+  def download(self, asset, download_folder, replace=True):
+      """
+      Download an asset. The method will exit once the file is downloaded.
 
-      Example::
+      :Args:
+        asset (object): The asset object.
+        download_folder (path): The location to download the file to.
+        replace (bool): Replace the file if it exists.
 
-        client.download(asset, "~./Downloads")
-    """
-    downloader = FrameioDownloader(asset, download_folder)
-    downloader.download()
+        Example::
+
+          client.download(asset, "~./Downloads")
+      """
+      downloader = FrameioDownloader(asset, download_folder, replace)
+      downloader.download()
 
   def get_comment(self, comment_id, **kwargs):
     """
