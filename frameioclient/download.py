@@ -19,7 +19,8 @@ class FrameioDownloader(object):
     self.destination = None
     self.watermarked = False
     self.chunk_manager = dict()
-    self.chunks = (asset['filesize'] / 52428800)
+    self.chunk_size = 52428800
+    self.chunks = math.floor(asset['filesize'] / self.chunk_size)
     self.prefix = prefix
     self.filename = asset['name']
 
@@ -94,7 +95,7 @@ class FrameioDownloader(object):
 
   def accelerate_download(self, url):
     start_time = time.time()
-    offset = (self.asset['filesize'] / self.chunks)
+    offset = math.ceil(self.asset['filesize'] / self.chunks)
     in_byte = 0 # Set initially here, but then override
     
     print("Accelerated download -- {} -- {}".format(self.asset['name'], format_bytes(self.asset['filesize'], type="size")))
