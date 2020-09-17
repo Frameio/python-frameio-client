@@ -1,8 +1,12 @@
+import os
 import math
 import requests
 import threading
 import concurrent.futures
-import os
+
+from requests.adapters import HTTPAdapter
+from requests.packages.urllib3.util.retry import Retry
+
 
 thread_local = threading.local()
 
@@ -11,6 +15,12 @@ class FrameioUploader(object):
     self.asset = asset
     self.file = file
     self.chunk_size = None
+    self.retry_strategy = Retry(
+        total=3,
+        backoff_factor=1,
+        status_forcelist=[400, 500, 503],
+        method_whitelist=["PUT"]
+    )
 
   def _calculate_chunks(self, total_size, chunk_count):
     self.chunk_size = int(math.ceil(total_size / chunk_count))
@@ -24,8 +34,12 @@ class FrameioUploader(object):
     return chunk_offsets
 
   def _get_session(self):
-    if not hasattr(thread_local, "session"):
-        thread_local.session = requests.Session()
+    if not hasattr(thread_local, "session"):        
+        adapter = HTTPAdapter(max_retries=self.retry_strategy)
+        http = requests.Session()
+        http.mount("https", adapter)
+
+        thread_local.session = http
     return thread_local.session
 
   def _smart_read_chunk(self, chunk_offset, is_final_chunk):
@@ -48,7 +62,7 @@ class FrameioUploader(object):
 
     if chunk_id+1 == chunks_total:
       is_final_chunk = True
-    
+
     session = self._get_session()
 
     chunk_data = self._smart_read_chunk(chunk_offset, is_final_chunk)
