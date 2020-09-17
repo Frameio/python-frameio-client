@@ -38,9 +38,10 @@ class FrameioUploader(object):
       return data
 
   def _upload_chunk(self, task):
-    url = task[0]
-    chunk_offset = task[1]
-    chunk_id = task[2]
+    asset_id = task[0]
+    url = task[1]
+    chunk_offset = task[2]
+    chunk_id = task[3]
     chunks_total = len(self.asset['upload_urls'])
 
     is_final_chunk = False
@@ -57,13 +58,16 @@ class FrameioUploader(object):
         'content-type': self.asset['filetype'],
         'x-amz-acl': 'private'
       })
-      # print("Completed chunk, status: {}".format(r.status_code))
+
+      print("Completed chunk {}/{} for asset: {}, status: {}".format(chunk_id+1, chunks_total, asset_id, r.status_code))
+    
     except Exception as e:
       print(e)
 
     r.raise_for_status()
 
   def upload(self):
+    asset_id = self.asset['id']
     total_size = self.asset['filesize']
     upload_urls = self.asset['upload_urls']
 
@@ -74,5 +78,5 @@ class FrameioUploader(object):
         url = upload_urls[i]
         chunk_offset = chunk_offsets[i]
         
-        task = (url, chunk_offset, i)
+        task = (asset_id, url, chunk_offset, i)
         executor.submit(self._upload_chunk, task)
