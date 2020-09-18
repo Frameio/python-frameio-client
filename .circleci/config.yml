@@ -45,21 +45,21 @@ workflows:
           requires:
             - hold
 
-  upload_test:
-    triggers:
-      - schedule:
-          cron: "0,30 * * * *"
-          filters:
-            branches:
-              only:
-                - jh/test-loop
+  # upload_test:
+  #   triggers:
+  #     - schedule:
+  #         cron: "0,30 * * * *"
+  #         filters:
+  #           branches:
+  #             only:
+  #               - jh/test-loop
 
-    jobs:
-      - build
+  #   jobs:
+  #     - build
 
-      - upload_test_job:
-          requires:
-            - build
+  #     - upload_test_job:
+  #         requires:
+  #           - build
 
 jobs:
   build:
