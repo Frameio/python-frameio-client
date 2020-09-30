@@ -23,13 +23,9 @@ class FrameioDownloader(object):
     self.concurrency = concurrency
     self.futures = list()
     self.chunk_size = (52428800 / 2) # 25 MB chunk size or so
-    self.chunks = self.calculate_chunk_count(self.file_size, self.chunk_size)
+    self.chunks = math.floor(self.file_size/self.chunk_size)
     self.prefix = prefix
     self.filename = asset['name']
-
-  @staticmethod
-  def calculate_chunk_count(file_size, chunk_size):
-    return int(math.floor(file_size/chunk_size)) # Extra cast to handle Py2
 
   def _get_session(self):
     if not hasattr(thread_local, "session"):
@@ -129,7 +125,7 @@ class FrameioDownloader(object):
 
     # Queue up threads
     with concurrent.futures.ThreadPoolExecutor(max_workers=self.concurrency) as executor:
-      for i in range(self.chunks):
+      for i in range(int(self.chunks)):
         out_byte = offset * (i+1) # Advance by one byte to get proper offset
         task = (url, in_byte, out_byte, i)
 
