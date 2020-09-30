@@ -29,7 +29,7 @@ class FrameioDownloader(object):
 
   @staticmethod
   def calculate_chunk_count(file_size, chunk_size):
-    return math.floor(file_size/chunk_size)
+    return int(math.floor(file_size/chunk_size)) # Extra cast to handle Py2
 
   def _get_session(self):
     if not hasattr(thread_local, "session"):
@@ -129,7 +129,7 @@ class FrameioDownloader(object):
 
     # Queue up threads
     with concurrent.futures.ThreadPoolExecutor(max_workers=self.concurrency) as executor:
-      for i in range(int(self.chunks)):
+      for i in range(self.chunks):
         out_byte = offset * (i+1) # Advance by one byte to get proper offset
         task = (url, in_byte, out_byte, i)
 
