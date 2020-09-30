@@ -7,27 +7,44 @@ import threading
 import concurrent.futures
 
 from .utils import format_bytes
-from .exceptions import DownloadException
+from .exceptions import DownloadException, WatermarkIDDownloadException
 
 thread_local = threading.local()
 
 class FrameioDownloader(object):
-  def __init__(self, asset, download_folder, prefix=None):
+  def __init__(self, asset, download_folder, prefix, acceleration=False, concurrency=5):
+    self.acceleration = acceleration
     self.asset = asset
     self.download_folder = download_folder
     self.resolution_map = dict()
     self.destination = None
     self.watermarked = False
-    self.chunk_manager = dict()
-    self.chunk_size = 52428800
-    self.chunks = math.floor(asset['filesize'] / self.chunk_size)
+    self.file_size = asset['filesize']
+    self.concurrency = concurrency
+    self.futures = list()
+    self.chunk_size = 52428800 / 2 # 25 MB chunk size or so
+    self.chunks = self.calculate_chunk_count(self.file_size, self.chunk_size)
     self.prefix = prefix
     self.filename = asset['name']
+
+  @staticmethod
+  def calculate_chunk_count(file_size, chunk_size):
+    return math.floor(file_size/chunk_size)
 
   def _get_session(self):
     if not hasattr(thread_local, "session"):
         thread_local.session = requests.Session()
     return thread_local.session
+
+  def _create_file_stub(self):
+    try:
+      fp = open(self.destination, "wb")
+      fp.write(b'\0' * self.file_size)
+      fp.close()
+    except Exception as e:
+      print(e)
+      return False
+    return True
 
   def get_download_key(self):
     try:
@@ -51,7 +68,7 @@ class FrameioDownloader(object):
         except KeyError:
           raise DownloadException
       else:
-        raise DownloadException
+        raise WatermarkIDDownloadException
 
     return url
 
@@ -65,82 +82,99 @@ class FrameioDownloader(object):
       
     return self.destination
 
-  def download_handler(self, acceleration_override=False):
+  def download_handler(self):
     if os.path.isfile(self.get_path()):
-      return self.destination, 0
+      print("File already exists at this location.")
+      return self.destination
     else:
       url = self.get_download_key()
 
       if self.watermarked == True:
         return self.download(url)
       else:
-        if acceleration_override == True:
-          return self.accelerate_download(url)
+        if self.acceleration == True:
+          return self.accelerated_download(url)
         else:
           return self.download(url)
 
   def download(self, url):
     start_time = time.time()
-    print("Beginning download -- {} -- {}".format(self.asset['name'], format_bytes(self.asset['filesize'], type="size")))
+    print("Beginning download -- {} -- {}".format(self.asset['name'], format_bytes(self.file_size, type="size")))
 
     # Downloading
     r = requests.get(url)
     open(self.destination, 'wb').write(r.content)
 
     download_time = time.time() - start_time
-    download_speed = format_bytes(math.ceil(self.asset['filesize']/(download_time)))
-    print("Downloaded {} at {}".format(self.asset['filesize'], download_speed))
+    download_speed = format_bytes(math.ceil(self.file_size/(download_time)))
+    print("Downloaded {} at {}".format(self.file_size, download_speed))
 
     return self.destination, download_speed
 
-  def accelerate_download(self, url):
+  def accelerated_download(self, url):
     start_time = time.time()
+
+    # Generate stub
+    try:
+      self._create_file_stub()
+
+    except Exception as e:
+      raise DownloadException
+      print("Aborting", e)
+
     offset = math.ceil(self.asset['filesize'] / self.chunks)
     in_byte = 0 # Set initially here, but then override
     
-    print("Accelerated download -- {} -- {}".format(self.asset['name'], format_bytes(self.asset['filesize'], type="size")))
+    print("Accelerated download -- {} -- {}".format(self.asset['name'], format_bytes(self.file_size, type="size")))
 
-    # Build chunk manager state
-    chunk_list = list(range(self.chunks))
-    for chunk in chunk_list:
-      self.chunk_manager.update({
-        chunk: None
-      })
-
-    with concurrent.futures.ThreadPoolExecutor(max_workers=8) as executor:
+    # Queue up threads
+    with concurrent.futures.ThreadPoolExecutor(max_workers=self.concurrency) as executor:
       for i in range(self.chunks):
-        out_byte = offset * (i+1)
+        out_byte = offset * (i+1) # Advance by one byte to get proper offset
+        task = (url, in_byte, out_byte, i)
 
-        headers = {
-          "Range": "bytes={}-{}".format(in_byte, out_byte)
-          }
-        task = (url, headers, i)
-        executor.submit(self.get_chunk, task)
-
+        self.futures.append(executor.submit(self.download_chunk, task))
         in_byte = out_byte + 1 # Reset new in byte
-
-    # Merge chunks
-    print("Writing chunks to disk")
-    with open(self.destination, 'a') as outfile:
-      for chunk in self.chunk_manager:
-        outfile.write(self.chunk_manager[chunk])
-
+    
+    # Wait on threads to finish
+    for future in concurrent.futures.as_completed(self.futures):
+      try:
+        status = future.result()
+        print(status)
+      except Exception as exc:
+        print(exc)
+    
+    # Calculate and print stats
     download_time = time.time() - start_time
-    download_speed = format_bytes(math.ceil(self.asset['filesize']/(download_time)))
-    print("Downloaded {} at {}".format(self.asset['filesize'], download_speed))
+    download_speed = format_bytes(math.ceil(self.file_size/(download_time)))
+    print("Downloaded {} at {}".format(self.file_size, download_speed))
 
-    return self.destination, download_speed
+    return self.destination
 
-  def get_chunk(self, task):
+
+  def download_chunk(self, task):
+    # Download a particular chunk
+    # Called by the threadpool execuor
+
     url = task[0]
-    headers = task[1]
-    chunk_number = task[2]
+    start_byte = task[1]
+    end_byte = task[2]
+    chunk_number = task[3]
 
     session = self._get_session()
-
     print("Getting chunk {}/{}".format(chunk_number + 1, self.chunks))
-    r = session.get(url, headers=headers)
-    self.chunk_manager[chunk_number] = r.content
+         
+    # Specify the starting and ending of the file 
+    headers = {'Range': 'bytes=%d-%d' % (start_byte, end_byte)} 
+
+    # Grab the data as a stream
+    r = session.get(url, headers=headers, stream=True)
+
+    with open(self.destination, "r+b") as fp:
+      fp.seek(start_byte) # Seek to the right of the file
+      fp.write(r.content) # Write the data
+      print("Done writing chunk {}/{}".format(chunk_number + 1, self.chunks))
+
     print("Completed chunk {}/{}".format(chunk_number + 1, self.chunks))
 
-    return True
+    return "Complete!"

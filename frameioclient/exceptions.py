@@ -11,13 +11,23 @@ class PresentationException(Exception):
         self.message = message
         super().__init__(self.message)
 
-class DownloadException(Exception):
+class WatermarkIDDownloadException(Exception):
     """Exception raised when trying to download a file where there is no available
     download URL.
     """
     def __init__(
         self, 
         message="This file is unavailable for download due to security and permission settings."
+    ):
+        self.message = message
+        super().__init__(self.message)
+
+class DownloadException(Exception):
+    """Exception raised when trying to download a file 
+    """
+    def __init__(
+        self, 
+        message="Unable to download for some reason."
     ):
         self.message = message
         super().__init__(self.message)
