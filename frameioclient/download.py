@@ -122,14 +122,14 @@ class FrameioDownloader(object):
       raise DownloadException
       print("Aborting", e)
 
-    offset = math.ceil(self.asset['filesize'] / self.chunks)
+    offset = math.ceil(self.file_size / self.chunks)
     in_byte = 0 # Set initially here, but then override
     
     print("Accelerated download -- {} -- {}".format(self.asset['name'], format_bytes(self.file_size, type="size")))
 
     # Queue up threads
     with concurrent.futures.ThreadPoolExecutor(max_workers=self.concurrency) as executor:
-      for i in range(self.chunks):
+      for i in range(int(self.chunks)):
         out_byte = offset * (i+1) # Advance by one byte to get proper offset
         task = (url, in_byte, out_byte, i)
 
