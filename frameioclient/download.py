@@ -22,7 +22,7 @@ class FrameioDownloader(object):
     self.file_size = asset['filesize']
     self.concurrency = concurrency
     self.futures = list()
-    self.chunk_size = 52428800 / 2 # 25 MB chunk size or so
+    self.chunk_size = (52428800 / 2) # 25 MB chunk size or so
     self.chunks = self.calculate_chunk_count(self.file_size, self.chunk_size)
     self.prefix = prefix
     self.filename = asset['name']
