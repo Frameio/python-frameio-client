@@ -6,26 +6,36 @@ import requests
 import threading
 import concurrent.futures
 
-from .utils import format_bytes
-from .exceptions import DownloadException, WatermarkIDDownloadException
+from .utils import format_bytes, normalize_filename
+from .exceptions import DownloadException, WatermarkIDDownloadException, AssetNotFullyUploaded
 
 thread_local = threading.local()
 
 class FrameioDownloader(object):
-  def __init__(self, asset, download_folder, prefix, acceleration=False, concurrency=5):
-    self.acceleration = acceleration
+  def __init__(self, asset, download_folder, prefix, multi_part=False, concurrency=5):
+    self.multi_part = multi_part
     self.asset = asset
+    self.asset_type = None
     self.download_folder = download_folder
     self.resolution_map = dict()
     self.destination = None
     self.watermarked = False
-    self.file_size = asset['filesize']
+    self.file_size = asset["filesize"]
     self.concurrency = concurrency
     self.futures = list()
-    self.chunk_size = (52428800 / 2) # 25 MB chunk size or so
-    self.chunks = math.floor(self.file_size/self.chunk_size)
+    self.chunk_size = (25 * 1024 * 1024) # 25 MB chunk size
+    self.chunks = math.ceil(self.file_size/self.chunk_size)
     self.prefix = prefix
-    self.filename = asset['name']
+    self.filename = normalize_filename(asset["name"])
+
+    self._evaluate_asset()
+
+  def _evaluate_asset(self):
+    if self.asset.get("_type") != "file":
+      raise DownloadException(message="Unsupport Asset type: {}".format(self.asset.get("_type")))
+    
+    if self.asset.get("upload_completed_at") == None:
+      raise AssetNotFullyUploaded
 
   def _get_session(self):
     if not hasattr(thread_local, "session"):
@@ -35,11 +45,11 @@ class FrameioDownloader(object):
   def _create_file_stub(self):
     try:
       fp = open(self.destination, "wb")
-      fp.write(b'\0' * self.file_size)
+      fp.write(b"\0" * self.file_size)
       fp.close()
-    except Exception as e:
+    except FileExistsError as e:
       print(e)
-      return False
+      raise e
     return True
 
   def get_download_key(self):
@@ -88,26 +98,26 @@ class FrameioDownloader(object):
       if self.watermarked == True:
         return self.download(url)
       else:
-        if self.acceleration == True:
-          return self.accelerated_download(url)
+        if self.multi_part == True:
+          return self.multi_part_download(url)
         else:
           return self.download(url)
 
   def download(self, url):
     start_time = time.time()
-    print("Beginning download -- {} -- {}".format(self.asset['name'], format_bytes(self.file_size, type="size")))
+    print("Beginning download -- {} -- {}".format(self.asset["name"], format_bytes(self.file_size, type="size")))
 
     # Downloading
     r = requests.get(url)
-    open(self.destination, 'wb').write(r.content)
+    open(self.destination, "wb").write(r.content)
 
     download_time = time.time() - start_time
     download_speed = format_bytes(math.ceil(self.file_size/(download_time)))
-    print("Downloaded {} at {}".format(self.file_size, download_speed))
+    print("Downloaded {} at {}".format(format_bytes(self.file_size), download_speed))
 
     return self.destination, download_speed
 
-  def accelerated_download(self, url):
+  def multi_part_download(self, url):
     start_time = time.time()
 
     # Generate stub
@@ -115,22 +125,21 @@ class FrameioDownloader(object):
       self._create_file_stub()
 
     except Exception as e:
-      raise DownloadException
-      print("Aborting", e)
+      raise DownloadException(message=e)
 
     offset = math.ceil(self.file_size / self.chunks)
     in_byte = 0 # Set initially here, but then override
     
-    print("Accelerated download -- {} -- {}".format(self.asset['name'], format_bytes(self.file_size, type="size")))
+    print("Multi-part download -- {} -- {}".format(self.asset["name"], format_bytes(self.file_size, type="size")))
 
     # Queue up threads
     with concurrent.futures.ThreadPoolExecutor(max_workers=self.concurrency) as executor:
       for i in range(int(self.chunks)):
-        out_byte = offset * (i+1) # Advance by one byte to get proper offset
+        out_byte = offset * (i+1) # Increment by the iterable + 1 so we don't mutiply by zero
         task = (url, in_byte, out_byte, i)
 
         self.futures.append(executor.submit(self.download_chunk, task))
-        in_byte = out_byte + 1 # Reset new in byte
+        in_byte = out_byte # Reset new in byte equal to last out byte
     
     # Wait on threads to finish
     for future in concurrent.futures.as_completed(self.futures):
@@ -143,14 +152,13 @@ class FrameioDownloader(object):
     # Calculate and print stats
     download_time = time.time() - start_time
     download_speed = format_bytes(math.ceil(self.file_size/(download_time)))
-    print("Downloaded {} at {}".format(self.file_size, download_speed))
+    print("Downloaded {} at {}".format(format_bytes(self.file_size), download_speed))
 
     return self.destination
 
-
   def download_chunk(self, task):
     # Download a particular chunk
-    # Called by the threadpool execuor
+    # Called by the threadpool executor
 
     url = task[0]
     start_byte = task[1]
@@ -161,7 +169,7 @@ class FrameioDownloader(object):
     print("Getting chunk {}/{}".format(chunk_number + 1, self.chunks))
          
     # Specify the starting and ending of the file 
-    headers = {'Range': 'bytes=%d-%d' % (start_byte, end_byte)} 
+    headers = {"Range": "bytes=%d-%d" % (start_byte, end_byte)} 
 
     # Grab the data as a stream
     r = session.get(url, headers=headers, stream=True)
@@ -170,7 +178,5 @@ class FrameioDownloader(object):
       fp.seek(start_byte) # Seek to the right of the file
       fp.write(r.content) # Write the data
       print("Done writing chunk {}/{}".format(chunk_number + 1, self.chunks))
-
-    print("Completed chunk {}/{}".format(chunk_number + 1, self.chunks))
 
     return "Complete!"

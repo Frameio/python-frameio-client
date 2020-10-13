@@ -27,7 +27,17 @@ class DownloadException(Exception):
     """
     def __init__(
         self, 
-        message="Unable to download for some reason."
+        message="Generic Dowload exception."
+    ):
+        self.message = message
+        super().__init__(self.message)
+
+class AssetNotFullyUploaded(Exception):
+    """Exception raised when trying to download a file that isn't yet fully upload.
+    """
+    def __init__(
+        self, 
+        message="Unable to download this asset because it not yet fully uploaded."
     ):
         self.message = message
         super().__init__(self.message)

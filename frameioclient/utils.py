@@ -1,5 +1,6 @@
 import xxhash
 import sys
+import re
 
 KB = 1024
 MB = KB * KB
@@ -80,3 +81,23 @@ def compare_items(dict1, dict2):
         print("File mismatch between upload and download")
 
     return comparison
+
+def get_valid_filename(s):
+    """
+    Strip out invalid characters from a filename using regex
+    """
+    s = str(s).strip().replace(' ', '_')
+    return re.sub(r'(?u)[^-\w.]', '', s)
+
+def normalize_filename(fn):
+    """
+    Normalize filename using pure python
+    """
+    validchars = "-_.() "
+    out = ""
+    for c in fn:
+      if str.isalpha(c) or str.isdigit(c) or (c in validchars):
+        out += c
+      else:
+        out += "_"
+    return out    
