@@ -113,7 +113,7 @@ class FrameioDownloader(object):
 
     download_time = time.time() - start_time
     download_speed = format_bytes(math.ceil(self.file_size/(download_time)))
-    print("Downloaded {} at {}".format(format_bytes(self.file_size), download_speed))
+    print("Downloaded {} at {}".format(format_bytes(self.file_size, type="size"), download_speed))
 
     return self.destination, download_speed
 
@@ -152,7 +152,7 @@ class FrameioDownloader(object):
     # Calculate and print stats
     download_time = time.time() - start_time
     download_speed = format_bytes(math.ceil(self.file_size/(download_time)))
-    print("Downloaded {} at {}".format(format_bytes(self.file_size), download_speed))
+    print("Downloaded {} at {}".format(format_bytes(self.file_size, type="size"), download_speed))
 
     return self.destination
 
