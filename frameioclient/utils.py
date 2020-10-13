@@ -95,9 +95,17 @@ def normalize_filename(fn):
     """
     validchars = "-_.() "
     out = ""
+
+    if isinstance(fn, str):
+        pass
+    elif isinstance(fn, unicode):
+        fn = str(fn.decode('utf-8', 'ignore'))
+    else:
+        pass
+
     for c in fn:
       if str.isalpha(c) or str.isdigit(c) or (c in validchars):
         out += c
       else:
         out += "_"
-    return out    
+    return out
