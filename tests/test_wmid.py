@@ -10,7 +10,7 @@ regular_asset = {
         "h264_1080_best": "some-other-s3-url"
     },
     "h264_720": "some-s3-url",
-    "h264_1080_best": "some-other-s3-url"
+    "h264_1080_best": "some-other-s3-url",
     "original": "some-s3-url",
     "hls_manifest": "hls-url"
 }
@@ -36,6 +36,3 @@ no_download_allowed = {
     "is_session_watermarked": False,
     "hls_manifest": "hls-url"
 }
-
-def test_FrameioClient(frameioclient):
-  assert type(frameioclient) == FrameioClient
