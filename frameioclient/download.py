@@ -12,21 +12,24 @@ class FrameioDownloader(object):
   def get_download_key(self):
     try:
       url = self.asset['original']
-    except KeyError:
+    except KeyError as e:
       if self.asset['is_session_watermarked'] == True:
         resolution_list = list()
-        for resolution_key, download_url in sorted(self.asset['downloads'].items()):
-          resolution = resolution_key.split("_")[1] # Grab the item at index 1 (resolution)
-          try:
-            resolution = int(resolution)
-          except ValueError:
-            continue
+        try:
+          for resolution_key, download_url in sorted(self.asset['downloads'].items()):
+            resolution = resolution_key.split("_")[1] # Grab the item at index 1 (resolution)
+            try:
+              resolution = int(resolution)
+            except ValueError:
+              continue
 
-          if download_url is not None:
-            resolution_list.append(download_url)
+            if download_url is not None:
+              resolution_list.append(download_url)
 
-        # Grab the highest resolution (first item) now
-        url = resolution_list[0]
+          # Grab the highest resolution (first item) now
+          url = resolution_list[0]
+        except KeyError:
+          raise DownloadException
       else:
         raise DownloadException
 
