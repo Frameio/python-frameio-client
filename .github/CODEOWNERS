@@ -7,4 +7,4 @@
 # Order is important; the last matching pattern takes the most
 # precedence. When someone opens a pull request that only
 # modifies Python files.
-*.py    jmeggesto@frame.io billy@frame.io zach@frame.io jay@frame.io
+*.py    @devrel

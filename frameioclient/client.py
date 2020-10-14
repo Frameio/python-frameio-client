@@ -351,8 +351,7 @@ class FrameioClient(object):
     return self._api_call('post', endpoint, kwargs)
 
   def bulk_copy_assets(self, destination_folder_id, asset_list=[], copy_comments=False):
-    """
-    Bulk copy assets
+    """Bulk copy assets
 
     :Args:
       destination_folder_id (string): The id of the folder you want to copy into.

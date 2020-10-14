@@ -4,7 +4,7 @@ import setuptools
 
 from setuptools.command.install import install
 
-version='0.8.1'
+version='0.8.2'
 
 with open("README.md", "r") as f:
   long_description = f.read()
@@ -47,9 +47,11 @@ setuptools.setup(
     'Programming Language :: Python :: 2',
     'Programming Language :: Python :: 2.7',
     'Programming Language :: Python :: 3',
+    'Programming Language :: Python :: 3.5',
     'Programming Language :: Python :: 3.6',
     'Programming Language :: Python :: 3.7',
     'Programming Language :: Python :: 3.8',
+    'Programming Language :: Python :: 3.9',
   ],
   description='Client library for the Frame.io API',
   long_description=long_description,
