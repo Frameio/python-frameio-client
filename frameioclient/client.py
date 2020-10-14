@@ -351,8 +351,7 @@ class FrameioClient(object):
     return self._api_call('post', endpoint, kwargs)
 
   def bulk_copy_assets(self, destination_folder_id, asset_list=[], copy_comments=False):
-    """
-    Bulk copy assets
+    """Bulk copy assets
 
     :Args:
       destination_folder_id (string): The id of the folder you want to copy into.
@@ -402,7 +401,7 @@ class FrameioClient(object):
     uploader = FrameioUploader(asset, file)
     uploader.upload()
   
-  def download(self, asset, download_folder):
+  def download(self, asset, download_folder, prefix=None, multi_part=False, concurrency=5):
     """
     Download an asset. The method will exit once the file is downloaded.
 
@@ -414,8 +413,8 @@ class FrameioClient(object):
 
         client.download(asset, "~./Downloads")
     """
-    downloader = FrameioDownloader(asset, download_folder)
-    downloader.download()
+    downloader = FrameioDownloader(asset, download_folder, prefix, multi_part, concurrency)
+    return downloader.download_handler()
 
   def get_comment(self, comment_id, **kwargs):
     """

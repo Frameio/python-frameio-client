@@ -107,7 +107,7 @@ def test_download(client, override=False):
         start_time = time.time()
         print("{}/{} Beginning to download: {}".format(count, len(asset_list), asset['name']))
         
-        client.download(asset, 'downloads')
+        client.download(asset, 'downloads', multi_part=True, concurrency=20)
         
         download_time = time.time() - start_time
         download_speed = format_bytes(ceil(asset['filesize']/(download_time)))
