@@ -19,7 +19,7 @@ class FrameioDownloader(object):
     self.download_folder = download_folder
     self.resolution_map = dict()
     self.destination = None
-    self.watermarked = False
+    self.watermarked = asset['is_session_watermarked'] # Default is probably false
     self.file_size = asset["filesize"]
     self.concurrency = concurrency
     self.futures = list()
@@ -56,7 +56,7 @@ class FrameioDownloader(object):
     try:
       url = self.asset['original']
     except KeyError as e:
-      if self.asset['is_session_watermarked'] == True:
+      if self.watermarked == True:
         resolution_list = list()
         try:
           for resolution_key, download_url in sorted(self.asset['downloads'].items()):
