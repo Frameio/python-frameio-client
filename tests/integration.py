@@ -230,7 +230,6 @@ def check_for_checksums(client, upload_folder_id):
     else:
         return False
 
-
 def check_upload_completion(client, download_folder_id, upload_folder_id):
     # Do a comparison against filenames and filesizes here to make sure they match
 
