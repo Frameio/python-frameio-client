@@ -3,8 +3,8 @@ import sys
 import requests
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
-from .lib import ClientVersion, PaginatedResponse, Utils
 
+from .lib import ClientVersion, PaginatedResponse, Utils, ClientVersion
 
 
 class FrameioConnection(object):
@@ -77,4 +77,50 @@ class FrameioConnection(object):
 
 
 class FrameioClient(FrameioConnection):
-  pass
+  @property
+  def _auth(self):
+    return self.token
+
+  @property
+  def _version(self):
+    return ClientVersion.version()
+
+  @property
+  def users(self):
+    from .service import User
+    return User(self)
+
+  @property
+  def assets(self):
+    from .service import Asset
+    return Asset(self)
+  
+  @property
+  def comments(self):
+    from .service import Comment
+    return Comment(self)
+
+  @property
+  def logs(self):
+    from .service import AuditLogs
+    return AuditLogs(self)
+
+  @property
+  def review_links(self):
+    from .service import ReviewLink
+    return ReviewLink(self)
+
+  @property
+  def presentation_links(self):
+    from .service import PresentationLink
+    return PresentationLink(self)
+
+  @property
+  def projects(self):
+    from .service import Project
+    return Project(self)
+
+  @property
+  def teams(self):
+    from .service import Team
+    return Team(self)

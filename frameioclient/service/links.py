@@ -1,7 +1,7 @@
-from ..client import FrameioClient
+from .service import Service
 
 
-class ReviewLink:
+class ReviewLink(Service):
   def create(self, project_id, **kwargs):
     """
     Create a review link.
@@ -20,7 +20,7 @@ class ReviewLink:
         )
     """
     endpoint = '/projects/{}/review_links'.format(project_id)
-    return self._api_call('post', endpoint, payload=kwargs)
+    return self.client._api_call('post', endpoint, payload=kwargs)
 
   def list(self, project_id):
     """
@@ -30,7 +30,7 @@ class ReviewLink:
       asset_id (string): The asset id.
     """
     endpoint = '/projects/{}/review_links'.format(project_id)
-    return self._api_call('get', endpoint)
+    return self.client._api_call('get', endpoint)
 
   def get(self, link_id, **kwargs):
     """
@@ -40,7 +40,7 @@ class ReviewLink:
       link_id (string): The review link id.
     """
     endpoint = '/review_links/{}'.format(link_id)
-    return self._api_call('get', endpoint, payload=kwargs)
+    return self.client._api_call('get', endpoint, payload=kwargs)
 
   def get_assets(self, link_id):
     """
@@ -56,7 +56,7 @@ class ReviewLink:
         )
     """
     endpoint = '/review_links/{}/items'.format(link_id)
-    return self._api_call('get', endpoint)
+    return self.client._api_call('get', endpoint)
 
   def update_assets(self, link_id, **kwargs):
     """
@@ -75,7 +75,7 @@ class ReviewLink:
         )
     """
     endpoint = '/review_links/{}/assets'.format(link_id)
-    return self._api_call('post', endpoint, payload=kwargs)
+    return self.client._api_call('post', endpoint, payload=kwargs)
 
   def update_settings(self, link_id, **kwargs):
     """
@@ -97,10 +97,10 @@ class ReviewLink:
         )
     """
     endpoint = '/review_links/{}'.format(link_id)
-    return self._api_call('put', endpoint, payload=kwargs)
+    return self.client._api_call('put', endpoint, payload=kwargs)
 
 
-class PresentationLink:
+class PresentationLink(Service):
   def create(self, asset_id, **kwargs):
     """
     Create a presentation link.
@@ -119,4 +119,4 @@ class PresentationLink:
         )
     """
     endpoint = '/assets/{}/presentations'.format(asset_id)
-    return self._api_call('post', endpoint, payload=kwargs)
+    return self.client._api_call('post', endpoint, payload=kwargs)

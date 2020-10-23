@@ -107,3 +107,4 @@ venv.bak/
 # Pipenv
 Pipfile
 Pipfile.lock
+.vscode/launch.json

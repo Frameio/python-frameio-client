@@ -1,6 +1,6 @@
-from ..client import FrameioClient
+from .service import Service
 
-class Comment(FrameioClient):
+class Comment(Service):
   def create(self, asset_id, **kwargs):
     """
     Create a comment.
@@ -18,7 +18,7 @@ class Comment(FrameioClient):
         )
     """
     endpoint = '/assets/{}/comments'.format(asset_id)
-    return self._api_call('post', endpoint, payload=kwargs)
+    return self.client._api_call('post', endpoint, payload=kwargs)
 
   def get(self, comment_id, **kwargs):
     """
@@ -28,7 +28,7 @@ class Comment(FrameioClient):
       comment_id (string): The comment id.
     """
     endpoint = '/comments/{}'.format(comment_id)
-    return self._api_call('get', endpoint, **kwargs)
+    return self.client._api_call('get', endpoint, **kwargs)
 
   def list(self, asset_id, **kwargs):
     """
@@ -38,7 +38,7 @@ class Comment(FrameioClient):
       asset_id (string): The asset id.
     """
     endpoint = '/assets/{}/comments'.format(asset_id)
-    return self._api_call('get', endpoint, **kwargs)
+    return self.client._api_call('get', endpoint, **kwargs)
 
   def update(self, comment_id, **kwargs):
     """
@@ -57,7 +57,7 @@ class Comment(FrameioClient):
         )
     """
     endpoint = '/comments/{}'.format(comment_id)
-    return self._api_call('post', endpoint, payload=kwargs)
+    return self.client._api_call('post', endpoint, payload=kwargs)
 
   def delete(self, comment_id):
     """
@@ -67,7 +67,7 @@ class Comment(FrameioClient):
       comment_id (string): The comment id.
     """
     endpoint = '/comments/{}'.format(comment_id)
-    return self._api_call('delete', endpoint)
+    return self.client._api_call('delete', endpoint)
 
   def reply(self, comment_id, **kwargs):
     """
@@ -86,4 +86,4 @@ class Comment(FrameioClient):
         )
     """
     endpoint = '/comments/{}/replies'.format(comment_id)
-    return self._api_call('post', endpoint, payload=kwargs)
+    return self.client._api_call('post', endpoint, payload=kwargs)

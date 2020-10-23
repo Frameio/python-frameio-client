@@ -1,14 +1,14 @@
 import os
 import mimetypes
 
-from ..client import FrameioClient
 from ..lib.uploader import FrameioUploader
 from ..lib.download import FrameioDownloader
 
+from .service import Service
 from .projects import Project
 
 
-class Asset(FrameioClient):
+class Asset(Service):
   def get(self, asset_id):
     """
     Get an asset by id.
@@ -17,7 +17,7 @@ class Asset(FrameioClient):
       asset_id (string): The asset id.
     """
     endpoint = '/assets/{}'.format(asset_id)
-    return self._api_call('get', endpoint)
+    return self.client._api_call('get', endpoint)
 
   def get_children(self, asset_id, **kwargs):
     """
@@ -27,7 +27,7 @@ class Asset(FrameioClient):
       asset_id (string): The asset id.
     """
     endpoint = '/assets/{}/children'.format(asset_id)
-    return self._api_call('get', endpoint, kwargs)
+    return self.client._api_call('get', endpoint, kwargs)
 
   def create(self, parent_asset_id, **kwargs):
     """
@@ -49,7 +49,7 @@ class Asset(FrameioClient):
         )
     """
     endpoint = '/assets/{}/children'.format(parent_asset_id)
-    return self._api_call('post', endpoint, payload=kwargs)
+    return self.client._api_call('post', endpoint, payload=kwargs)
   
   def from_url(self, parent_asset_id, url):
     """
@@ -70,7 +70,7 @@ class Asset(FrameioClient):
         )
     """
     endpoint = '/assets/{}/children'.format(parent_asset_id)
-    return self._api_call('post', endpoint, payload=kwargs)
+    return self.client._api_call('post', endpoint, payload=kwargs)
 
   def update(self, asset_id, **kwargs):
     """
@@ -85,7 +85,7 @@ class Asset(FrameioClient):
         client.update_asset("adeffee123342", name="updated_filename.mp4")
     """
     endpoint = '/assets/{}'.format(asset_id)
-    return self._api_call('put', endpoint, kwargs)
+    return self.client._api_call('put', endpoint, kwargs)
 
   def copy(self, destination_folder_id, **kwargs):
     """
@@ -100,7 +100,7 @@ class Asset(FrameioClient):
         client.copy_asset("adeffee123342", id="7ee008c5-49a2-f8b5-997d-8b64de153c30")
     """
     endpoint = '/assets/{}/copy'.format(destination_folder_id)
-    return self._api_call('post', endpoint, kwargs)
+    return self.client._api_call('post', endpoint, kwargs)
 
   def bulk_copy(self, destination_folder_id, asset_list=[], copy_comments=False):
     """Bulk copy assets
@@ -126,7 +126,7 @@ class Asset(FrameioClient):
       payload['batch'].append({"id": asset})
 
     endpoint = '/batch/assets/{}/copy'.format(destination_folder_id)
-    return self._api_call('post', endpoint, payload)
+    return self.client._api_call('post', endpoint, payload)
 
   def delete(self, asset_id):
     """
@@ -136,9 +136,9 @@ class Asset(FrameioClient):
       asset_id (string): the asset's id
     """
     endpoint = '/assets/{}'.format(asset_id)
-    return self._api_call('delete', endpoint)
+    return self.client._api_call('delete', endpoint)
 
-  def upload(self, asset, file):
+  def _upload(self, asset, file):
     """
     Upload an asset. The method will exit once the file is uploaded.
 
@@ -169,7 +169,7 @@ class Asset(FrameioClient):
 
     return file_info
 
-  def simple_upload(self, destination_id, filepath):
+  def upload(self, destination_id, filepath):
     # Check if destination is a project or folder
     # If it's a project, well then we look up its root asset ID, otherwise we use the folder id provided
     # Then we start our upload
@@ -180,7 +180,7 @@ class Asset(FrameioClient):
     except Exception as e:
         print(e) 
         # Then try to grab it as a project
-        folder_id = Project(self.token).get_project(destination_id)['root_asset_id']
+        folder_id = Project(self.client).get_project(destination_id)['root_asset_id']
 
     file_info = self.build_asset_info(filepath)
 
@@ -193,7 +193,7 @@ class Asset(FrameioClient):
         )
 
         with open(file_info['filepath'], "rb") as fp:
-          self.upload(asset, fp)
+          self._upload(asset, fp)
 
     except Exception as e:
         print(e)
