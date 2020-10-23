@@ -1,12 +1,10 @@
 import os
 import mimetypes
 
-from ..lib.uploader import FrameioUploader
-from ..lib.download import FrameioDownloader
-
 from .service import Service
 from .projects import Project
 
+from ..lib import FrameioUploader, FrameioDownloader
 
 class Asset(Service):
   def get(self, asset_id):
@@ -19,9 +17,9 @@ class Asset(Service):
     endpoint = '/assets/{}'.format(asset_id)
     return self.client._api_call('get', endpoint)
 
-  def get_children(self, asset_id, **kwargs):
+  def get_folder(self, asset_id, **kwargs):
     """
-    Get an asset's children.
+    Get a folder.
 
     :Args:
       asset_id (string): The asset id.
@@ -178,13 +176,11 @@ class Asset(Service):
         # First try to grab it as a folder
         folder_id = self.get(destination_id)['id']
     except Exception as e:
-        print(e) 
         # Then try to grab it as a project
         folder_id = Project(self.client).get_project(destination_id)['root_asset_id']
-
-    file_info = self.build_asset_info(filepath)
-
-    try:
+    finally:
+      file_info = self.build_asset_info(filepath)
+      try:
         asset = self.create(folder_id,  
             type="file",
             name=file_info['filename'],
@@ -195,9 +191,8 @@ class Asset(Service):
         with open(file_info['filepath'], "rb") as fp:
           self._upload(asset, fp)
 
-    except Exception as e:
-        print(e)
-    
+      except Exception as e:
+          print(e)
 
   def download(self, asset, download_folder, prefix=None, multi_part=False, concurrency=5):
     """

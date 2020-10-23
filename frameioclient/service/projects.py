@@ -12,7 +12,7 @@ class Project(Service):
 
       Example::
 
-        client.create_project(
+        client.projects.create_project(
           team_id="123",
           name="My Awesome Project",
         )

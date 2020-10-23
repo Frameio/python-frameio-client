@@ -1,7 +1,6 @@
 import warnings
 from .service import Service
 
-
 class Team(Service):
   def create(self, account_id, **kwargs):
     """
