@@ -3,9 +3,11 @@ import sys
 import requests
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
-from .lib import ClientVersion, PaginatedResponse
+from .lib import ClientVersion, PaginatedResponse, Utils
 
-class FrameioClient(object):
+
+
+class FrameioConnection(object):
   def __init__(self, token, host='https://api.frame.io'):
     self.token = token
     self.host = host
@@ -16,25 +18,20 @@ class FrameioClient(object):
         method_whitelist=["POST", "OPTIONS", "GET"]
     )
     self.client_version = ClientVersion.version()
+    self.headers = Utils.format_headers(self.token, self.client_version)
+
+    self.adapter = HTTPAdapter(max_retries=self.retry_strategy)
+    self.session = requests.Session()
+    self.session.mount("https://", self.adapter)
 
   def _api_call(self, method, endpoint, payload={}, limit=None):
     url = '{}/v2{}'.format(self.host, endpoint)
 
-    headers = {
-      'Authorization': 'Bearer {}'.format(self.token),
-      'x-frameio-client': 'python/{}'.format(self.client_version)
-    }
-
-    adapter = HTTPAdapter(max_retries=self.retry_strategy)
-
-    http = requests.Session()
-    http.mount("https://", adapter)
-
-    r = http.request(
+    r = self.session.request(
       method,
       url,
       json=payload,
-      headers=headers,
+      headers=self.headers,
     )
 
     if r.ok:
@@ -77,3 +74,7 @@ class FrameioClient(object):
     if method == 'post':
       payload['page'] = page
       return self._api_call(method, endpoint, payload=payload)
+
+
+class FrameioClient(FrameioConnection):
+  pass
