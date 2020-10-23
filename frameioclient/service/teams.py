@@ -1,9 +1,8 @@
 import warnings
+from .service import Service
 
-from ..client import FrameioClient
 
-
-class Team(FrameioClient):
+class Team(Service):
   def create(self, account_id, **kwargs):
     """
     Create a Team.
@@ -22,7 +21,7 @@ class Team(FrameioClient):
     """
     warnings.warn('Note: Your token must support team.create scopes')
     endpoint = '/accounts/{}/teams'.format(account_id)
-    return self._api_call('post', endpoint, payload=kwargs)
+    return self.client._api_call('post', endpoint, payload=kwargs)
 
   def list(self, account_id, **kwargs):
     """
@@ -33,7 +32,7 @@ class Team(FrameioClient):
       account_id (string): The account id.
     """
     endpoint = '/accounts/{}/teams'.format(account_id)
-    return self._api_call('get', endpoint, kwargs)
+    return self.client._api_call('get', endpoint, kwargs)
   
   def list_all(self, **kwargs):
     """
@@ -43,7 +42,7 @@ class Team(FrameioClient):
       account_id (string): The account id.
     """
     endpoint = '/teams'
-    return self._api_call('get', endpoint, kwargs)
+    return self.client._api_call('get', endpoint, kwargs)
 
   def get(self, team_id):
     """
@@ -53,7 +52,7 @@ class Team(FrameioClient):
       team_id (string): the team's id
     """
     endpoint  = '/teams/{}'.format(team_id)
-    return self._api_call('get', endpoint)
+    return self.client._api_call('get', endpoint)
 
   def get_members(self, team_id):
     """
@@ -63,7 +62,7 @@ class Team(FrameioClient):
       team_id (string): The team id.
     """
     endpoint = '/teams/{}/members'.format(team_id)
-    return self._api_call('get', endpoint)  
+    return self.client._api_call('get', endpoint)  
 
   def list_projects(self, team_id, **kwargs):
     """
@@ -73,4 +72,4 @@ class Team(FrameioClient):
       team_id (string): The team id.
     """
     endpoint = '/teams/{}/projects'.format(team_id)
-    return self._api_call('get', endpoint, kwargs)
+    return self.client._api_call('get', endpoint, kwargs)

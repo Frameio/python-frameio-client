@@ -1,7 +1,6 @@
-from ..client import FrameioClient
+from .service import Service
 
-
-class AuditLogs:
+class AuditLogs(Service):
   def list(self, account_id):
     """
     Get audit logs for the currently authenticated account.
@@ -15,4 +14,4 @@ class AuditLogs:
         )
     """
     endpoint = '/accounts/{}/audit_logs'.format(account_id)
-    return self._api_call('get', endpoint)
+    return self.client._api_call('get', endpoint)
