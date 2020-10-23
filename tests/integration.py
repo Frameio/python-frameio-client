@@ -11,9 +11,7 @@ import requests
 from math import ceil
 from pprint import pprint, pformat
 from datetime import datetime
-from frameioclient import FrameioClient
-from frameioclient.utils import format_bytes, compare_items, calculate_hash, KB, MB
-
+from frameioclient import FrameioClient, Utils, KB, MB
 
 token = os.getenv("FRAMEIO_TOKEN") # Your Frame.io token
 project_id = os.getenv("PROJECT_ID") # Project you want to upload files back into
@@ -52,7 +50,7 @@ def verify_local(client, dl_children):
         print("{}/{} Generating hash for: {}".format(count, len(dled_files), fn))
         dl_file_path = os.path.join(os.path.abspath(os.path.curdir), 'downloads', fn)
         print("Path to downloaded file for hashing: {}".format(dl_file_path))
-        xxhash = calculate_hash(dl_file_path)
+        xxhash = Utils.calculate_hash(dl_file_path)
         xxhash_name = "{}_{}".format(fn, 'xxHash')
         dl_items[xxhash_name] = xxhash
 
@@ -65,7 +63,7 @@ def verify_local(client, dl_children):
     print("Downloaded Items Check: \n")
     pprint(dl_items)
 
-    pass_fail = compare_items(og_items, dl_items)
+    pass_fail = Utils.compare_items(og_items, dl_items)
 
     # If verification fails here, try downloading again.
     if pass_fail == False:
@@ -110,7 +108,7 @@ def test_download(client, override=False):
         client.download(asset, 'downloads', multi_part=True, concurrency=20)
         
         download_time = time.time() - start_time
-        download_speed = format_bytes(ceil(asset['filesize']/(download_time)))
+        download_speed = Utils.format_bytes(ceil(asset['filesize']/(download_time)))
 
         print("{}/{} Download completed in {:.2f}s @ {}".format((count), len(asset_list), download_time, download_speed))
 
@@ -164,7 +162,7 @@ def test_upload(client):
             client.upload(asset, ul_file)
 
         upload_time = time.time() - start_time
-        upload_speed = format_bytes(ceil(filesize/(upload_time)))
+        upload_speed = Utils.format_bytes(ceil(filesize/(upload_time)))
 
         print("{}/{} Upload completed in {:.2f}s @ {}".format((count), len(dled_files), upload_time, upload_speed))
 
@@ -282,7 +280,7 @@ def check_upload_completion(client, download_folder_id, upload_folder_id):
     print("UL Items Check:")
     pprint(ul_items)
 
-    pass_fail = compare_items(og_items, ul_items)
+    pass_fail = Utils.compare_items(og_items, ul_items)
 
     print("Verification complete for {}/{} uploaded assets.".format(int(len(ul_items)), int(len(og_items))))
 

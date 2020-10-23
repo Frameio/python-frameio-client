@@ -1,6 +1,5 @@
 import pytest
-from frameioclient.download import FrameioDownloader
-from frameioclient.exceptions import DownloadException
+from frameioclient import FrameioDownloader, DownloadException
 
 
 regular_asset = {
