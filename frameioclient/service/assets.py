@@ -49,7 +49,7 @@ class Asset(Service):
     endpoint = '/assets/{}/children'.format(parent_asset_id)
     return self.client._api_call('post', endpoint, payload=kwargs)
   
-  def from_url(self, parent_asset_id, url):
+  def from_url(self, parent_asset_id, name, url):
     """
     Create an asset from a URL.
 
@@ -67,8 +67,16 @@ class Asset(Service):
           url="https://"
         )
     """
+    
+    payload = {
+      "name": name,
+      "source": {
+        "url": url
+      }
+    }
+
     endpoint = '/assets/{}/children'.format(parent_asset_id)
-    return self.client._api_call('post', endpoint, payload=kwargs)
+    return self.client._api_call('post', endpoint, payload=payload)
 
   def update(self, asset_id, **kwargs):
     """
