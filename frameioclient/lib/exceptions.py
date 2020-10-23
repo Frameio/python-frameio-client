@@ -1,4 +1,3 @@
-
 class PresentationException(Exception):
     """Exception raised when you try to create a Presentation Link for an asset
     that already has one.
