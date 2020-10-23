@@ -6,7 +6,7 @@ import requests
 import threading
 import concurrent.futures
 
-from .utils import format_bytes, normalize_filename
+from .utils import Utils
 from .exceptions import DownloadException, WatermarkIDDownloadException, AssetNotFullyUploaded
 
 thread_local = threading.local()
@@ -26,7 +26,7 @@ class FrameioDownloader(object):
     self.chunk_size = (25 * 1024 * 1024) # 25 MB chunk size
     self.chunks = math.ceil(self.file_size/self.chunk_size)
     self.prefix = prefix
-    self.filename = normalize_filename(asset["name"])
+    self.filename = Utils.normalize_filename(asset["name"])
 
     self._evaluate_asset()
 
@@ -105,15 +105,15 @@ class FrameioDownloader(object):
 
   def download(self, url):
     start_time = time.time()
-    print("Beginning download -- {} -- {}".format(self.asset["name"], format_bytes(self.file_size, type="size")))
+    print("Beginning download -- {} -- {}".format(self.asset["name"], Utils.format_bytes(self.file_size, type="size")))
 
     # Downloading
     r = requests.get(url)
     open(self.destination, "wb").write(r.content)
 
     download_time = time.time() - start_time
-    download_speed = format_bytes(math.ceil(self.file_size/(download_time)))
-    print("Downloaded {} at {}".format(format_bytes(self.file_size, type="size"), download_speed))
+    download_speed = Utils.format_bytes(math.ceil(self.file_size/(download_time)))
+    print("Downloaded {} at {}".format(Utils.format_bytes(self.file_size, type="size"), download_speed))
 
     return self.destination, download_speed
 
@@ -130,7 +130,7 @@ class FrameioDownloader(object):
     offset = math.ceil(self.file_size / self.chunks)
     in_byte = 0 # Set initially here, but then override
     
-    print("Multi-part download -- {} -- {}".format(self.asset["name"], format_bytes(self.file_size, type="size")))
+    print("Multi-part download -- {} -- {}".format(self.asset["name"], Utils.format_bytes(self.file_size, type="size")))
 
     # Queue up threads
     with concurrent.futures.ThreadPoolExecutor(max_workers=self.concurrency) as executor:
@@ -151,8 +151,8 @@ class FrameioDownloader(object):
     
     # Calculate and print stats
     download_time = time.time() - start_time
-    download_speed = format_bytes(math.ceil(self.file_size/(download_time)))
-    print("Downloaded {} at {}".format(format_bytes(self.file_size, type="size"), download_speed))
+    download_speed = Utils.format_bytes(math.ceil(self.file_size/(download_time)))
+    print("Downloaded {} at {}".format(Utils.format_bytes(self.file_size, type="size"), download_speed))
 
     return self.destination
 

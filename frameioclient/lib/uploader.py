@@ -1,8 +1,8 @@
+import os
 import math
 import requests
 import threading
 import concurrent.futures
-import os
 
 thread_local = threading.local()
 
