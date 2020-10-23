@@ -1,3 +1,5 @@
+from ..client import FrameioClient
+
 
 class AuditLogs:
   def list(self, account_id):

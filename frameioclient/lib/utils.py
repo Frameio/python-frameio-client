@@ -111,7 +111,13 @@ class Utils:
         else:
           out += "_"
       return out
-    
+
+  def format_headers(token, version):
+    return {
+      'Authorization': 'Bearer {}'.format(token),
+      'x-frameio-client': 'python/{}'.format(version)
+    }
+
 
 class PaginatedResponse(object):
   def __init__(self, results=[], limit=None, page_size=0, total=0,
