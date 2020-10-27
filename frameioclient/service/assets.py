@@ -54,9 +54,11 @@ class Asset(Service):
     Create an asset from a URL.
 
     :Args:
-      parent_asset_id (string): The parent asset id.
-      name (string): The filename.
-      url (string): The remote URL.
+      parent_asset_id (str): The parent asset id.
+
+      name (str): The filename.
+
+      url (str): The remote URL.
 
       Example::
 
@@ -88,7 +90,7 @@ class Asset(Service):
       the fields to update
 
       Example::
-      
+
         client.assets.update("adeffee123342", name="updated_filename.mp4")
     """
     endpoint = '/assets/{}'.format(asset_id)
