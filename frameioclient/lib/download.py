@@ -89,6 +89,8 @@ class FrameioDownloader(object):
     return self.destination
 
   def download_handler(self):
+    """Call this to perform the actual download of your asset!
+    """
     if os.path.isfile(self.get_path()):
       print("File already exists at this location.")
       return self.destination

@@ -36,6 +36,8 @@ setuptools.setup(
   extras_require={
     'dev': [
       'bump2version',
+      'sphinx',
+      'sphinx-jekyll-builder'
     ]
   },
   classifiers=[

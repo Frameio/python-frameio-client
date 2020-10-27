@@ -1,3 +1,10 @@
+"""
+client.py
+====================================
+The core module of the frameioclient
+"""
+
+
 import re
 import sys
 import requests
@@ -77,6 +84,7 @@ class FrameioConnection(object):
 
 
 class FrameioClient(FrameioConnection):
+  """An example docstring for a class definition."""
   @property
   def _auth(self):
     return self.token
