@@ -17,12 +17,12 @@ Module contents
     :undoc-members:
     :show-inheritance:
 
-.. autoclass:: frameioclient.FrameioUploader
+.. autoclass:: FrameioUploader
     :members:
     :undoc-members:
     :show-inheritance:
 
-.. autoclass:: frameioclient.FrameioDownloader
+.. autoclass:: FrameioDownloader
     :members:
     :undoc-members:
     :show-inheritance:

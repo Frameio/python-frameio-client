@@ -85,50 +85,50 @@ class FrameioConnection(object):
 
 class FrameioClient(FrameioConnection):
   """An example docstring for a class definition."""
-  @property
+  # @property
   def _auth(self):
     return self.token
 
-  @property
+  # @property
   def _version(self):
     return ClientVersion.version()
 
-  @property
+  # @property
   def users(self):
     from .service import User
     return User(self)
 
-  @property
+  # @property
   def assets(self):
     from .service import Asset
     return Asset(self)
   
-  @property
+  # @property
   def comments(self):
     from .service import Comment
     return Comment(self)
 
-  @property
+  # @property
   def logs(self):
     from .service import AuditLogs
     return AuditLogs(self)
 
-  @property
+  # @property
   def review_links(self):
     from .service import ReviewLink
     return ReviewLink(self)
 
-  @property
+  # @property
   def presentation_links(self):
     from .service import PresentationLink
     return PresentationLink(self)
 
-  @property
+  # @property
   def projects(self):
     from .service import Project
     return Project(self)
 
-  @property
+  # @property
   def teams(self):
     from .service import Team
     return Team(self)

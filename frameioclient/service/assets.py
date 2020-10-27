@@ -38,7 +38,7 @@ class Asset(Service):
 
       Example::
 
-        client.create_asset(
+        client.assets.create(
           parent_asset_id="123abc",
           name="ExampleFile.mp4",
           type="file",
@@ -60,7 +60,7 @@ class Asset(Service):
 
       Example::
 
-        client.create_asset(
+        client.assets.from_url(
           parent_asset_id="123abc",
           name="ExampleFile.mp4",
           type="file",
@@ -88,7 +88,8 @@ class Asset(Service):
       the fields to update
 
       Example::
-        client.update_asset("adeffee123342", name="updated_filename.mp4")
+      
+        client.assets.update("adeffee123342", name="updated_filename.mp4")
     """
     endpoint = '/assets/{}'.format(asset_id)
     return self.client._api_call('put', endpoint, kwargs)
@@ -98,12 +99,13 @@ class Asset(Service):
     Copy an asset
 
     :Args:
-      destination_folder_id (string): The id of the folder you want to copy into.
+      destination_folder_id (str): The id of the folder you want to copy into.
     :Kwargs:
-      id (string): The id of the asset you want to copy.
+      id (str): The id of the asset you want to copy.
 
       Example::
-        client.copy_asset("adeffee123342", id="7ee008c5-49a2-f8b5-997d-8b64de153c30")
+
+        client.assets.copy("adeffee123342", id="7ee008c5-49a2-f8b5-997d-8b64de153c30")
     """
     endpoint = '/assets/{}/copy'.format(destination_folder_id)
     return self.client._api_call('post', endpoint, kwargs)
@@ -118,7 +120,8 @@ class Asset(Service):
       copy_comments (boolean): Whether or not to copy comments: True or False.
 
       Example::
-        client.bulk_copy_assets("adeffee123342", asset_list=["7ee008c5-49a2-f8b5-997d-8b64de153c30", \ 
+
+        client.assets.bulk_copy("adeffee123342", asset_list=["7ee008c5-49a2-f8b5-997d-8b64de153c30", \ 
         "7ee008c5-49a2-f8b5-997d-8b64de153c30"], copy_comments=True)
     """
     
@@ -176,6 +179,18 @@ class Asset(Service):
     return file_info
 
   def upload(self, destination_id, filepath):
+    """
+    Upload an asset. The method will exit once the file is uploaded.
+
+    :Args:
+      destination_id (uuid): The destination Project/Folder ID.
+      file (file): The file path you want to upload.
+
+      Example::
+
+        client.assets.upload(asset, open('example.mp4'))
+    """
+
     # Check if destination is a project or folder
     # If it's a project, well then we look up its root asset ID, otherwise we use the folder id provided
     # Then we start our upload

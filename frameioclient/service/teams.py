@@ -49,6 +49,10 @@ class Team(Service):
 
     :Args:
       team_id (string): the team's id
+
+      Example::
+
+        client.get("6bdcb4d9-4548-4548-4548-27a6c024ae6b")
     """
     endpoint  = '/teams/{}'.format(team_id)
     return self.client._api_call('get', endpoint)
