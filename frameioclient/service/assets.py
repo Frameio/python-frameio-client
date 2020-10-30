@@ -107,7 +107,10 @@ class Asset(Service):
 
       Example::
 
-        client.assets.copy("adeffee123342", id="7ee008c5-49a2-f8b5-997d-8b64de153c30")
+        client.assets.copy(
+          "adeffee123342",
+          id="7ee008c5-49a2-f8b5-997d-8b64de153c30"
+        )
     """
     endpoint = '/assets/{}/copy'.format(destination_folder_id)
     return self.client._api_call('post', endpoint, kwargs)
@@ -123,8 +126,14 @@ class Asset(Service):
 
       Example::
 
-        client.assets.bulk_copy("adeffee123342", asset_list=["7ee008c5-49a2-f8b5-997d-8b64de153c30", \ 
-        "7ee008c5-49a2-f8b5-997d-8b64de153c30"], copy_comments=True)
+        client.assets.bulk_copy(
+          "adeffee123342", 
+          asset_list=[
+            "7ee008c5-49a2-f8b5-997d-8b64de153c30",
+            "7ee008c5-49a2-f8b5-997d-8b64de153c30"
+          ], 
+          copy_comments=True
+        )
     """
     
     payload = {"batch": []}
@@ -156,10 +165,6 @@ class Asset(Service):
     :Args:
       asset (object): The asset object.
       file (file): The file to upload.
-
-      Example::
-
-        client.upload(asset, open('example.mp4')) // TODO fix this example (bad way of opening file)
     """
 
     uploader = FrameioUploader(asset, file)

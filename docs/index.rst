@@ -1,14 +1,16 @@
 Welcome to Frame.io Python SDK's documentation!
 ===============================================
 
-.. automodule:: frameioclient
-   :members:
-   :undoc-members:
-   :inherited-members:
-
 .. toctree::
    :maxdepth: 3
    :caption: Contents:
+
+FrameioClient
+===================
+.. automodule:: frameioclient.FrameioClient
+   :members:
+   :undoc-members:
+   :inherited-members:
 
 Indices and tables
 ==================

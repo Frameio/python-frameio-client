@@ -13,7 +13,7 @@ class Team(Service):
 
       Example::
 
-        client.create_team(
+        client.teams.create(
           account_id="6bdcb4d9-4548-4548-4548-27a6c024ae6b",
           name="My Awesome Project",
         )

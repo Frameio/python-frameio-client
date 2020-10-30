@@ -13,6 +13,22 @@ frameioclient sub-modules
     :members:
     :undoc-members:
 
+.. autoclass:: frameioclient.Comment
+    :members:
+    :undoc-members:
+
+.. autoclass:: frameioclient.AuditLogs
+    :members:
+    :undoc-members:
+
+.. autoclass:: frameioclient.User
+    :members:
+    :undoc-members:
+
 .. autoclass:: frameioclient.ReviewLink
+    :members:
+    :undoc-members:
+
+.. autoclass:: frameioclient.PresentationLink
     :members:
     :undoc-members:
