@@ -45,6 +45,10 @@ workflows:
           requires:
             - hold
 
+      - docs:
+          requires:
+            - deploy
+
   # upload_test:
   #   triggers:
   #     - schedule:
@@ -53,10 +57,8 @@ workflows:
   #           branches:
   #             only:
   #               - jh/use-xxhash-for-integration-test
-
   #   jobs:
   #     - build
-
   #     - upload_test_job:
   #         requires:
   #           - build
@@ -180,7 +182,6 @@ jobs:
           command: |
             python /tmp/artifact/tests/integration.py
 
-
   deploy:
     docker:
       - image: circleci/python:latest
@@ -208,3 +209,31 @@ jobs:
           command: |
             cd /tmp/artifact
             twine upload dist/*
+
+  docs:
+    docker:
+      - image: circleci/python:latest
+
+    steps:
+      - attach_workspace:
+          at: /tmp/artifact
+          name: Attach build artifact
+
+      - run:
+          name: Install dependencies
+          command: |
+            cd /tmp/artifact/docs
+            pip install -r requirements.txt
+      
+      - run:
+          name: Build autodocs
+          command: |
+            cd /tmp/artifact/docs
+            make jekyll
+
+      - run:
+          name: Publish autodocs
+          command: |
+            cd /tmp/artifact/docs
+            python publish.py
+

@@ -1,0 +1,4 @@
+sphinx
+sphinx-jekyll-builder
+contentful_management
+python-frontmatter
