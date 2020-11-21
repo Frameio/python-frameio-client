@@ -24,8 +24,8 @@ class Team(Service):
 
   def list(self, account_id, **kwargs):
     """
-    Get teams owned by the account. 
-    (To return all teams, use get_all_teams())
+    Get Teams owned by the Account. 
+    (To return all Teams, use list_all())
     
     :Args:
       account_id (string): The account id.

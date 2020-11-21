@@ -98,7 +98,7 @@ class Asset(Service):
 
   def copy(self, destination_folder_id, **kwargs):
     """
-    Copy an asset
+    Copy an Asset
 
     :Args:
       destination_folder_id (str): The id of the folder you want to copy into.
