@@ -10,7 +10,7 @@ workflows:
     jobs:
       - build
 
-      - integration_test:
+      - test_integration:
           requires:
             - build
           matrix:
@@ -20,7 +20,7 @@ workflows:
       - hold:
           type: approval
           requires:
-            - integration_test
+            - test_integration
 
           filters:
             branches:
@@ -68,7 +68,7 @@ jobs:
           paths:
             - .
 
-  integration_test:
+  test_integration:
     parameters:
       python-version:
         type: string
