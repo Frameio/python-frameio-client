@@ -47,7 +47,8 @@ workflows:
 
       - docs:
           requires:
-            - deploy
+            # - deploy
+            - linux_py_latest
 
   # upload_test:
   #   triggers:
