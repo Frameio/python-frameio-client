@@ -69,9 +69,13 @@ jobs:
             - .
 
   integration_test:
-    description: Python << parameters.node-version >>
+    parameters:
+      python-version:
+        type: string
+
+    description: Python << parameters.python-version >>
     docker:
-      - image: circleci/python:<< parameters.node-version >>
+      - image: circleci/python:<< parameters.python-version >>
 
     steps:
       - attach_workspace:
