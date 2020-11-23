@@ -15,3 +15,6 @@ bump-patch:
 
 clean:
 	find . -name "*.pyc" -exec rm -f {} \;
+
+publish-docs:
+	cd docs && pip install -r requirements.txt && make jekyll && make publish

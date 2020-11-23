@@ -5,7 +5,7 @@ import contentful_management
 
 TOKEN = os.getenv("CONTENTFUL_TOKEN")
 SPACE_ID = os.getenv("CONTENTFUL_SPACE_ID")
-SDK_ID = '2NXhxEZBQTqp2Ff3SWYQ79'
+SDK_ID = os.getenv("CONTENTFUL_SDK_ID")
 
 docs_path = "./dist/jekyll/api"
 
@@ -133,7 +133,6 @@ def compare_docs(local, remote):
             "content": doc.content,
             "hash": hash_content(doc.content)
         }
-        # print(enriched_local)
 
     # Enrich remote docs
     enriched_remote = dict()
@@ -146,7 +145,6 @@ def compare_docs(local, remote):
             "content": doc.fields()['content'],
             "hash": hash_content(doc.fields()['content'])
         }
-        # print(enriched_remote)
 
 
     # Compare titles and content hashes, update only ones in which the hashes are different
