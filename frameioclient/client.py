@@ -217,7 +217,36 @@ class FrameioClient(object):
       team_id (string): The team id.
     """
     endpoint = '/teams/{}/members'.format(team_id)
-    return self._api_call('get', endpoint)  
+    return self._api_call('get', endpoint)
+  
+  def add_team_members(self, team_id, emails):
+    """
+    Add a list of users via their e-mail address to a given Team.
+
+    :Args:
+      team_id (string): The team id.
+      emails (list): The e-mails you want to add.
+    """
+    payload = dict()
+    payload['batch'] = list(map(lambda email: {"email": email}, emails))
+
+    endpoint = '/batch/teams/{}/members'.format(team_id)
+    return self._api_call('post', endpoint, payload=payload)
+
+  def remove_team_members(self, team_id, emails):
+    """
+    Remove a list of users via their e-mail address from a given Team.
+
+    :Args:
+      team_id (string): The team id.
+      emails (list): The e-mails you want to add.
+    """
+
+    payload = dict()
+    payload['batch'] = list(map(lambda email: {"email": email}, emails))
+
+    endpoint = '/batch/teams/{}/members'.format(team_id)
+    return self._api_call('delete', endpoint, payload=payload)  
 
   def get_projects(self, team_id, **kwargs):
     """
