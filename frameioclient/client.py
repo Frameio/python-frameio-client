@@ -249,6 +249,36 @@ class FrameioClient(object):
     endpoint = "/projects/{}/collaborators?include=project_role".format(project_id)
     return self._api_call('get', endpoint, kwargs)
 
+  def add_project_collaborator(self, project_id, email):
+    """
+    Add Project Collaborator to Project ID.
+    :Args:
+      project_id (string): The Project id.
+      email (string): Email user's e-mail address
+      Example::
+        client.add_project_collaborator(
+          project_id="123",
+          email="",
+        )
+    """
+    payload = {"email": email}
+    endpoint = '/projects/{}/collaborators'.format(project_id)
+    return self._api_call('post', endpoint, payload=payload)
+  def remove_project_collaborator(self, project_id, email):
+    """
+    Remove Collaborator from Project.
+    :Args:
+      project_id (string): The Project ID.
+      email (string): The user's e-mail address
+      Example::
+        client.remove_project_collaborator(
+          project_id="123",
+          email="",
+        )
+    """
+    endpoint = '/projects/{}/collaborators/_?email={}'.format(project_id, email)
+    return self._api_call('delete', endpoint)
+
   def get_pending_collaborators(self, project_id, **kwargs):
     """
     Get pending collaborators for a project
