@@ -158,6 +158,7 @@ class PaginatedResponse(object):
         self.asset_index += 1
         self.returned += 1
         return self.results[self.asset_index - 1]
+        raise StopIteration
 
       if self.current_page < self.total_pages:
         self.current_page += 1
@@ -168,6 +169,7 @@ class PaginatedResponse(object):
           self.method, self.endpoint, self.payload, self.current_page).results
 
         return self.results[self.asset_index - 1]
+      raise StopIteration
 
     raise StopIteration
 
