@@ -6,7 +6,7 @@ import requests
 import threading
 import concurrent.futures
 
-from .utils import format_bytes, normalize_filename
+from .utils import format_bytes, normalize_filename, calculate_hash
 from .exceptions import DownloadException, WatermarkIDDownloadException, AssetNotFullyUploaded
 
 thread_local = threading.local()
@@ -27,6 +27,8 @@ class FrameioDownloader(object):
     self.chunks = math.ceil(self.file_size/self.chunk_size)
     self.prefix = prefix
     self.filename = normalize_filename(asset["name"])
+    self.attempts = 0
+    self.retry_limit = 2
 
     self._evaluate_asset()
 
@@ -89,19 +91,33 @@ class FrameioDownloader(object):
     return self.destination
 
   def download_handler(self):
-    if os.path.isfile(self.get_path()):
+    if os.path.isfile(self.get_path()) and self.attempts == 0:
       print("File already exists at this location.")
       return self.destination
     else:
       url = self.get_download_key()
 
       if self.watermarked == True:
-        return self.download(url)
+        download = self.download(url)
       else:
         if self.multi_part == True:
-          return self.multi_part_download(url)
+          download = self.multi_part_download(url)
         else:
-          return self.download(url)
+          download = self.download(url)
+
+    try:
+      asset_checksum = self.asset['checksums']['xx_hash']      
+      if calculate_hash(self.destination) == asset_checksum:
+        return download
+      elif self.attempts < self.retry_limit:
+        self.attempts += 1
+        return self.download_handler()
+      else:
+        raise DownloadException(message="Checksum verification failed on third download attempt")
+    
+    except (TypeError, KeyError): # Asset has no checksum on Frame.io
+      return download
+
 
   def download(self, url):
     start_time = time.time()
