@@ -112,6 +112,7 @@ class Utils:
           out += "_"
       return out
 
+  @staticmethod
   def format_headers(token, version):
     return {
       'Authorization': 'Bearer {}'.format(token),
