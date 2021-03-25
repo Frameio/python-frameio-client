@@ -11,9 +11,7 @@ import requests
 from math import ceil
 from pprint import pprint, pformat
 from datetime import datetime
-from frameioclient import FrameioClient
-from frameioclient.utils import format_bytes, compare_items, calculate_hash, KB, MB
-
+from frameioclient import FrameioClient, Utils, KB, MB
 
 token = os.getenv("FRAMEIO_TOKEN") # Your Frame.io token
 project_id = os.getenv("PROJECT_ID") # Project you want to upload files back into
@@ -52,7 +50,7 @@ def verify_local(client, dl_children):
         print("{}/{} Generating hash for: {}".format(count, len(dled_files), fn))
         dl_file_path = os.path.join(os.path.abspath(os.path.curdir), 'downloads', fn)
         print("Path to downloaded file for hashing: {}".format(dl_file_path))
-        xxhash = calculate_hash(dl_file_path)
+        xxhash = Utils.calculate_hash(dl_file_path)
         xxhash_name = "{}_{}".format(fn, 'xxHash')
         dl_items[xxhash_name] = xxhash
 
@@ -65,7 +63,7 @@ def verify_local(client, dl_children):
     print("Downloaded Items Check: \n")
     pprint(dl_items)
 
-    pass_fail = compare_items(og_items, dl_items)
+    pass_fail = Utils.compare_items(og_items, dl_items)
 
     # If verification fails here, try downloading again.
     if pass_fail == False:
@@ -83,7 +81,7 @@ def test_download(client, override=False):
 
     if os.path.isdir('downloads'):
         print("Local downloads folder detected...")
-        asset_list = client.get_asset_children(
+        asset_list = client.assets.get_children(
             download_asset_id,
             page=1,
             page_size=40,
@@ -95,7 +93,7 @@ def test_download(client, override=False):
     
     os.mkdir('downloads')
 
-    asset_list = client.get_asset_children(
+    asset_list = client.assets.get_children(
         download_asset_id,
         page=1,
         page_size=40,
@@ -107,10 +105,10 @@ def test_download(client, override=False):
         start_time = time.time()
         print("{}/{} Beginning to download: {}".format(count, len(asset_list), asset['name']))
         
-        client.download(asset, 'downloads', multi_part=True, concurrency=20)
+        client.assets.download(asset, 'downloads', multi_part=True, concurrency=20)
         
         download_time = time.time() - start_time
-        download_speed = format_bytes(ceil(asset['filesize']/(download_time)))
+        download_speed = Utils.format_bytes(ceil(asset['filesize']/(download_time)))
 
         print("{}/{} Download completed in {:.2f}s @ {}".format((count), len(asset_list), download_time, download_speed))
 
@@ -126,11 +124,11 @@ def test_download(client, override=False):
 def test_upload(client):
     print("Beginning upload test")
     # Create new parent asset
-    project_info = client.get_project(project_id)
+    project_info = client.projects.get_project(project_id)
     root_asset_id = project_info['root_asset_id']
     
     print("Creating new folder to upload to")
-    new_folder = client.create_asset(
+    new_folder = client.assets.create(
             parent_asset_id=root_asset_id,  
             name="{}_{}_Py{}_{}".format(socket.gethostname(), platform.system(), platform.python_version(), datetime.now().strftime("%B-%d-%Y")),
             type="folder",
@@ -145,26 +143,16 @@ def test_upload(client):
 
     for count, fn in enumerate(dled_files, start=1):
         start_time = time.time()
-        abs_path = os.path.join(os.curdir, 'downloads', fn)
-        filesize = os.path.getsize(abs_path)
-        filename = os.path.basename(abs_path)
-        filemime = mimetypes.guess_type(abs_path)[0]
+        ul_abs_path = os.path.join(os.curdir, 'downloads', fn)
+        filesize = os.path.getsize(ul_abs_path)
+        filename = os.path.basename(ul_abs_path)
 
-        asset = client.create_asset(
-            parent_asset_id=new_parent_id,  
-            name=filename,
-            type="file",
-            filetype=filemime,
-            filesize=filesize
-        )
+        print("{}/{} Beginning to upload: {}".format(count, len(dled_files), fn))
 
-        print("{}/{} Beginning to upload: {}, ID: {}".format(count, len(dled_files), fn, asset['id']))
-
-        with open(abs_path, "rb") as ul_file:
-            client.upload(asset, ul_file)
+        client.assets.upload(new_parent_id, ul_abs_path)
 
         upload_time = time.time() - start_time
-        upload_speed = format_bytes(ceil(filesize/(upload_time)))
+        upload_speed = Utils.format_bytes(ceil(filesize/(upload_time)))
 
         print("{}/{} Upload completed in {:.2f}s @ {}".format((count), len(dled_files), upload_time, upload_speed))
 
@@ -200,7 +188,7 @@ def flatten_asset_children(asset_children):
 
 def check_for_checksums(client, upload_folder_id):
     # Get asset children for upload folder
-    asset_children = client.get_asset_children(
+    asset_children = client.assets.get_children(
         upload_folder_id,
         page=1,
         page_size=40,
@@ -232,14 +220,13 @@ def check_for_checksums(client, upload_folder_id):
     else:
         return False
 
-
 def check_upload_completion(client, download_folder_id, upload_folder_id):
     # Do a comparison against filenames and filesizes here to make sure they match
 
     print("Beginning upload comparison check")
 
     # Get asset children for download folder
-    dl_asset_children = client.get_asset_children(
+    dl_asset_children = client.assets.get_children(
         download_folder_id,
         page=1,
         page_size=40,
@@ -252,7 +239,7 @@ def check_upload_completion(client, download_folder_id, upload_folder_id):
     check_for_checksums(client, upload_folder_id)
 
     # Get asset children for upload folder
-    ul_asset_children = client.get_asset_children(
+    ul_asset_children = client.assets.get_children(
         upload_folder_id,
         page=1,
         page_size=40,
@@ -282,7 +269,7 @@ def check_upload_completion(client, download_folder_id, upload_folder_id):
     print("UL Items Check:")
     pprint(ul_items)
 
-    pass_fail = compare_items(og_items, ul_items)
+    pass_fail = Utils.compare_items(og_items, ul_items)
 
     print("Verification complete for {}/{} uploaded assets.".format(int(len(ul_items)), int(len(og_items))))
 

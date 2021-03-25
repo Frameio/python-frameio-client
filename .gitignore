@@ -14,7 +14,6 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
 lib64/
 parts/
 sdist/
@@ -108,3 +107,4 @@ venv.bak/
 # Pipenv
 Pipfile
 Pipfile.lock
+.vscode/launch.json
