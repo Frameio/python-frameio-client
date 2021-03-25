@@ -81,7 +81,7 @@ def test_download(client, override=False):
 
     if os.path.isdir('downloads'):
         print("Local downloads folder detected...")
-        asset_list = client.get_asset_children(
+        asset_list = client.assets.get_folder(
             download_asset_id,
             page=1,
             page_size=40,
@@ -93,7 +93,7 @@ def test_download(client, override=False):
     
     os.mkdir('downloads')
 
-    asset_list = client.get_asset_children(
+    asset_list = client.assets.get_folder(
         download_asset_id,
         page=1,
         page_size=40,
@@ -124,11 +124,11 @@ def test_download(client, override=False):
 def test_upload(client):
     print("Beginning upload test")
     # Create new parent asset
-    project_info = client.get_project(project_id)
+    project_info = client.projects.get_project(project_id)
     root_asset_id = project_info['root_asset_id']
     
     print("Creating new folder to upload to")
-    new_folder = client.create_asset(
+    new_folder = client.assets.create(
             parent_asset_id=root_asset_id,  
             name="{}_{}_Py{}_{}".format(socket.gethostname(), platform.system(), platform.python_version(), datetime.now().strftime("%B-%d-%Y")),
             type="folder",
@@ -143,23 +143,13 @@ def test_upload(client):
 
     for count, fn in enumerate(dled_files, start=1):
         start_time = time.time()
-        abs_path = os.path.join(os.curdir, 'downloads', fn)
-        filesize = os.path.getsize(abs_path)
-        filename = os.path.basename(abs_path)
-        filemime = mimetypes.guess_type(abs_path)[0]
+        ul_abs_path = os.path.join(os.curdir, 'downloads', fn)
+        filesize = os.path.getsize(ul_abs_path)
+        filename = os.path.basename(ul_abs_path)
 
-        asset = client.create_asset(
-            parent_asset_id=new_parent_id,  
-            name=filename,
-            type="file",
-            filetype=filemime,
-            filesize=filesize
-        )
+        print("{}/{} Beginning to upload: {}".format(count, len(dled_files), fn))
 
-        print("{}/{} Beginning to upload: {}, ID: {}".format(count, len(dled_files), fn, asset['id']))
-
-        with open(abs_path, "rb") as ul_file:
-            client.upload(asset, ul_file)
+        client.assets.upload(new_parent_id, ul_abs_path)
 
         upload_time = time.time() - start_time
         upload_speed = Utils.format_bytes(ceil(filesize/(upload_time)))
@@ -198,7 +188,7 @@ def flatten_asset_children(asset_children):
 
 def check_for_checksums(client, upload_folder_id):
     # Get asset children for upload folder
-    asset_children = client.get_asset_children(
+    asset_children = client.assets.get_folder(
         upload_folder_id,
         page=1,
         page_size=40,
@@ -236,7 +226,7 @@ def check_upload_completion(client, download_folder_id, upload_folder_id):
     print("Beginning upload comparison check")
 
     # Get asset children for download folder
-    dl_asset_children = client.get_asset_children(
+    dl_asset_children = client.assets.get_folder(
         download_folder_id,
         page=1,
         page_size=40,
@@ -249,7 +239,7 @@ def check_upload_completion(client, download_folder_id, upload_folder_id):
     check_for_checksums(client, upload_folder_id)
 
     # Get asset children for upload folder
-    ul_asset_children = client.get_asset_children(
+    ul_asset_children = client.assets.get_folder(
         upload_folder_id,
         page=1,
         page_size=40,
