@@ -81,7 +81,7 @@ def test_download(client, override=False):
 
     if os.path.isdir('downloads'):
         print("Local downloads folder detected...")
-        asset_list = client.assets.get_folder(
+        asset_list = client.assets.get_children(
             download_asset_id,
             page=1,
             page_size=40,
@@ -93,7 +93,7 @@ def test_download(client, override=False):
     
     os.mkdir('downloads')
 
-    asset_list = client.assets.get_folder(
+    asset_list = client.assets.get_children(
         download_asset_id,
         page=1,
         page_size=40,
@@ -188,7 +188,7 @@ def flatten_asset_children(asset_children):
 
 def check_for_checksums(client, upload_folder_id):
     # Get asset children for upload folder
-    asset_children = client.assets.get_folder(
+    asset_children = client.assets.get_children(
         upload_folder_id,
         page=1,
         page_size=40,
@@ -226,7 +226,7 @@ def check_upload_completion(client, download_folder_id, upload_folder_id):
     print("Beginning upload comparison check")
 
     # Get asset children for download folder
-    dl_asset_children = client.assets.get_folder(
+    dl_asset_children = client.assets.get_children(
         download_folder_id,
         page=1,
         page_size=40,
@@ -239,7 +239,7 @@ def check_upload_completion(client, download_folder_id, upload_folder_id):
     check_for_checksums(client, upload_folder_id)
 
     # Get asset children for upload folder
-    ul_asset_children = client.assets.get_folder(
+    ul_asset_children = client.assets.get_children(
         upload_folder_id,
         page=1,
         page_size=40,

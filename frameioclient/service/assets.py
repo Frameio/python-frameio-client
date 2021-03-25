@@ -17,7 +17,7 @@ class Asset(Service):
     endpoint = '/assets/{}'.format(asset_id)
     return self.client._api_call('get', endpoint)
 
-  def get_folder(self, asset_id, **kwargs):
+  def get_children(self, asset_id, **kwargs):
     """
     Get a folder.
 
