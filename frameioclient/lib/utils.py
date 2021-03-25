@@ -7,6 +7,7 @@ MB = KB * KB
 
 
 class Utils:
+  @staticmethod
   def stream(func, page=1, page_size=20):
       """
       Accepts a lambda of a call to a client list method, and streams the results until
@@ -27,6 +28,7 @@ class Utils:
 
           page += 1
 
+  @staticmethod
   def format_bytes(size, type="speed"):
       """
       Convert bytes to KB/MB/GB/TB/s
@@ -48,6 +50,7 @@ class Utils:
       elif type == "size":
           return formatted
 
+  @staticmethod
   def calculate_hash(file_path):
       """
       Calculate an xx64hash
@@ -65,6 +68,7 @@ class Utils:
 
       return xxh64_digest
 
+  @staticmethod
   def compare_items(dict1, dict2):
       """
       Python 2 and 3 compatible way of comparing 2x dictionaries
@@ -84,6 +88,7 @@ class Utils:
 
       return comparison
 
+  @staticmethod
   def get_valid_filename(s):
       """
       Strip out invalid characters from a filename using regex
@@ -91,6 +96,7 @@ class Utils:
       s = str(s).strip().replace(' ', '_')
       return re.sub(r'(?u)[^-\w.]', '', s)
 
+  @staticmethod
   def normalize_filename(fn):
       """
       Normalize filename using pure python
