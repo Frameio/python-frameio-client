@@ -5,5 +5,6 @@ except ImportError:
     import importlib_metadata as metadata
 
 class ClientVersion:
+    @staticmethod
     def version():
         return metadata.version('frameioclient')
