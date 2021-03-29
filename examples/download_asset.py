@@ -1,11 +1,10 @@
 import os
-
 from frameioclient import FrameioClient
 
 def benchmark(asset_id):
     token = os.getenv("FRAMEIO_TOKEN")
     client = FrameioClient(token)
-    asset_info = client.get_asset(asset_id)
+    asset_info = client.assets.get(asset_id)
     accelerated_filename = client.download(asset_info, "downloads", prefix="accelerated_", multi_part=True, concurrency=20)
 
     # print("Normal speed: {}, Accelerated speed: {}".format(normal_speed, accelerated_speed))

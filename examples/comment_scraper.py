@@ -25,7 +25,7 @@ def build_comments_list(client, asset_id, comment_list):
     Takes an initialized client, recursively builds a list of comments
     and returns the list. (Technically, it's a list of dicts)
     """
-    assets = client.get_asset_children(asset_id)
+    assets = client.assets.get_children(asset_id)
 
     for asset in assets:
         # Recurse through folders but skip the empty ones
@@ -33,7 +33,7 @@ def build_comments_list(client, asset_id, comment_list):
             build_comments_list(client, asset['id'], comment_list)
 
         if asset.get('type') == 'file' and asset.get('comment_count') > 0:
-            comments = client.get_comments(asset['id'])
+            comments = client.comments.get(asset['id'])
             for comment in comments:
                 # The 'get_comments" call won't return the asset name
                 # So we'll add it to the dictionary now.
@@ -42,9 +42,9 @@ def build_comments_list(client, asset_id, comment_list):
 
         if asset.get('type') == 'version_stack':
             # Read about version stacks: https://docs.frame.io/docs/managing-version-stacks
-            versions = client.get_asset_children(asset['id'])
+            versions = client.assets.get_children(asset['id'])
             for v_asset in versions:
-                comments = client.get_comments(v_asset['id'])
+                comments = client.comments.get(v_asset['id'])
                 for comment in comments:
                     comment['asset'] = { 'name': asset['name'] }
                     comment_list.append(comment)

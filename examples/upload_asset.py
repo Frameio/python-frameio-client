@@ -1,21 +1,11 @@
 from frameioclient import FrameioClient
-import os
 
 def main():
   client = FrameioClient("TOKEN")
+  file_path = './file_to_upload.mov'
+  parent_asset_id = ''
 
-  filesize = os.path.getsize('demo.mov')
-
-  asset = client.create_asset(
-    parent_asset_id="PARENT_ASSET_ID",
-    name="Test123.mov",
-    type="file",
-    filetype="video/quicktime",
-    filesize=filesize
-  )
-
-  file = open("demo.mov", "rb")
-  client.upload(asset, file)
+  asset = client.assets.upload(parent_asset_id,file_path)
 
 if __name__ == "__main__":
   main()
