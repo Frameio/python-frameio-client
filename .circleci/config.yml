@@ -69,11 +69,11 @@ jobs:
             - .
 
   test_integration:
+    description: Python << parameters.python-version >>
     parameters:
       python-version:
         type: string
 
-    description: Python << parameters.python-version >>
     docker:
       - image: circleci/python:<< parameters.python-version >>
 
