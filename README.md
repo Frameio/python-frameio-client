@@ -44,7 +44,7 @@ Get basic info on the authenticated user.
 from frameioclient import FrameioClient
 
 client = FrameioClient("TOKEN")
-me = client.get_me()
+me = client.users.get_me()
 print(me['id'])
 ```
 
@@ -53,15 +53,15 @@ print(me['id'])
 Create a new asset and upload a file. For `parent_asset_id` you must have the root asset ID for the project, or an ID for a folder in the project. For more information on how assets work, check out [our docs](https://developer.frame.io/docs/workflows-assets/uploading-assets).
 
 ```python
-from frameioclient import FrameioClient
 import os
+from frameioclient import FrameioClient
 
 client = FrameioClient("TOKEN")
 
 filesize = os.path.getsize("sample.mp4")
 
-# Create a new asset.
-asset = client.create_asset(
+# Create a new asset manually
+asset = client.assets.create(
   parent_asset_id="1234abcd",
   name="MyVideo.mp4",
   type="file",
@@ -69,7 +69,13 @@ asset = client.create_asset(
   filesize=filesize
 )
 
-# Upload the file at the target asset.
-file = open("sample.mp4", "rb")
-client.upload(asset, file)
+# Create a new folder
+client.assets.create(
+  parent_asset_id="",
+  name="Folder name",
+  type="folder" # this kwarg is what makes it a folder
+)
+
+# Upload a file 
+client.assets.upload(asset, file)
 ```
