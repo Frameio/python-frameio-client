@@ -60,7 +60,7 @@ class Asset(Service):
 
       Example::
 
-        client.create_asset(
+        client.assets.from_url(
           parent_asset_id="123abc",
           name="ExampleFile.mp4",
           type="file",
@@ -70,6 +70,7 @@ class Asset(Service):
     
     payload = {
       "name": name,
+      "type": "file",
       "source": {
         "url": url
       }
@@ -88,7 +89,7 @@ class Asset(Service):
       the fields to update
 
       Example::
-        client.update_asset("adeffee123342", name="updated_filename.mp4")
+        client.assets.update("adeffee123342", name="updated_filename.mp4")
     """
     endpoint = '/assets/{}'.format(asset_id)
     return self.client._api_call('put', endpoint, kwargs)
@@ -103,7 +104,7 @@ class Asset(Service):
       id (string): The id of the asset you want to copy.
 
       Example::
-        client.copy_asset("adeffee123342", id="7ee008c5-49a2-f8b5-997d-8b64de153c30")
+        client.assets.copy("adeffee123342", id="7ee008c5-49a2-f8b5-997d-8b64de153c30")
     """
     endpoint = '/assets/{}/copy'.format(destination_folder_id)
     return self.client._api_call('post', endpoint, kwargs)
@@ -118,7 +119,7 @@ class Asset(Service):
       copy_comments (boolean): Whether or not to copy comments: True or False.
 
       Example::
-        client.bulk_copy_assets("adeffee123342", asset_list=["7ee008c5-49a2-f8b5-997d-8b64de153c30", \ 
+        client.assets.buly_copy("adeffee123342", asset_list=["7ee008c5-49a2-f8b5-997d-8b64de153c30", \ 
         "7ee008c5-49a2-f8b5-997d-8b64de153c30"], copy_comments=True)
     """
     
@@ -160,8 +161,14 @@ class Asset(Service):
     uploader = FrameioUploader(asset, file)
     uploader.upload()
 
-  def upload_folder(self, destination_id, folderpath):
-    pass
+  # def upload_folder(self, destination_id, folderpath):
+  #   try:
+  #     if os.path.isdir(folderpath):
+  #       # Good it's a directory, we can keep going
+
+  #   except OSError:
+  #     if not os.path.exists(folderpath):
+  #       sys.exit("Folder doesn't exist, exiting...")
 
   def build_asset_info(self, filepath):
     full_path = os.path.abspath(filepath)

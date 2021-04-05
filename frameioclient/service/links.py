@@ -12,7 +12,7 @@ class ReviewLink(Service):
 
       Example::
 
-        client.create_review_link(
+        client.review_links.create(
           project_id="123",
           name="My Review Link",
           password="abc123"
@@ -50,7 +50,7 @@ class ReviewLink(Service):
 
       Example::
 
-        client.get_review_link_items(
+        client.review_links.get_assets(
           link_id="123"
         )
     """
@@ -68,7 +68,7 @@ class ReviewLink(Service):
 
       Example::
 
-        client.update_review_link_assets(
+        client.review_links.update_assets(
           link_id="123",
           asset_ids=["abc","def"]
         )
@@ -87,7 +87,7 @@ class ReviewLink(Service):
 
       Example::
 
-        client.update_review_link(
+        client.review_links.update_settings(
           link_id,
           expires_at="2020-04-08T12:00:00+00:00",
           is_active=False,
@@ -111,7 +111,7 @@ class PresentationLink(Service):
 
       Example::
 
-        client.create_presentation_link(
+        client.presentation_links.create(
           asset_id="9cee7966-4066-b326-7db1-f9e6f5e929e4",
           title="My fresh presentation",
           password="abc123"
