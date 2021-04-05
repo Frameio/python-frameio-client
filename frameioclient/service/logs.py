@@ -9,7 +9,7 @@ class AuditLogs(Service):
 
       Example::
 
-        client.get_audit_logs(
+        client.logs.list(
           account_id="6bdcb4d9-9a2e-a765-4548-ae6b27a6c024"
         )
     """
