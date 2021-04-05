@@ -44,8 +44,8 @@ class FrameioDownloader(object):
 
   def _create_file_stub(self):
     try:
-      fp = open(self.destination, "wb")
-      fp.write(b"\0" * self.file_size)
+      fp = open(self.destination, "w")
+      # fp.write(b"\0" * self.file_size) # Disabled to prevent pre-allocatation of disk space
       fp.close()
     except FileExistsError as e:
       print(e)
