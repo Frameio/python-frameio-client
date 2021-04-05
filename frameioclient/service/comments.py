@@ -12,7 +12,7 @@ class Comment(Service):
 
       Example::
 
-        client.create_comment(
+        client.comments.create(
           asset_id="123abc",
           text="Hello world"
         )
@@ -51,7 +51,7 @@ class Comment(Service):
 
       Example::
 
-        client.create_comment(
+        client.comments.update(
           comment_id="123abc",
           text="Hello world"
         )
@@ -80,7 +80,7 @@ class Comment(Service):
 
       Example::
 
-        client.reply_comment(
+        client.comments.reply(
           comment_id="123abc",
           text="Hello world"
         )
