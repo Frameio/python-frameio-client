@@ -138,6 +138,7 @@ class FrameioDownloader(object):
         out_byte = offset * (i+1) # Increment by the iterable + 1 so we don't mutiply by zero
         task = (url, in_byte, out_byte, i)
 
+        time.sleep(0.1) # Stagger start for each chunk by 0.1 seconds
         self.futures.append(executor.submit(self.download_chunk, task))
         in_byte = out_byte # Reset new in byte equal to last out byte
     
@@ -180,3 +181,9 @@ class FrameioDownloader(object):
       print("Done writing chunk {}/{}".format(chunk_number + 1, self.chunks))
 
     return "Complete!"
+
+  @staticmethod
+  def get_byte_range(url, start_byte=0, end_byte=2048):
+    headers = {"Range": "bytes=%d-%d" % (start_byte, end_byte)}
+    br = requests.get(url, headers=headers).content
+    return br

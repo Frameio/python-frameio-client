@@ -38,7 +38,7 @@ class Asset(Service):
 
       Example::
 
-        client.create_asset(
+        client.assets.create(
           parent_asset_id="123abc",
           name="ExampleFile.mp4",
           type="file",
@@ -119,7 +119,7 @@ class Asset(Service):
       copy_comments (boolean): Whether or not to copy comments: True or False.
 
       Example::
-        client.assets.buly_copy("adeffee123342", asset_list=["7ee008c5-49a2-f8b5-997d-8b64de153c30", \ 
+        client.assets.bulk_copy("adeffee123342", asset_list=["7ee008c5-49a2-f8b5-997d-8b64de153c30", \ 
         "7ee008c5-49a2-f8b5-997d-8b64de153c30"], copy_comments=True)
     """
     
@@ -154,8 +154,7 @@ class Asset(Service):
       file (file): The file to upload.
 
       Example::
-
-        client.upload(asset, open('example.mp4')) // TODO fix this example (bad way of opening file)
+        client.upload(asset, open('example.mp4'))
     """
 
     uploader = FrameioUploader(asset, file)
