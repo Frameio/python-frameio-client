@@ -4,7 +4,7 @@ import requests
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
 
-from .lib import ClientVersion, PaginatedResponse, Utils, ClientVersion
+from .lib import ClientVersion, PaginatedResponse, Utils, ClientVersion, FrameioDownloader
 
 
 class FrameioConnection(object):
@@ -84,6 +84,10 @@ class FrameioClient(FrameioConnection):
   @property
   def _version(self):
     return ClientVersion.version()
+
+  @property
+  def _download(self):
+    return FrameioDownloader
 
   @property
   def users(self):
