@@ -1,6 +1,7 @@
 import re
 import sys
 import xxhash
+import enlighten
 
 KB = 1024
 MB = KB * KB
@@ -51,7 +52,7 @@ class Utils:
           return formatted
 
   @staticmethod
-  def calculate_hash(file_path):
+  def calculate_hash(file_path, progress_callback=None):
       """
       Calculate an xx64hash
       """
@@ -62,7 +63,11 @@ class Utils:
           numread = f.readinto(b)
           if not numread:
               break
+          
           xxh64_hash.update(b[:numread])
+          if progress_callback:
+            # Should only subtract 1 here when necessary, not every time!
+            progress_callback.update(float(numread - 1), force=True)
       
       xxh64_digest = xxh64_hash.hexdigest()
 
@@ -189,3 +194,6 @@ class PaginatedResponse(object):
 
     return self.total
 
+
+class ProgressBar:
+  pass
