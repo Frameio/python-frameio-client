@@ -1,4 +1,4 @@
-from .service import Service
+from ..lib.service import Service
 
 class User(Service):
     def get_me(self):

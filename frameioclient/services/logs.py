@@ -1,4 +1,4 @@
-from .service import Service
+from ..lib.service import Service
 
 class AuditLogs(Service):
   def list(self, account_id):

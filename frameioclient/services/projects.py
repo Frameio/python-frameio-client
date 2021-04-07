@@ -1,4 +1,4 @@
-from .service import Service
+from ..lib.service import Service
 
 class Project(Service):
   def create(self, team_id, **kwargs):

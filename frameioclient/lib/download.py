@@ -2,19 +2,20 @@ import io
 import os
 import math
 import time
-import logging
 import enlighten
-import requests
 import threading
 import concurrent.futures
 
 from .utils import Utils
-from .exceptions import DownloadException, WatermarkIDDownloadException, AssetNotFullyUploaded
+from .transport import AWSClient
+from .telemetry import Event
+from .logger import SDKLogger
 
-thread_local = threading.local()
-
-logging.basicConfig(level=logging.INFO)
-LOGGER = logging.getLogger('enlighten')
+from .exceptions import (
+  DownloadException,
+  WatermarkIDDownloadException,
+  AssetNotFullyUploaded
+)
 
 class FrameioDownloader(object):
   def __init__(self, asset, download_folder, prefix, multi_part=False, concurrency=5, progress=True):
@@ -31,11 +32,13 @@ class FrameioDownloader(object):
     self.chunk_size = (25 * 1024 * 1024) # 25 MB chunk size
     self.chunks = math.ceil(self.file_size/self.chunk_size)
     self.prefix = prefix
-    self.tasks = list()
+
     self.bytes_started = 0
     self.bytes_completed = 0
     self.in_progress = 0
     self.filename = Utils.normalize_filename(asset["name"])
+    self.request_logs = list()
+    self.session = AWSClient()._get_session(auth=None)
 
     self._evaluate_asset()
 
@@ -49,11 +52,6 @@ class FrameioDownloader(object):
     
     if self.asset.get("upload_completed_at") == None:
       raise AssetNotFullyUploaded
-
-  def _get_session(self):
-    if not hasattr(thread_local, "session"):
-        thread_local.session = requests.Session()
-    return thread_local.session
 
   def _create_file_stub(self):
     try:
@@ -189,7 +187,7 @@ class FrameioDownloader(object):
           # Stagger start for each chunk by 0.1 seconds
           if i < self.concurrency: time.sleep(0.1)
           # Append tasks to futures list
-          self.futures.append(executor.submit(self.download_chunk, task))
+          self.futures.append(executor.submit(self._download_chunk, task))
           # Reset new in byte equal to last out byte
           in_byte = out_byte
     
@@ -223,15 +221,22 @@ class FrameioDownloader(object):
           color='purple'
         )
 
+        # Calculate the file hash
         Utils.calculate_hash(self.destination, progress_callback=verification)
 
+        # Update the header
         status.update(stage='Download Complete!', force=True)
 
-        LOGGER.info("Downloaded {} at {}".format(Utils.format_bytes(self.file_size, type="size"), download_speed))
+        # Log completion event
+        SDKLogger('downloads').info("Downloaded {} at {}".format(Utils.format_bytes(self.file_size, type="size"), download_speed))
+
+        # Submit telemetry
+        Event('uuid', {'speed': download_speed, 'time': download_time})
+
     
     return self.destination
 
-  def download_chunk(self, task):
+  def _download_chunk(self, task):
     # Download a particular chunk
     # Called by the threadpool executor
 
@@ -256,22 +261,25 @@ class FrameioDownloader(object):
     self.bytes_started += (chunk_size)
     in_progress.update(float(chunk_size))
 
-    # Get the shared thread's requests session
-    session = self._get_session()
-
     # print("Beginning: \t {}/{}".format(chunk_number + 1, self.chunks).expandtabs(3))
          
     # Specify the start and end of the range request 
     headers = {"Range": "bytes=%d-%d" % (start_byte, end_byte)} 
 
     # Grab the data as a stream
-    r = session.get(url, headers=headers, stream=True)
+    r = self.session.get(url, headers=headers, stream=True)
 
     with open(self.destination, "r+b") as fp:
       fp.seek(start_byte) # Seek to the right spot in the file
       chunk_size = len(r.content) # Get the final chunk size
       fp.write(r.content) # Write the data
       # print("Completed: \t {}/{}".format(chunk_number + 1, self.chunks).expandtabs(3))
+
+    self.request_logs.append({
+      'headers': r.headers,
+      'http_status': r.status_code,
+      'bytes_transferred': len(r.content)
+    })
 
     self.bytes_completed += (chunk_size)
     if self.bytes_completed > self.file_size:
@@ -281,8 +289,3 @@ class FrameioDownloader(object):
 
     return chunk_size
 
-  @staticmethod
-  def get_byte_range(url, start_byte=0, end_byte=2048):
-    headers = {"Range": "bytes=%d-%d" % (start_byte, end_byte)}
-    br = requests.get(url, headers=headers).content
-    return br

@@ -1,9 +1,9 @@
 import os
 import mimetypes
 
-from .service import Service
 from .projects import Project
 
+from ..lib.service import Service
 from ..lib import FrameioUploader, FrameioDownloader
 
 class Asset(Service):
