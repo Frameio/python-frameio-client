@@ -30,7 +30,7 @@ setuptools.setup(
     'requests',
     'urllib3',
     'xxhash',
-    'python-analytics'
+    'python-analytics',
     'importlib-metadata ~= 1.0 ; python_version < "3.8"',
     'futures; python_version == "2.7"'
   ],
