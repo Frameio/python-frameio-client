@@ -154,7 +154,7 @@ class FrameioDownloader(object):
     # Queue up threads
     with enlighten.get_manager() as manager:
       status = manager.status_bar(
-        position=4,
+        position=3,
         status_format=u'{fill}Stage: {stage}{fill}{elapsed}',
         color='bold_underline_bright_white_on_lightslategray',
         justify=enlighten.Justify.CENTER, 
