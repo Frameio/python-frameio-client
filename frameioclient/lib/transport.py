@@ -56,7 +56,6 @@ class APIClient(HTTPClient, object):
             'Authorization': 'Bearer {}'.format(self.token),
         }
 
-
     def _api_call(self, method, endpoint, payload={}, limit=None):
         url = '{}/v2{}'.format(self.host, endpoint)
 
@@ -91,8 +90,6 @@ class APIClient(HTTPClient, object):
         if r.status_code == 422 and "presentation" in endpoint:
             raise PresentationException
 
-        print(r.headers)
-
         return r.raise_for_status()
 
     def get_specific_page(self, method, endpoint, payload, page):
@@ -115,27 +112,75 @@ class APIClient(HTTPClient, object):
 
 
 class AWSClient(HTTPClient, object):
-    def __init__(self, concurrency=5):
-        super().__init__()
-        pass
+    def __init__(self, concurrency=None):
+        super().__init__() # Initialize via inheritance
+        if concurrency is not None:
+            self.concurrency = concurrency
+        else:
+            self.concurrency = self.optimize_concurrency()
+
+    def optimize_concurrency(self):
+        """
+        This method looks as the net_stats and disk_stats that we've run on \
+            the current environment in order to suggest the best optimized \
+            number of concurrent TCP connections.
+
+        Example::
+            AWSClient.optimize_concurrency()
+        """
+
+        net_stats = NetworkBandwidth
+        disk_stats = DiskBandwidth
+
+        # Algorithm ensues
+        #
+        #
+
+        return 5
     
     @staticmethod
     def get_byte_range(url, start_byte=0, end_byte=2048):
+        """
+        Get a specific byte range from a given URL. This is **not** optimized \
+            for heavily-threaded operations currently.
+
+        :Args:
+            url (string): The URL you want to fetch a byte-range from
+            start_byte (int): The first byte you want to request
+            end_byte (int): The last byte you want to extract
+
+        Example::
+            AWSClient.get_byte_range(asset, "~./Downloads")
+        """
+
         headers = {"Range": "bytes=%d-%d" % (start_byte, end_byte)}
         br = requests.get(url, headers=headers).content
         return br
+
+    @staticmethod
+    def check_cdn(url):
+        # TODO improve this algo
+        if 'assets.frame.io' in url:
+            return 'Cloudfront'
+        elif 's3' in url:
+            return 'S3'
+        else:
+            return None
+
 
 class TransferJob(AWSClient):
     # These will be used to track the job and then push telemetry
     def __init__(self, job_info):
         self.job_info = job_info
-        self.cdn = 'S3' # or 'CF'
+        self.cdn = 'S3' # or 'CF' - use check_cdn to confirm
+
 
 class DownloadJob(TransferJob):
     def __init__(self):
         # Need to create a re-usable job schema
-        # Think like URL -> output_path
+        # Think URL -> output_path
         pass
+
 
 class UploadJob(TransferJob):
     def __init__(self, destination):

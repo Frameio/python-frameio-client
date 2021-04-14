@@ -195,5 +195,15 @@ class PaginatedResponse(object):
     return self.total
 
 
-class ProgressBar:
-  pass
+class ProgressBar(object):
+  def __init__(self, parent=None, total=0, iterable=[]):
+    self.parent = parent
+    self.total = total
+    self.iterable = iterable
+
+  def create(self):
+    pass
+
+  def update(self):
+    pass
+

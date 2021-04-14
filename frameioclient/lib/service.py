@@ -8,7 +8,7 @@ class Service(object):
 
         # Auto-configure afterwards
         self.autoconfigure()
-    
+
     def autoconfigure(self):
         # self.bandwidth = SpeedTest.speedtest()
         return

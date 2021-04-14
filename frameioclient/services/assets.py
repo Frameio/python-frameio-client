@@ -208,7 +208,7 @@ class Asset(Service):
       except Exception as e:
           print(e)
 
-  def download(self, asset, download_folder, prefix=None, multi_part=False, concurrency=5):
+  def download(self, asset, download_folder, prefix=None, multi_part=False, concurrency=5, stats=False):
     """
     Download an asset. The method will exit once the file is downloaded.
 
@@ -220,5 +220,14 @@ class Asset(Service):
 
         client.download(asset, "~./Downloads")
     """
-    downloader = FrameioDownloader(asset, download_folder, prefix, multi_part, concurrency)
+    downloader = FrameioDownloader(
+      asset, 
+      download_folder, 
+      prefix, 
+      multi_part, 
+      concurrency, 
+      user_id=self.client.me['id'],
+      stats=stats
+    )
+    
     return downloader.download_handler()

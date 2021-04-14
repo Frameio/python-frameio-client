@@ -8,6 +8,7 @@ class NetworkBandwidth:
         self.results = dict()
 
     def load_stats(self):
+        # Force an update on these stats before starting download/upload
         pass
 
     def persist_stats(self):
@@ -18,6 +19,14 @@ class NetworkBandwidth:
 
     @staticmethod
     def speedtest():
+        """
+        Run a speedtest using Speedtest.net in order to get a 'control' for \
+            bandwidth optimization.
+
+        Example::
+            NetworkBandwidth.speedtest()
+        """
+
         st = speedtest.Speedtest()
         download_speed = round(st.download(threads=10) * (1.192 * 10 ** -7), 2)
         upload_speed = round(st.upload(threads=10) * (1.192 * 10 ** -7), 2)
@@ -40,4 +49,8 @@ class DiskBandwidth:
     
     def __init__(self, volume):
         self.volume = volume
-    
+        self.results = dict()
+
+    def __repr__(self):
+        self.results
+

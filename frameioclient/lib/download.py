@@ -7,9 +7,9 @@ import threading
 import concurrent.futures
 
 from .utils import Utils
-from .transport import AWSClient
-from .telemetry import Event
 from .logger import SDKLogger
+from .transport import AWSClient
+from .telemetry import Event, ComparisonTest
 
 from .exceptions import (
   DownloadException,
@@ -18,7 +18,8 @@ from .exceptions import (
 )
 
 class FrameioDownloader(object):
-  def __init__(self, asset, download_folder, prefix, multi_part=False, concurrency=5, progress=True):
+  def __init__(self, asset, download_folder, prefix, multi_part=False, concurrency=5, progress=True, user_id=None, stats=False):
+    self.user_id = user_id
     self.multi_part = multi_part
     self.asset = asset
     self.asset_type = None
@@ -32,7 +33,7 @@ class FrameioDownloader(object):
     self.chunk_size = (25 * 1024 * 1024) # 25 MB chunk size
     self.chunks = math.ceil(self.file_size/self.chunk_size)
     self.prefix = prefix
-
+    self.stats = stats
     self.bytes_started = 0
     self.bytes_completed = 0
     self.in_progress = 0
@@ -42,14 +43,25 @@ class FrameioDownloader(object):
 
     self._evaluate_asset()
 
-  def _calculate_in_progress(self):
+  def _update_in_progress(self):
     self.in_progress = self.bytes_started - self.bytes_completed
-    return self.in_progress
+    return self.in_progress # Number of in-progress bytes
+
+  def get_path(self):
+    if self.prefix != None:
+      self.filename = self.prefix + self.filename
+
+    if self.destination == None:
+      final_destination = os.path.join(self.download_folder, self.filename)
+      self.destination = final_destination
+      
+    return self.destination
 
   def _evaluate_asset(self):
     if self.asset.get("_type") != "file":
       raise DownloadException(message="Unsupport Asset type: {}".format(self.asset.get("_type")))
     
+    # This logic may block uploads that were started before this field was introduced
     if self.asset.get("upload_completed_at") == None:
       raise AssetNotFullyUploaded
 
@@ -89,17 +101,13 @@ class FrameioDownloader(object):
 
     return url
 
-  def get_path(self):
-    if self.prefix != None:
-      self.filename = self.prefix + self.filename
-
-    if self.destination == None:
-      final_destination = os.path.join(self.download_folder, self.filename)
-      self.destination = final_destination
-      
-    return self.destination
-
   def download_handler(self):
+    if os.path.isdir(os.path.join(os.path.curdir, self.download_folder)):
+      print("Folder exists, don't need to create it")
+    else:
+      print("Destination folder not found, creating")
+      os.mkdir(self.download_folder)
+
     if os.path.isfile(self.get_path()):
       print("File already exists at this location.")
       return self.destination
@@ -107,14 +115,14 @@ class FrameioDownloader(object):
       url = self.get_download_key()
 
       if self.watermarked == True:
-        return self.download(url)
+        return self.single_part_download(url)
       else:
         if self.multi_part == True:
           return self.multi_part_download(url)
         else:
-          return self.download(url)
+          return self.single_part_download(url)
 
-  def download(self, url):
+  def single_part_download(self, url):
     start_time = time.time()
     print("Beginning download -- {} -- {}".format(self.asset["name"], Utils.format_bytes(self.file_size, type="size")))
 
@@ -201,8 +209,8 @@ class FrameioDownloader(object):
             print(exc)
           
         # Calculate and print stats
-        download_time = time.time() - start_time
-        download_speed = Utils.format_bytes(math.ceil(self.file_size/(download_time)))
+        download_time = round((time.time() - start_time), 2)
+        download_speed = round((self.file_size/download_time), 2)
 
         # Perform hash-verification
         status.update(stage='Verifying')
@@ -231,23 +239,38 @@ class FrameioDownloader(object):
         SDKLogger('downloads').info("Downloaded {} at {}".format(Utils.format_bytes(self.file_size, type="size"), download_speed))
 
         # Submit telemetry
-        Event('uuid', {'speed': download_speed, 'time': download_time})
+        transfer_stats = {'speed': download_speed, 'time': download_time, 'cdn': AWSClient.check_cdn(url)}
 
-    
+        Event(self.user_id, 'python-sdk-download-stats', transfer_stats)
+
+    # If stats = True, we return a dict with way more info, otherwise \
+    if self.stats:
+      # We end by returning a dict with info about the download
+      dl_info = {
+        "destination": self.destination,
+        "speed": download_speed,
+        "elapsed": download_time,
+        "cdn": AWSClient.check_cdn(url),
+        "concurrency": self.concurrency,
+        "size": self.file_size,
+        "chunks": self.chunks
+      }
+      return dl_info
+
     return self.destination
 
   def _download_chunk(self, task):
     # Download a particular chunk
     # Called by the threadpool executor
 
+    # Destructure the task object into its parts
     url = task[0]
     start_byte = task[1]
     end_byte = task[2]
     chunk_number = task[3]
     in_progress = task[4]
 
-    # Update the count for bytes we've started to download
-
+    # Set the initial chunk_size, but prepare to overwrite
     chunk_size = (end_byte - start_byte)
 
     if self.bytes_started + (chunk_size) > self.file_size:
@@ -259,9 +282,9 @@ class FrameioDownloader(object):
 
     # Set chunk size in a smarter way
     self.bytes_started += (chunk_size)
-    in_progress.update(float(chunk_size))
 
-    # print("Beginning: \t {}/{}".format(chunk_number + 1, self.chunks).expandtabs(3))
+    # Update the bar for in_progress chunks
+    in_progress.update(float(chunk_size))
          
     # Specify the start and end of the range request 
     headers = {"Range": "bytes=%d-%d" % (start_byte, end_byte)} 
@@ -269,23 +292,27 @@ class FrameioDownloader(object):
     # Grab the data as a stream
     r = self.session.get(url, headers=headers, stream=True)
 
+    # Write the file to disk
     with open(self.destination, "r+b") as fp:
       fp.seek(start_byte) # Seek to the right spot in the file
       chunk_size = len(r.content) # Get the final chunk size
       fp.write(r.content) # Write the data
-      # print("Completed: \t {}/{}".format(chunk_number + 1, self.chunks).expandtabs(3))
 
+    # Save requests logs
     self.request_logs.append({
       'headers': r.headers,
       'http_status': r.status_code,
       'bytes_transferred': len(r.content)
     })
 
+    # Increase the count for bytes_completed, but only if it doesn't overrun file length
     self.bytes_completed += (chunk_size)
     if self.bytes_completed > self.file_size:
       self.bytes_completed = self.file_size
 
-    self._calculate_in_progress()
+    # Update the in_progress bar
+    self._update_in_progress()
 
+    # After the function completes, we report back the # of bytes transferred
     return chunk_size
 

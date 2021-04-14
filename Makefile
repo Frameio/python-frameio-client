@@ -15,3 +15,15 @@ bump-patch:
 
 clean:
 	find . -name "*.pyc" -exec rm -f {} \;
+
+package:
+	pipenv run python3 setup.py sdist bdist_wheel
+
+build-docker:
+	docker build . -t benchmark
+
+run-benchmark:
+	docker run -it -e $1 benchmark
+
+format:
+	black frameioclient
