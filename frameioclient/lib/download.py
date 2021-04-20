@@ -30,10 +30,13 @@ class FrameioDownloader(object):
     self.file_size = asset["filesize"]
     self.concurrency = concurrency
     self.futures = list()
+    self.checksum = None
+    self.original_checksum = None
     self.chunk_size = (25 * 1024 * 1024) # 25 MB chunk size
     self.chunks = math.ceil(self.file_size/self.chunk_size)
     self.prefix = prefix
     self.stats = stats
+    self.progress = progress
     self.bytes_started = 0
     self.bytes_completed = 0
     self.in_progress = 0
@@ -64,6 +67,11 @@ class FrameioDownloader(object):
     # This logic may block uploads that were started before this field was introduced
     if self.asset.get("upload_completed_at") == None:
       raise AssetNotFullyUploaded
+
+    try:
+      self.original_checksum = self.asset['checksums']['xx_hash']
+    except (TypeError, KeyError):
+      self.original_checksum = None
 
   def _create_file_stub(self):
     try:

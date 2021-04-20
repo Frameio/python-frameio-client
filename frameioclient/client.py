@@ -9,8 +9,8 @@ from .lib import (
 )
 
 class FrameioClient(APIClient, object):
-  def __init__(self, token):
-    super().__init__(token)
+  def __init__(self, token, host):
+    super().__init__(token, host)
 
   @property
   def me(self):

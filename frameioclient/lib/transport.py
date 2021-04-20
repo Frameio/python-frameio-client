@@ -112,8 +112,9 @@ class APIClient(HTTPClient, object):
 
 
 class AWSClient(HTTPClient, object):
-    def __init__(self, concurrency=None):
+    def __init__(self, concurrency=None, progress=True):
         super().__init__() # Initialize via inheritance
+        self.progress = progress
         if concurrency is not None:
             self.concurrency = concurrency
         else:
@@ -173,14 +174,14 @@ class TransferJob(AWSClient):
     def __init__(self, job_info):
         self.job_info = job_info
         self.cdn = 'S3' # or 'CF' - use check_cdn to confirm
-
+        self.progress_manager = None
 
 class DownloadJob(TransferJob):
     def __init__(self):
+        self.asset_type = 'review_link' # we should use a dataclass here
         # Need to create a re-usable job schema
         # Think URL -> output_path
         pass
-
 
 class UploadJob(TransferJob):
     def __init__(self, destination):
