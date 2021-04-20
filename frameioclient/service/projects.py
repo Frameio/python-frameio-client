@@ -11,8 +11,7 @@ class Project(Service):
       (optional) kwargs: additional request parameters.
 
       Example::
-
-        client.projects.create_project(
+        client.projects.create(
           team_id="123",
           name="My Awesome Project",
         )
@@ -20,12 +19,18 @@ class Project(Service):
     endpoint = '/teams/{}/projects'.format(team_id)
     return self.client._api_call('post', endpoint, payload=kwargs)
 
-  def get_project(self, project_id):
+  def get(self, project_id):
     """
     Get an individual project
 
     :Args:
-      project_id (string): the project's id
+      project_id (string): The project's id
+    
+      Example::
+        client.project.get(
+          project_id="123",
+        )
+
     """
     endpoint = '/projects/{}'.format(project_id)
     return self.client._api_call('get', endpoint)
@@ -35,7 +40,13 @@ class Project(Service):
     Get collaborators for a project
 
     :Args:
-      project_id (string): the project's id
+      project_id (uuid): The project's id
+
+      Example::
+        client.projects.get_collaborators(
+          project_id="123"
+        )
+
     """
     endpoint = "/projects/{}/collaborators?include=project_role".format(project_id)
     return self.client._api_call('get', endpoint, kwargs)
@@ -45,7 +56,48 @@ class Project(Service):
     Get pending collaborators for a project
 
     :Args:
-      project_id (string): the project's id
+      project_id (uuid): The project's id
+
+      Example::
+        client.projects.get_pending_collaborators(
+          project_id="123"
+        )
+
     """
     endpoint = "/projects/{}/pending_collaborators".format(project_id)
     return self.client._api_call('get', endpoint, kwargs)
+
+  def add_collaborator(self, project_id, email):
+    """
+    Add Collaborator to a Project Collaborator.
+
+    :Args:
+      project_id (uuid): The project id
+      email (string): Email user's e-mail address
+      
+      Example::
+        client.projects.add_collaborator(
+          project_id="123",
+          email="",
+        )
+    """
+    payload = {"email": email}
+    endpoint = '/projects/{}/collaborators'.format(project_id)
+    return self._api_call('post', endpoint, payload=payload)
+
+  def remove_collaborator(self, project_id, email):
+    """
+    Remove Collaborator from Project.
+
+    :Args:
+      project_id (uuid): The Project ID.
+      email (string): The user's e-mail address
+
+      Example::
+        client.projects.remove_collaborator(
+          project_id="123",
+          email="",
+        )
+    """
+    endpoint = '/projects/{}/collaborators/_?email={}'.format(project_id, email)
+    return self._api_call('delete', endpoint)
