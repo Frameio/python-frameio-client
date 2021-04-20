@@ -181,7 +181,20 @@ class Asset(Service):
 
     return file_info
 
-  def upload(self, destination_id, filepath):
+  def upload(self, destination_id, filepath, asset=None):
+    """
+    Upload a file. The method will exit once the file is downloaded.
+
+    :Args:
+      destination_id (uuid): The destination Project or Folder ID.
+      filepath (string): The locaiton of the file on your local filesystem \
+        that you want to upload.
+
+      Example::
+
+        client.assets.upload('1231-12414-afasfaf-aklsajflaksjfla', "./file.mov")
+    """
+
     # Check if destination is a project or folder
     # If it's a project, well then we look up its root asset ID, otherwise we use the folder id provided
     # Then we start our upload
@@ -194,19 +207,27 @@ class Asset(Service):
         folder_id = Project(self.client).get_project(destination_id)['root_asset_id']
     finally:
       file_info = self.build_asset_info(filepath)
-      try:
-        asset = self.create(folder_id,  
-            type="file",
-            name=file_info['filename'],
-            filetype=file_info['mimetype'],
-            filesize=file_info['filesize']
-        )
 
-        with open(file_info['filepath'], "rb") as fp:
-          self._upload(asset, fp)
+      if not asset:
+        try:
+          asset = self.create(folder_id,  
+              type="file",
+              name=file_info['filename'],
+              filetype=file_info['mimetype'],
+              filesize=file_info['filesize']
+          )
 
-      except Exception as e:
-          print(e)
+        except Exception as e:
+            print(e)
+
+        try:
+          with open(file_info['filepath'], "rb") as fp:
+            self._upload(asset, fp)
+
+        except Exception as e:
+            print(e)
+
+    return asset
 
   def download(self, asset, download_folder, prefix=None, multi_part=False, concurrency=5):
     """
@@ -218,7 +239,7 @@ class Asset(Service):
 
       Example::
 
-        client.download(asset, "~./Downloads")
+        client.assets.download(asset, "~./Downloads")
     """
     downloader = FrameioDownloader(asset, download_folder, prefix, multi_part, concurrency)
     return downloader.download_handler()

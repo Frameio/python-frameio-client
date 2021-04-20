@@ -124,7 +124,7 @@ def test_download(client, override=False):
 def test_upload(client):
     print("Beginning upload test")
     # Create new parent asset
-    project_info = client.projects.get_project(project_id)
+    project_info = client.projects.get(project_id)
     root_asset_id = project_info['root_asset_id']
     
     print("Creating new folder to upload to")
