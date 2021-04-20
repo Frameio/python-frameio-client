@@ -72,3 +72,32 @@ class Team(Service):
     """
     endpoint = '/teams/{}/projects'.format(team_id)
     return self.client._api_call('get', endpoint, kwargs)
+
+  def add_members(self, team_id, emails):
+    """
+    Add a list of users via their e-mail address to a given Team.
+
+    :Args:
+      team_id (string): The team id.
+      emails (list): The e-mails you want to add.
+    """
+    payload = dict()
+    payload['batch'] = list(map(lambda email: {"email": email}, emails))
+
+    endpoint = '/batch/teams/{}/members'.format(team_id)
+    return self._api_call('post', endpoint, payload=payload)
+
+  def remove_members(self, team_id, emails):
+    """
+    Remove a list of users via their e-mail address from a given Team.
+    
+    :Args:
+      team_id (string): The team id.
+      emails (list): The e-mails you want to add.
+    """
+
+    payload = dict()
+    payload['batch'] = list(map(lambda email: {"email": email}, emails))
+
+    endpoint = '/batch/teams/{}/members'.format(team_id)
+    return self._api_call('delete', endpoint, payload=payload)
