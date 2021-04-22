@@ -14,17 +14,15 @@ Frame.io is a cloud-based collaboration hub that allows video professionals to s
 ### Installation
 
 via Pip
-```
+```sh
 $ pip install frameioclient
 ```
 
 via Source
-```
+```sh
 $ git clone https://github.com/frameio/python-frameio-client
 $ pip install .
 ```
-
-_Note: The Frame.io Python client may not work correctly in Python 3.8+_
 
 ## Documentation
 
@@ -77,5 +75,5 @@ client.assets.create(
 )
 
 # Upload a file 
-client.assets.upload(asset, file)
+client.assets.upload(destination_id, file)
 ```
