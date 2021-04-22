@@ -58,7 +58,6 @@ from frameioclient import FrameioClient
 
 client = FrameioClient("TOKEN")
 
-filesize = os.path.getsize("sample.mp4")
 
 # Create a new asset manually
 asset = client.assets.create(
@@ -66,7 +65,7 @@ asset = client.assets.create(
   name="MyVideo.mp4",
   type="file",
   filetype="video/mp4",
-  filesize=filesize
+  filesize=os.path.getsize("sample.mp4")
 )
 
 # Create a new folder
@@ -77,5 +76,5 @@ client.assets.create(
 )
 
 # Upload a file 
-client.assets.upload(asset, file)
+client.assets.upload(destination_id, "video.mp4")
 ```
