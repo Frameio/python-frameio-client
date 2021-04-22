@@ -154,7 +154,7 @@ class Asset(Service):
       file (file): The file to upload.
 
       Example::
-        client.upload(asset, open('example.mp4'))
+        client._upload(asset, open('example.mp4'))
     """
 
     uploader = FrameioUploader(asset, file)
