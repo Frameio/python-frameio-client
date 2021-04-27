@@ -13,7 +13,7 @@ class Project(Service):
       Example::
         client.projects.create(
           team_id="123",
-          name="My Awesome Project",
+          name="My Awesome Project"
         )
     """
     endpoint = '/teams/{}/projects'.format(team_id)
@@ -28,7 +28,7 @@ class Project(Service):
     
       Example::
         client.project.get(
-          project_id="123",
+          project_id="123"
         )
 
     """
@@ -78,7 +78,7 @@ class Project(Service):
       Example::
         client.projects.add_collaborator(
           project_id="123",
-          email="",
+          email="janedoe@frame.io",
         )
     """
     payload = {"email": email}
@@ -96,7 +96,7 @@ class Project(Service):
       Example::
         client.projects.remove_collaborator(
           project_id="123",
-          email="",
+          email="janedoe@frame.io"
         )
     """
     endpoint = '/projects/{}/collaborators/_?email={}'.format(project_id, email)
