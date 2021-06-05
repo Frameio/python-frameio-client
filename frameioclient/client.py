@@ -137,5 +137,5 @@ class FrameioClient(FrameioConnection):
 
   @property
   def helpers(self):
-    from .lib import FrameioHelpers
+    from .service import FrameioHelpers
     return FrameioHelpers(self)
