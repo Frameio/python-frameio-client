@@ -143,7 +143,8 @@ class AWSClient(HTTPClient, object):
     def get_byte_range(url, start_byte=0, end_byte=2048):
         """
         Get a specific byte range from a given URL. This is **not** optimized \
-            for heavily-threaded operations currently.
+            for heavily-threaded operations currently because it doesn't use a shared \
+            HTTP session object / thread
 
         :Args:
             url (string): The URL you want to fetch a byte-range from
@@ -172,7 +173,7 @@ class AWSClient(HTTPClient, object):
 class TransferJob(AWSClient):
     # These will be used to track the job and then push telemetry
     def __init__(self, job_info):
-        self.job_info = job_info
+        self.job_info = self.check_cdn(job_info)
         self.cdn = 'S3' # or 'CF' - use check_cdn to confirm
         self.progress_manager = None
 
