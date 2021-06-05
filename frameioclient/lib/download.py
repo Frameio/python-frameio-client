@@ -1,5 +1,6 @@
 import io
 import os
+import sys
 import math
 import time
 import requests
@@ -12,7 +13,7 @@ from .exceptions import DownloadException, WatermarkIDDownloadException, AssetNo
 thread_local = threading.local()
 
 class FrameioDownloader(object):
-  def __init__(self, asset, download_folder, prefix, multi_part=False, concurrency=5):
+  def __init__(self, asset, download_folder, prefix, multi_part=False, concurrency=5, replace=False):
     self.multi_part = multi_part
     self.asset = asset
     self.asset_type = None
@@ -27,6 +28,7 @@ class FrameioDownloader(object):
     self.chunks = math.ceil(self.file_size/self.chunk_size)
     self.prefix = prefix
     self.filename = Utils.normalize_filename(asset["name"])
+    self.replace = replace
 
     self._evaluate_asset()
 
@@ -48,8 +50,12 @@ class FrameioDownloader(object):
       # fp.write(b"\0" * self.file_size) # Disabled to prevent pre-allocatation of disk space
       fp.close()
     except FileExistsError as e:
-      print(e)
-      raise e
+      if self.replace == True:
+        os.remove(self.destination) # Remove the file
+        self._create_file_stub() # Create a new stub
+      else:
+        print(e)
+        raise e
     return True
 
   def get_download_key(self):
