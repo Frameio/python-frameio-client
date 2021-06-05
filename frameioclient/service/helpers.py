@@ -29,4 +29,4 @@ class FrameioHelpers(Service):
       }
     }
     endpoint = '/search/library'
-    return self._api_call('post', endpoint, payload=payload)
+    return self.client._api_call('post', endpoint, payload=payload)
