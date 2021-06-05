@@ -1,4 +1,6 @@
-class FrameioHelpers(object):
+from .service import Service
+
+class FrameioHelpers(Service):
   def get_updated_assets(self, account_id, project_id, timestamp):
     """
     Get assets added or updated since timestamp.
