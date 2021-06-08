@@ -1,6 +1,9 @@
 import os
 import math
+import base64
+import hashlib
 import requests
+import traceback
 import threading
 import concurrent.futures
 
@@ -23,6 +26,11 @@ class FrameioUploader(object):
 
     return chunk_offsets
 
+  def _get_content_md5(self, data):
+      digest = hashlib.md5(data[:]).digest()
+      # print(base64.b64encode(digest).decode('utf-8'))
+      return base64.b64encode(digest).decode('utf-8')
+
   def _get_session(self):
     if not hasattr(thread_local, "session"):
         thread_local.session = requests.Session()
@@ -35,6 +43,7 @@ class FrameioUploader(object):
         data = file.read()
       else: # If it's not the final chunk, we want to ONLY read the specified chunk
         data = file.read(self.chunk_size)
+      # self._get_content_md5(data)
       return data
 
   def _upload_chunk(self, task):
@@ -51,13 +60,19 @@ class FrameioUploader(object):
     session = self._get_session()
 
     chunk_data = self._smart_read_chunk(chunk_offset, is_final_chunk)
+    chunk_md5 = self._get_content_md5(chunk_data)
+
+    print(chunk_md5)
 
     try:
       r = session.put(url, data=chunk_data, headers={
         'content-type': self.asset['filetype'],
-        'x-amz-acl': 'private'
+        'x-amz-acl': 'private',
+        'Content-MD5': chunk_md5
       })
-      # print("Completed chunk, status: {}".format(r.status_code))
+      # 'Content-Length': str(len(chunk_data))
+      print("Completed chunk, status: {}".format(r.content))
+      print("Completed chunk, status: {}".format(r.status_code))
     except Exception as e:
       print(e)
 
