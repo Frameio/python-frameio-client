@@ -6,7 +6,7 @@ class Search(Service):
     Search for assets using the library search endpoint, documented here \
         https://developer.frame.io/docs/workflows-assets/search-for-assets.
     
-    For more information check out https://developer.frame.io/api/reference/operation/assetSearchPost/.
+    For more information check out https://developer.frame.io/api/reference/operation/librarySearchPost/.
 
     :Args:
         query (string): The search keyword you want to search with.
