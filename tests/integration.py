@@ -3,14 +3,14 @@ import sys
 import json
 import time
 import socket
-import platform
-import mimetypes
 import shutil
 import requests
+import platform
+import mimetypes
 
 from math import ceil
-from pprint import pprint, pformat
 from datetime import datetime
+from pprint import pprint, pformat
 from frameioclient import FrameioClient, Utils, KB, MB
 
 token = os.getenv("FRAMEIO_TOKEN") # Your Frame.io token
