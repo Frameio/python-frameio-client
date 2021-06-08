@@ -55,15 +55,14 @@ class APIClient(HTTPClient, object):
         self.auth_header = {
             'Authorization': 'Bearer {}'.format(self.token),
         }
+    
+    def _format_api_call(self, endpoint):
+        return '{}/v2{}'.format(self.host, endpoint)
 
     def _api_call(self, method, endpoint, payload={}, limit=None):
-        url = '{}/v2{}'.format(self.host, endpoint)
-
-        headers = {**self.shared_headers, **self.auth_header}
-
         r = self.session.request(
             method,
-            url,
+            url=self._format_api_call(endpoint),
             headers=self.auth_header,
             json=payload
         )
@@ -97,14 +96,14 @@ class APIClient(HTTPClient, object):
         Gets a specific page for that endpoint, used by Pagination Class
 
         :Args:
-        method (string): 'get', 'post'
-        endpoint (string): endpoint ('/accounts/<ACCOUNT_ID>/teams')
-        payload (dict): Request payload
-        page (int): What page to get
+            method (string): 'get', 'post'
+            endpoint (string): endpoint ('/accounts/<ACCOUNT_ID>/teams')
+            payload (dict): Request payload
+            page (int): What page to get
         """
         if method == 'get':
             endpoint = '{}?page={}'.format(endpoint, page)
-        return self._api_call(method, endpoint)
+            return self._api_call(method, endpoint)
 
         if method == 'post':
             payload['page'] = page
