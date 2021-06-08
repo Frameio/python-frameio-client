@@ -1,7 +1,5 @@
 from .lib import (
-  Utils,
   APIClient,
-  AWSClient,
   Telemetry,
   ClientVersion,
   ClientVersion,
@@ -9,7 +7,7 @@ from .lib import (
 )
 
 class FrameioClient(APIClient, object):
-  def __init__(self, token, host):
+  def __init__(self, token, host='https://api.frame.io'):
     super().__init__(token, host)
 
   @property
@@ -41,7 +39,6 @@ class FrameioClient(APIClient, object):
   def assets(self):
     from .services import Asset
     return Asset(self)
-        total=3,
   
   @property
   def comments(self):

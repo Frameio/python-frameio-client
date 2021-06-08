@@ -46,7 +46,7 @@ class HTTPClient(object):
 
 
 class APIClient(HTTPClient, object):
-    def __init__(self, token, host='https://api.frame.io'):
+    def __init__(self, token, host):
         super().__init__()
         self.host = host
         self.token = token
