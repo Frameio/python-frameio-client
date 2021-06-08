@@ -17,15 +17,29 @@ class Asset(Service):
     endpoint = '/assets/{}'.format(asset_id)
     return self.client._api_call('get', endpoint)
 
-  def get_children(self, asset_id, **kwargs):
+  def get_children(self, asset_id, include=[]):
     """
     Get a folder.
 
     :Args:
       asset_id (string): The asset id.
+    
+    :Kwargs:
+      includes (list): List of includes you would like to add.
+
+      Example::
+      
+        client.assets.get_children(
+          asset_id='1231-12414-afasfaf-aklsajflaksjfla',
+          includes=['review_links','cover_asset','creator','presentation']
+        )
     """
     endpoint = '/assets/{}/children'.format(asset_id)
-    return self.client._api_call('get', endpoint, kwargs)
+
+    if len(include) > 0:
+      endpoint += '?include={}'.format(include.join(','))
+
+    return self.client._api_call('get', endpoint)
 
   def create(self, parent_asset_id, **kwargs):
     """
