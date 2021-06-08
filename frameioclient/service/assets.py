@@ -29,7 +29,7 @@ class Asset(Service):
     endpoint = '/assets/{}'.format(asset_id)
     return self.client._api_call('get', endpoint)
 
-  def get_children(self, asset_id, include=[]):
+  def get_children(self, asset_id, include=[], **kwargs):
     """
     Get a folder.
 
@@ -51,7 +51,7 @@ class Asset(Service):
     if len(include) > 0:
       endpoint += '?include={}'.format(include.join(','))
 
-    return self.client._api_call('get', endpoint)
+    return self.client._api_call('get', endpoint, kwargs)
 
   def create(self, parent_asset_id, **kwargs):
     """
