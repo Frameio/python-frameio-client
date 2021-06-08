@@ -7,6 +7,18 @@ from .projects import Project
 from ..lib import FrameioUploader, FrameioDownloader
 
 class Asset(Service):
+  def _build_asset_info(self, filepath):
+    full_path = os.path.abspath(filepath)
+
+    file_info = {
+        "filepath": full_path,
+        "filename": os.path.basename(full_path),
+        "filesize": os.path.getsize(full_path),
+        "mimetype": mimetypes.guess_type(full_path)[0]
+    }
+
+    return file_info
+
   def get(self, asset_id):
     """
     Get an asset by id.
@@ -123,7 +135,7 @@ class Asset(Service):
     endpoint = '/assets/{}/copy'.format(destination_folder_id)
     return self.client._api_call('post', endpoint, kwargs)
 
-  def bulk_copy(self, destination_folder_id, asset_list=[], copy_comments=False):
+  def bulk_copy(self, destination_folder_id, asset_list, copy_comments=False):
     """Bulk copy assets
 
     :Args:
@@ -137,8 +149,7 @@ class Asset(Service):
         "7ee008c5-49a2-f8b5-997d-8b64de153c30"], copy_comments=True)
     """
     
-    payload = {"batch": []}
-    new_list = list()
+    payload = {"batch": list()}
 
     if copy_comments:
       payload['copy_comments'] = "all"
@@ -183,18 +194,6 @@ class Asset(Service):
   #     if not os.path.exists(folderpath):
   #       sys.exit("Folder doesn't exist, exiting...")
 
-  def build_asset_info(self, filepath):
-    full_path = os.path.abspath(filepath)
-
-    file_info = {
-        "filepath": full_path,
-        "filename": os.path.basename(full_path),
-        "filesize": os.path.getsize(full_path),
-        "mimetype": mimetypes.guess_type(full_path)[0]
-    }
-
-    return file_info
-
   def upload(self, destination_id, filepath, asset=None):
     """
     Upload a file. The method will exit once the file is downloaded.
@@ -220,7 +219,7 @@ class Asset(Service):
         # Then try to grab it as a project
         folder_id = Project(self.client).get_project(destination_id)['root_asset_id']
     finally:
-      file_info = self.build_asset_info(filepath)
+      file_info = self._build_asset_info(filepath)
 
       if not asset:
         try:
