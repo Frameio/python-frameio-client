@@ -41,6 +41,7 @@ class FrameioClient(APIClient, object):
   def assets(self):
     from .services import Asset
     return Asset(self)
+        total=3,
   
   @property
   def comments(self):
