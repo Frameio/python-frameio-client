@@ -42,7 +42,7 @@ class FrameioDownloader(object):
     self.in_progress = 0
     self.filename = Utils.normalize_filename(asset["name"])
     self.request_logs = list()
-    self.session = AWSClient()._get_session(auth=None)
+    self.session = AWSClient()._get_session()
 
     self._evaluate_asset()
 
@@ -135,7 +135,7 @@ class FrameioDownloader(object):
     print("Beginning download -- {} -- {}".format(self.asset["name"], Utils.format_bytes(self.file_size, type="size")))
 
     # Downloading
-    r = requests.get(url)
+    r = self.session.get(url)
     open(self.destination, "wb").write(r.content)
 
     download_time = time.time() - start_time

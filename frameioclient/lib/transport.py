@@ -34,7 +34,7 @@ class HTTPClient(object):
     def _initialize_thread(self):
         self.thread_local = threading.local()
 
-    def _get_session(self, auth=True):
+    def _get_session(self):
         if not hasattr(self.thread_local, "session"):
             http = requests.Session()
             adapter = HTTPAdapter(max_retries=self.retry_strategy)
@@ -51,7 +51,7 @@ class APIClient(HTTPClient, object):
         self.host = host
         self.token = token
         self._initialize_thread()
-        self.session = self._get_session(auth=token)
+        self.session = self._get_session()
         self.auth_header = {
             'Authorization': 'Bearer {}'.format(self.token),
         }
