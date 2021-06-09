@@ -27,8 +27,7 @@ class Search(Service):
             client.assets.search(
                 query="Final",
                 type="file",
-                sort="name",
-                
+                sort="name"
             )
     """
 
