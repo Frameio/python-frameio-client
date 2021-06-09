@@ -71,5 +71,5 @@ class Search(Service):
     if sort is not None:
         payload['sort'] = sort
 
-    endpoint = '/search/assets'
+    endpoint = '/search/library'
     return self.client._api_call('post', endpoint, payload=payload)
