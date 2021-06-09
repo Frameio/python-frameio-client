@@ -1,9 +1,7 @@
-import os
 import logging
 import enlighten
 import requests
 import threading
-import concurrent.futures
 
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
