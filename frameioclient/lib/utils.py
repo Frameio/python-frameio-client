@@ -128,7 +128,7 @@ class Utils:
     }
 
   @staticmethod
-  def verify_signature(curr_time: float, req_time: float, signature: str, body: str, secret: str):
+  def verify_signature(curr_time, req_time, signature, body, secret):
     """
     Verify webhook/custom action signature
 
