@@ -1,4 +1,3 @@
-import re
 import sys
 import requests
 from requests.adapters import HTTPAdapter
@@ -20,8 +19,8 @@ class FrameioConnection(object):
     self.retry_strategy = Retry(
         total=3,
         backoff_factor=1,
-        status_forcelist=[429],
-        method_whitelist=["POST", "OPTIONS", "GET"]
+        status_forcelist=[400, 429, 500],
+        method_whitelist=["POST", "OPTIONS", "GET", "PUT"]
     )
     self.client_version = ClientVersion.version()
     self.headers = Utils.format_headers(self.token, self.client_version)
