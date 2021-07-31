@@ -15,3 +15,6 @@ bump-patch:
 
 clean:
 	find . -name "*.pyc" -exec rm -f {} \;
+
+test:
+	cd tests && pipenv run python integration.py
