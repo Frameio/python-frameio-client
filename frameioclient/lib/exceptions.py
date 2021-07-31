@@ -40,3 +40,24 @@ class AssetNotFullyUploaded(Exception):
     ):
         self.message = message
         super().__init__(self.message)
+
+class AssetChecksumNotPresent(Exception):
+    """Exception raised when there's no checksum present for the Frame.io asset.
+    """
+    def __init__(
+        self, 
+        message="""No checksum found on Frame.io for this asset. This could be because it was uploaded \ 
+            before we introduced the feature, the media pipeline failed to process the asset, or the asset has yet to finish being processed."""
+    ):
+        self.message = message
+        super().__init__(self.message)
+
+class AssetChecksumMismatch(Exception):
+    """Exception raised when the checksum for the downloaded file doesn't match what's found on Frame.io.
+    """
+    def __init__(
+        self, 
+        message="Checksum mismatch, you should re-download the asset to resolve any corrupt bits."
+    ):
+        self.message = message
+        super().__init__(self.message)

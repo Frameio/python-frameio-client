@@ -8,12 +8,18 @@ import threading
 import concurrent.futures
 
 from .utils import Utils
-from .exceptions import DownloadException, WatermarkIDDownloadException, AssetNotFullyUploaded
+from .exceptions import (
+  DownloadException,
+  WatermarkIDDownloadException,
+  AssetNotFullyUploaded,
+  AssetChecksumNotPresent,
+  AssetChecksumMismatch
+)
 
 thread_local = threading.local()
 
 class FrameioDownloader(object):
-  def __init__(self, asset, download_folder, prefix, multi_part=False, concurrency=5, replace=False):
+  def __init__(self, asset, download_folder, prefix=None, replace=False, checksum_verification=True, multi_part=False, concurrency=5):
     self.multi_part = multi_part
     self.asset = asset
     self.asset_type = None
@@ -29,8 +35,10 @@ class FrameioDownloader(object):
     self.prefix = prefix
     self.filename = Utils.normalize_filename(asset["name"])
     self.replace = replace
+    self.checksum_verification = checksum_verification
 
     self._evaluate_asset()
+    self._get_path()
 
   def _evaluate_asset(self):
     if self.asset.get("_type") != "file":
@@ -45,18 +53,38 @@ class FrameioDownloader(object):
     return thread_local.session
 
   def _create_file_stub(self):
+    if self.replace == True:
+      os.remove(self.destination) # Remove the file
+      self._create_file_stub() # Create a new stub
+      
     try:
       fp = open(self.destination, "w")
       # fp.write(b"\0" * self.file_size) # Disabled to prevent pre-allocatation of disk space
       fp.close()
-    except FileExistsError as e:
-      if self.replace == True:
-        os.remove(self.destination) # Remove the file
-        self._create_file_stub() # Create a new stub
-      else:
-        print(e)
-        raise e
+
+    except Exception as e:
+      raise e
+
     return True
+
+  def _get_path(self):
+    print("prefix:", self.prefix)
+    if self.prefix != None:
+      self.filename = self.prefix + self.filename
+
+    if self.destination == None:
+      final_destination = os.path.join(self.download_folder, self.filename)
+      self.destination = final_destination
+      
+    return self.destination
+
+  def _get_checksum(self):
+    try:
+      self.original_checksum = self.asset['checksums']['xx_hash']
+    except (TypeError, KeyError):
+      self.original_checksum = None
+    
+    return self.original_checksum
 
   def get_download_key(self):
     try:
@@ -84,26 +112,27 @@ class FrameioDownloader(object):
 
     return url
 
-  def get_path(self):
-    if self.prefix != None:
-      self.filename = self.prefix + self.filename
-
-    if self.destination == None:
-      final_destination = os.path.join(self.download_folder, self.filename)
-      self.destination = final_destination
-      
-    return self.destination
-
   def download_handler(self):
-    if os.path.isfile(self.get_path()):
-      print("File already exists at this location.")
-      return self.destination
-    else:
-      url = self.get_download_key()
+    if os.path.isfile(self.destination) and self.replace != True:
+      try:
+        raise FileExistsError
+      except NameError:
+        raise OSError('File exists')  # Python < 3.3
 
-      if self.watermarked == True:
+    url = self.get_download_key()
+
+    if self.watermarked == True:
+      return self.download(url)
+    else:
+      # Don't use multi-part download for files below 25 MB
+      if self.asset['filesize'] < 26214400:
         return self.download(url)
+      if self.multi_part == True:
+        return self.multi_part_download(url)
       else:
+        # Don't use multi-part download for files below 25 MB
+        if self.asset['filesize'] < 26214400:
+          return self.download(url)
         if self.multi_part == True:
           return self.multi_part_download(url)
         else:
@@ -114,8 +143,17 @@ class FrameioDownloader(object):
     print("Beginning download -- {} -- {}".format(self.asset["name"], Utils.format_bytes(self.file_size, type="size")))
 
     # Downloading
-    r = requests.get(url)
-    open(self.destination, "wb").write(r.content)
+    session = self._get_session()
+    r = session.get('GET', url, stream=True)
+
+    with open(self.destination, 'wb') as handle:
+      try:
+        # TODO make sure this approach works for SBWM download
+        for chunk in r.iter_content(chunk_size=4096):
+          if chunk:
+            handle.write(chunk)
+      except requests.exceptions.ChunkedEncodingError as e:
+        raise e
 
     download_time = time.time() - start_time
     download_speed = Utils.format_bytes(math.ceil(self.file_size/(download_time)))
@@ -161,7 +199,17 @@ class FrameioDownloader(object):
     download_speed = Utils.format_bytes(math.ceil(self.file_size/(download_time)))
     print("Downloaded {} at {}".format(Utils.format_bytes(self.file_size, type="size"), download_speed))
 
-    return self.destination
+    if self.checksum_verification == True:
+      # Check for checksum, if not present throw error
+      if self._get_checksum() == None:
+        raise AssetChecksumNotPresent
+      else:
+        if Utils.calculate_hash(self.destination) != self.original_checksum:
+          raise AssetChecksumMismatch
+        else:
+          return self.destination
+    else:
+      return self.destination
 
   def download_chunk(self, task):
     # Download a particular chunk

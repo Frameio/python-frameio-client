@@ -260,7 +260,7 @@ class Asset(Service):
 
     return asset
 
-  def download(self, asset, download_folder, prefix=None, multi_part=False, concurrency=5, replace=False):
+  def download(self, asset, download_folder, **kwargs):
     """
     Download an asset. The method will exit once the file is downloaded.
 
@@ -272,5 +272,5 @@ class Asset(Service):
 
         client.assets.download(asset, "~./Downloads")
     """
-    downloader = FrameioDownloader(asset, download_folder, prefix, multi_part, concurrency)
+    downloader = FrameioDownloader(asset, download_folder, **kwargs)
     return downloader.download_handler()
