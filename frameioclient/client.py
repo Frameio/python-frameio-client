@@ -4,8 +4,14 @@ import requests
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
 
-from .lib import ClientVersion, PaginatedResponse, Utils, ClientVersion, FrameioDownloader
-
+from .lib import (
+  ClientVersion,
+  PaginatedResponse,
+  Utils,
+  ClientVersion,
+  FrameioDownloader,
+  PresentationException
+)
 
 class FrameioConnection(object):
   def __init__(self, token, host='https://api.frame.io'):
@@ -128,3 +134,8 @@ class FrameioClient(FrameioConnection):
   def teams(self):
     from .service import Team
     return Team(self)
+
+  @property
+  def helpers(self):
+    from .service import FrameioHelpers
+    return FrameioHelpers(self)

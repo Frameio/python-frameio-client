@@ -75,6 +75,24 @@ class Asset(Service):
     endpoint = '/assets/{}/children'.format(parent_asset_id)
     return self.client._api_call('post', endpoint, payload=kwargs)
   
+  def create_folder(self, parent_asset_id, name="New Folder"):
+    """
+    Create a new folder.
+
+    :Args:
+      parent_asset_id (string): The parent asset id.
+      name (string): The name of the new folder.
+
+      Example::
+
+        client.assets.create_folder(
+          parent_asset_id="123abc",
+          name="ExampleFile.mp4",
+        )
+    """
+    endpoint = '/assets/{}/children'.format(parent_asset_id)
+    return self.client._api_call('post', endpoint, payload={"name": name, "type":"folder"})
+
   def from_url(self, parent_asset_id, name, url):
     """
     Create an asset from a URL.
@@ -242,7 +260,7 @@ class Asset(Service):
 
     return asset
 
-  def download(self, asset, download_folder, prefix=None, multi_part=False, concurrency=5):
+  def download(self, asset, download_folder, prefix=None, multi_part=False, concurrency=5, replace=False):
     """
     Download an asset. The method will exit once the file is downloaded.
 
