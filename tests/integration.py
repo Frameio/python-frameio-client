@@ -31,11 +31,11 @@ def init_client():
         sys.exit(1)
     
     if environment == "PRODUCTION":
-        client = FrameioClient(token)
+        client = FrameioClient(token, threads=10)
         print("Client connection initialized.")
 
     else:
-        client = FrameioClient(token, host='https://api.dev.frame.io')
+        client = FrameioClient(token, host='https://api.dev.frame.io', threads=10)
         print("Client connection initialized.")
 
     return client
@@ -107,7 +107,7 @@ def test_download(client, override=False):
         start_time = time.time()
         print("{}/{} Beginning to download: {}".format(count, len(asset_list), asset['name']))
         
-        client.assets.download(asset, download_dir, multi_part=True, concurrency=10)
+        client.assets.download(asset, download_dir, multi_part=True)
         
         download_time = time.time() - start_time
         download_speed = Utils.format_bytes(ceil(asset['filesize']/(download_time)))
@@ -332,7 +332,7 @@ def run_test():
     print("Beginning Integration test...")
 
     client = init_client()
-    test_download(client)
+    test_download(client, override=True)
     upload_folder_id = test_upload(client)
     check_upload_completion(client, download_asset_id, upload_folder_id)
     # clean_up(client, upload_folder_id)
