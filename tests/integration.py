@@ -332,7 +332,7 @@ def run_test():
     print("Beginning Integration test...")
 
     client = init_client()
-    test_download(client, override=True)
+    test_download(client)
     upload_folder_id = test_upload(client)
     check_upload_completion(client, download_asset_id, upload_folder_id)
     # clean_up(client, upload_folder_id)
