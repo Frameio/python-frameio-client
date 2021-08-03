@@ -1,6 +1,8 @@
 import re
 import sys
+import hmac
 import xxhash
+import hashlib
 
 KB = 1024
 MB = KB * KB
@@ -125,6 +127,30 @@ class Utils:
       'x-frameio-client': 'python/{}'.format(version)
     }
 
+  @staticmethod
+  def verify_signature(curr_time, req_time, signature, body, secret):
+    """
+    Verify webhook/custom action signature
+
+    :Args:
+        curr_time (float): Current epoch time
+        req_time (float): Request epoch time
+        signature (str): Signature provided by the frame.io API for the given request
+        body (str): Webhook body from the received POST
+        secret (str): The secret for this custom action/webhook that you saved when you first created it
+    """
+    if int(curr_time) - int(req_time) < 500:
+        message = 'v0:{}:{}'.format(req_time, body)
+        calculated_signature = 'v0={}'.format(hmac.new(
+            bytes(secret, 'latin-1'),
+            msg=bytes(message, 'latin-1'),
+            digestmod=hashlib.sha256).hexdigest())
+        if calculated_signature == signature:
+            return True
+        else:
+            return False
+    else:
+        return False
 
 class PaginatedResponse(object):
   def __init__(self, results=[], limit=None, page_size=0, total=0,

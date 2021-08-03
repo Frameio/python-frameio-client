@@ -3,10 +3,9 @@ import sys
 import json
 import time
 import socket
-import platform
-import mimetypes
 import shutil
 import requests
+import platform
 
 from math import ceil
 from pprint import pprint, pformat
