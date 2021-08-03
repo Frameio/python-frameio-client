@@ -19,8 +19,7 @@ from .exceptions import (
 )
 
 class FrameioDownloader(object):
-  def __init__(self, asset, download_folder, prefix, multi_part=False, concurrency=5, progress=True, user_id=None, stats=False, replace=False):
-    self.user_id = user_id
+  def __init__(self, asset, download_folder, prefix, multi_part=False, concurrency=5, replace=False):
     self.multi_part = multi_part
     self.asset = asset
     self.asset_type = None
@@ -85,10 +84,13 @@ class FrameioDownloader(object):
       fp = open(self.destination, "w")
       # fp.write(b"\0" * self.file_size) # Disabled to prevent pre-allocatation of disk space
       fp.close()
-
-    except Exception as e:
-      raise e
-
+    except FileExistsError as e:
+      if self.replace == True:
+        os.remove(self.destination) # Remove the file
+        self._create_file_stub() # Create a new stub
+      else:
+        print(e)
+        raise e
     return True
 
   def _get_path(self):
