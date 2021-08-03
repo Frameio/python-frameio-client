@@ -6,17 +6,18 @@ class Team(Service):
     """
     Create a Team
 
-    :Args:
-      account_id (string): The account id you want to create this Team under.
-    :Kwargs:
+    Args:
+      account_id (string): The account id you want to create this team under.
+    
+    :Keyword Arguments::
       (optional) kwargs: additional request parameters.
 
-      Example::
+    Example::
 
-        client.teams.create(
-          account_id="6bdcb4d9-4548-4548-4548-27a6c024ae6b",
-          name="My Awesome Project",
-        )
+      client.teams.create(
+        account_id="6bdcb4d9-4548-4548-4548-27a6c024ae6b",
+        name="My Awesome Project",
+      )
     """
     warnings.warn('Note: Your token must support team.create scopes')
     endpoint = '/accounts/{}/teams'.format(account_id)
@@ -24,10 +25,10 @@ class Team(Service):
 
   def list(self, account_id, **kwargs):
     """
-    Get teams owned by the specified account. 
-    (To return all teams, use list_all())
+    Get teams owned by the specified account. \
+      (To return all teams, use list_all())
     
-    :Args:
+    Args:
       account_id (string): The account id.
     """
     endpoint = '/accounts/{}/teams'.format(account_id)
@@ -37,7 +38,7 @@ class Team(Service):
     """
     Get all teams for the authenticated user.
 
-    :Args:
+    Args:
       account_id (string): The account id.
     """
     endpoint = '/teams'
@@ -47,39 +48,39 @@ class Team(Service):
     """
     Get team by id
 
-    :Args:
-      team_id (string): the Team's id
+    Args:
+      team_id (string): the team's id
     """
     endpoint  = '/teams/{}'.format(team_id)
     return self.client._api_call('get', endpoint)
 
   def get_members(self, team_id):
     """
-    Get the member list for a given Team.
+    Get the member list for a given team.
 
-    :Args:
-      team_id (string): The Team id.
+    Args:
+      team_id (string): The team id.
     """
     endpoint = '/teams/{}/members'.format(team_id)
     return self.client._api_call('get', endpoint)  
 
   def list_projects(self, team_id, **kwargs):
     """
-    Get projects owned by the Team.
+    Get projects owned by the team.
 
-    :Args:
-      team_id (string): The Team id.
+    Args:
+      team_id (string): The team id.
     """
     endpoint = '/teams/{}/projects'.format(team_id)
     return self.client._api_call('get', endpoint, kwargs)
 
   def add_members(self, team_id, emails):
     """
-    Add a list of users via their e-mail address to a given Team.
+    Add a list of users via their e-mail address to a given team.
 
-    :Args:
-      team_id (string): The team id.
-      emails (list): The e-mails you want to add.
+    Args:
+        team_id (string): The team id.
+        emails (list): The e-mails you want to add.
     """
     payload = dict()
     payload['batch'] = list(map(lambda email: {"email": email}, emails))
@@ -89,11 +90,11 @@ class Team(Service):
 
   def remove_members(self, team_id, emails):
     """
-    Remove a list of users via their e-mail address from a given Team.
+    Remove a list of users via their e-mail address from a given team.
     
-    :Args:
-      team_id (string): The team id.
-      emails (list): The e-mails you want to add.
+    Args:
+        team_id (string): The team id.
+        emails (list): The e-mails you want to add.
     """
 
     payload = dict()

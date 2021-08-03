@@ -138,6 +138,8 @@ class FrameioDownloader(object):
     return url
 
   def download_handler(self):
+    """Call this to perform the actual download of your asset!
+    """
     if os.path.isdir(os.path.join(os.path.curdir, self.download_folder)):
       print("Folder exists, don't need to create it")
     else:
@@ -147,10 +149,17 @@ class FrameioDownloader(object):
     if os.path.isfile(self.get_path()) == False:
       pass
 
+<<<<<<<
     if os.path.isfile(self.get_path()) and self.replace == True:
       os.remove(self.get_path())
 
     if os.path.isfile(self.get_path()) and self.replace == False:
+=======
+  def download_handler(self):
+    """Call this to perform the actual download of your asset!
+    """
+    if os.path.isfile(self.get_path()):
+>>>>>>>
       print("File already exists at this location.")
       return self.destination
 

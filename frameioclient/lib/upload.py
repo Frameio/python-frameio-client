@@ -17,6 +17,15 @@ class FrameioUploader(object):
     self.file_num = 0
 
   def _calculate_chunks(self, total_size, chunk_count):
+    """Calculate chunk size
+
+    Args:
+        total_size (int): Total filesize in bytes
+        chunk_count (int): Total number of URL's we got back from the API
+
+    Returns:
+        chunk_offsets (list): List of chunk offsets
+    """    
     self.chunk_size = int(math.ceil(total_size / chunk_count))
 
     chunk_offsets = list()
