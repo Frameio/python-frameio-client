@@ -4,7 +4,7 @@ import mimetypes
 from .projects import Project
 
 from ..lib.service import Service
-from ..lib import FrameioUploader, FrameioDownloader
+from ..lib import FrameioUploader, FrameioDownloader, constants
 
 class Asset(Service):
   def get(self, asset_id):
@@ -17,14 +17,53 @@ class Asset(Service):
     endpoint = '/assets/{}'.format(asset_id)
     return self.client._api_call('get', endpoint)
 
-  def get_children(self, asset_id, **kwargs):
+  def get_children(self, asset_id, include=[], slim=False, **kwargs):
     """
     Get a folder.
 
     :Args:
       asset_id (string): The asset id.
+    
+    :Kwargs:
+      includes (list): List of includes you would like to add.
+
+      Example::
+      
+        client.assets.get_children(
+          asset_id='1231-12414-afasfaf-aklsajflaksjfla',
+          include=['review_links','cover_asset','creator','presentation']
+        )
     """
     endpoint = '/assets/{}/children'.format(asset_id)
+
+    if slim == True:
+      query_params = ''
+
+      if len(include) > 0:
+        query_params += '?include={}'.format(include.join(','))
+      else:
+        # Always include children
+        query_params += '?' + 'include=children'
+
+      # Only fields
+      query_params += '&' + 'only_fields=' + ','.join(constants.asset_excludes['only_fields'])
+
+      # # Drop includes
+      query_params += '&' + 'drop_includes=' + ','.join(constants.asset_excludes['drop_includes'])
+
+      # # Hard drop fields
+      query_params += '&' + 'hard_drop_fields=' + ','.join(constants.asset_excludes['hard_drop_fields'])
+
+      # Excluded fields
+      # query_params += '&' + 'excluded_fields=' + ','.join(constants.asset_excludes['excluded_fields'])
+
+      # # Sort by inserted_at
+      # query_params += '&' + 'sort=-inserted_at'
+
+      endpoint += query_params
+
+      # print("Final URL", endpoint)
+      
     return self.client._api_call('get', endpoint, kwargs)
 
   def create(self, parent_asset_id, **kwargs):
@@ -48,7 +87,25 @@ class Asset(Service):
     """
     endpoint = '/assets/{}/children'.format(parent_asset_id)
     return self.client._api_call('post', endpoint, payload=kwargs)
-  
+
+  def create_folder(self, parent_asset_id, name="New Folder"):
+    """
+    Create a new folder.
+
+    :Args:
+      parent_asset_id (string): The parent asset id.
+      name (string): The name of the new folder.
+
+      Example::
+
+        client.assets.create_folder(
+          parent_asset_id="123abc",
+          name="ExampleFile.mp4",
+        )
+    """
+    endpoint = '/assets/{}/children'.format(parent_asset_id)
+    return self.client._api_call('post', endpoint, payload={"name": name, "type":"folder"})
+
   def from_url(self, parent_asset_id, name, url):
     """
     Create an asset from a URL.
@@ -181,7 +238,20 @@ class Asset(Service):
 
     return file_info
 
-  def upload(self, destination_id, filepath):
+  def upload(self, destination_id, filepath, asset=None):
+    """
+    Upload a file. The method will exit once the file is downloaded.
+
+    :Args:
+      destination_id (uuid): The destination Project or Folder ID.
+      filepath (string): The locaiton of the file on your local filesystem \
+        that you want to upload.
+
+      Example::
+
+        client.assets.upload('1231-12414-afasfaf-aklsajflaksjfla', "./file.mov")
+    """
+
     # Check if destination is a project or folder
     # If it's a project, well then we look up its root asset ID, otherwise we use the folder id provided
     # Then we start our upload
@@ -193,41 +263,42 @@ class Asset(Service):
         # Then try to grab it as a project
         folder_id = Project(self.client).get_project(destination_id)['root_asset_id']
     finally:
-      file_info = self.build_asset_info(filepath)
-      try:
-        asset = self.create(folder_id,  
-            type="file",
-            name=file_info['filename'],
-            filetype=file_info['mimetype'],
-            filesize=file_info['filesize']
-        )
+      file_info = self._build_asset_info(filepath)
 
-        with open(file_info['filepath'], "rb") as fp:
-          self._upload(asset, fp)
+      if not asset:
+        try:
+          asset = self.create(folder_id,  
+              type="file",
+              name=file_info['filename'],
+              filetype=file_info['mimetype'],
+              filesize=file_info['filesize']
+          )
 
-      except Exception as e:
-          print(e)
+        except Exception as e:
+            print(e)
 
-  def download(self, asset, download_folder, prefix=None, multi_part=False, concurrency=5, stats=False):
+        try:
+          with open(file_info['filepath'], "rb") as fp:
+            self._upload(asset, fp)
+
+        except Exception as e:
+            print(e)
+
+    return asset
+
+  def download(self, asset, download_folder, prefix=None, multi_part=False, replace=False):
     """
     Download an asset. The method will exit once the file is downloaded.
 
     :Args:
       asset (object): The asset object.
       download_folder (path): The location to download the file to.
+      multi_part (bool): Attempt to do a multi-part download (non-WMID assets).
+      replace (bool): Whether or not you want to replace a file if one is found at the destination path.
 
       Example::
 
-        client.download(asset, "~./Downloads")
+        client.assets.download(asset, "~./Downloads")
     """
-    downloader = FrameioDownloader(
-      asset, 
-      download_folder, 
-      prefix, 
-      multi_part, 
-      concurrency, 
-      user_id=self.client.me['id'],
-      stats=stats
-    )
-    
+    downloader = FrameioDownloader(asset, download_folder, prefix, multi_part, replace)
     return downloader.download_handler()
