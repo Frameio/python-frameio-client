@@ -3,7 +3,8 @@ from .lib import (
   Telemetry,
   ClientVersion,
   ClientVersion,
-  FrameioDownloader
+  FrameioDownloader,
+  PresentationException
 )
 
 class FrameioClient(APIClient, object):
