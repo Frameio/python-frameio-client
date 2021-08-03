@@ -19,7 +19,7 @@ from .exceptions import (
 )
 
 class FrameioDownloader(object):
-  def __init__(self, asset, download_folder, prefix, multi_part=False, concurrency=5, replace=False):
+  def __init__(self, asset, download_folder, prefix, multi_part=False, replace=False):
     self.multi_part = multi_part
     self.asset = asset
     self.asset_type = None
@@ -29,21 +29,18 @@ class FrameioDownloader(object):
     self.destination = None
     self.watermarked = asset['is_session_watermarked'] # Default is probably false
     self.file_size = asset["filesize"]
-    self.concurrency = concurrency
     self.futures = list()
     self.checksum = None
     self.original_checksum = None
     self.chunk_size = (25 * 1024 * 1024) # 25 MB chunk size
     self.chunks = math.ceil(self.file_size/self.chunk_size)
     self.prefix = prefix
-    self.stats = stats
-    self.progress = progress
     self.bytes_started = 0
     self.bytes_completed = 0
     self.in_progress = 0
+    self.session = AWSClient()._get_session(auth=None)
     self.filename = Utils.normalize_filename(asset["name"])
     self.request_logs = list()
-    self.session = AWSClient()._get_session(auth=None)
 
     self._evaluate_asset()
     self._get_path()
@@ -235,7 +232,7 @@ class FrameioDownloader(object):
 
       status.update(stage='Downloading', color='green')
       
-      with concurrent.futures.ThreadPoolExecutor(max_workers=self.concurrency) as executor:
+      with concurrent.futures.ThreadPoolExecutor(max_workers=self.client.concurrency) as executor:
         for i in range(int(self.chunks)):
           # Increment by the iterable + 1 so we don't mutiply by zero
           out_byte = offset * (i+1)

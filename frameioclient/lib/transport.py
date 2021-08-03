@@ -115,7 +115,8 @@ class AWSClient(HTTPClient, object):
     def __init__(self, concurrency=None, progress=True):
         super().__init__() # Initialize via inheritance
         self.progress = progress
-        if concurrency is not None:
+        # Ensure this is a valid number before assigning
+        if concurrency is not None and type(concurrency) == int and concurrency > 0:
             self.concurrency = concurrency
         else:
             self.concurrency = self.optimize_concurrency()
