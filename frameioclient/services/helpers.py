@@ -140,7 +140,7 @@ class FrameioHelpers(Service):
 
         if asset['_type'] == 'file':
           count += 1
-          return self.client.assets.download(asset, target_directory, multi_part=True, concurrency=10)
+          return self.client.assets.download(asset, target_directory, multi_part=True)
 
       except Exception as e:
         print(e)

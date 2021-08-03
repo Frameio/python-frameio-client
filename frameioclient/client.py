@@ -8,10 +8,10 @@ from .lib import (
   Telemetry,
   ClientVersion,
   ClientVersion,
-  FrameioDownloader,
+  FrameioDownloader
 )
 
-class FrameioClient(APIClient, object):
+class FrameioClient(APIClient):
   def __init__(self, token, host='https://api.frame.io', threads=5, progress=False):
     super().__init__(token, host, threads, progress)
 

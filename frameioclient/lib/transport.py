@@ -4,23 +4,34 @@ import enlighten
 import requests
 import threading
 
+from pprint import pprint
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
 
 from .version import ClientVersion
 from .utils import PaginatedResponse
+from .constants import default_thread_count
 from .exceptions import PresentationException
-from .bandwidth import NetworkBandwidth, DiskBandwidth
+# from .bandwidth import NetworkBandwidth, DiskBandwidth
 
 
 class HTTPClient(object):
-    def __init__(self):
+    """[summary]
+
+    Args:
+        object ([type]): [description]
+    """    
+    def __init__(self, threads=default_thread_count):
+        # Setup number of threads to use
+        self.threads = threads
+
         # Initialize empty thread object
         self.thread_local = None
         self.client_version = ClientVersion.version()
         self.shared_headers = {
             'x-frameio-client': 'python/{}'.format(self.client_version)
         }
+
         # Configure retry strategy (very broad right now)
         self.retry_strategy = Retry(
             total=3,
@@ -28,6 +39,7 @@ class HTTPClient(object):
             status_forcelist=[400, 429, 500, 503],
             method_whitelist=["GET", "POST", "PUT", "GET", "DELETE"]
         )
+
         # Create real thread
         self._initialize_thread()
 
@@ -47,7 +59,7 @@ class HTTPClient(object):
 
 class APIClient(HTTPClient, object):
     def __init__(self, token, host, threads, progress):
-        super().__init__()
+        super().__init__(threads)
         self.host = host
         self.token = token
         self.threads = threads
@@ -72,6 +84,7 @@ class APIClient(HTTPClient, object):
         )
 
         if r.ok:
+            pprint(r.headers.items)
             if r.headers.get('page-number'):
                 if int(r.headers.get('total-pages')) > 1:
                     return PaginatedResponse(
@@ -114,86 +127,3 @@ class APIClient(HTTPClient, object):
             payload['page'] = page
         return self._api_call(method, endpoint, payload=payload)
 
-
-class AWSClient(HTTPClient, object):
-    def __init__(self, concurrency=None, progress=True):
-        super().__init__() # Initialize via inheritance
-        self.progress = progress
-        # Ensure this is a valid number before assigning
-        if concurrency is not None and type(concurrency) == int and concurrency > 0:
-            self.concurrency = concurrency
-        else:
-            self.concurrency = self.optimize_concurrency()
-
-    def optimize_concurrency(self):
-        """
-        This method looks as the net_stats and disk_stats that we've run on \
-            the current environment in order to suggest the best optimized \
-            number of concurrent TCP connections.
-
-        Example::
-            AWSClient.optimize_concurrency()
-        """
-
-        net_stats = NetworkBandwidth
-        disk_stats = DiskBandwidth
-
-        # Algorithm ensues
-        #
-        #
-
-        return 5
-    
-    @staticmethod
-    def get_byte_range(url, start_byte=0, end_byte=2048):
-        """
-        Get a specific byte range from a given URL. This is **not** optimized \
-            for heavily-threaded operations currently.
-
-        :Args:
-            url (string): The URL you want to fetch a byte-range from
-            start_byte (int): The first byte you want to request
-            end_byte (int): The last byte you want to extract
-
-        Example::
-            AWSClient.get_byte_range(asset, "~./Downloads")
-        """
-
-        range_header = {"Range": "bytes=%d-%d" % (start_byte, end_byte)}
-        shared_headers = {'x-frameio-client': 'python/{}'.format(self.client_version)}
-        headers = {**shared_headers, **range_header}
-
-        br = requests.get(url, headers=headers).content
-        return br
-
-    @staticmethod
-    def check_cdn(url):
-        # TODO improve this algo
-        if 'assets.frame.io' in url:
-            return 'Cloudfront'
-        elif 's3' in url:
-            return 'S3'
-        else:
-            return None
-
-
-class TransferJob(AWSClient):
-    # These will be used to track the job and then push telemetry
-    def __init__(self, job_info):
-        self.job_info = job_info
-        self.cdn = 'S3' # or 'CF' - use check_cdn to confirm
-        self.progress_manager = None
-
-class DownloadJob(TransferJob):
-    def __init__(self):
-        self.asset_type = 'review_link' # we should use a dataclass here
-        # Need to create a re-usable job schema
-        # Think URL -> output_path
-        pass
-
-class UploadJob(TransferJob):
-    def __init__(self, destination):
-        self.destination = destination
-        # Need to create a re-usable job schema
-        # Think local_file path and remote Frame.io destination
-        pass

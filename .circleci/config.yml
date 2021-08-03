@@ -71,6 +71,7 @@ jobs:
           paths:
             - .
 
+
   test_integration:
     description: Python << parameters.python-version >>
     parameters:
@@ -94,6 +95,7 @@ jobs:
           name: Run integration test
           command: |
             python /tmp/artifact/tests/integration.py
+
 
   upload_test_job:
     description: Upload test

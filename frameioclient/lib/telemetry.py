@@ -54,9 +54,9 @@ class Event(Telemetry, object):
 class ComparisonTest(Event, object):
     def __init__(self, transfer_stats, request_logs=[]):
         super().__init__()
-        self.event_name = event_name
+        # self.event_name = event_name
         self.transfer_stats = None
-        self.requests_logs = requests_logs
+        # self.requests_logs = requests_logs
 
     @staticmethod
     def _parse_requests_data(req_object):

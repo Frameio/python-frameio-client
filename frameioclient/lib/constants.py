@@ -30,3 +30,5 @@ asset_excludes = {
         "a.source"
     ]
 }
+
+default_thread_count = 5

@@ -31,6 +31,7 @@ def main():
             client = FrameioClient(args.token[0], progress=True, threads=threads)
         except Exception as e:
             print("Failed")
+            print(e)
             sys.exit(1)
 
         # If args.op == 'upload':
@@ -38,8 +39,14 @@ def main():
             if args.destination:
                 # Check to see if this is a local target and thus a download
                 if os.path.isdir(args.destination[0]):
-                    asset = client.assets.get(args.target[0])
-                    return client.assets.download(asset, args.destination[0], progress=True, multi_part=True, concurrency=threads)
+                    try:
+                        asset = client.assets.get(args.target[0])
+                        return client.assets.download(asset, args.destination[0], progress=True, multi_part=True)
+                    except Exception as e:
+                        print(e)
+                        client.projects.download(args.target[0], args.destination[0])
+
+
                 else: # This is an upload
                     if os.path.isdir(args.target[0]):
                         return client.assets.upload_folder(args.target[0], args.destination[0])

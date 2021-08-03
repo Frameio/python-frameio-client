@@ -1,24 +1,15 @@
-import io
 import os
-import sys
 import math
-import time
-import requests
-import enlighten
-import threading
-import concurrent.futures
 
 from .utils import Utils
 from .logger import SDKLogger
-from .transport import AWSClient
+from .transfer import AWSClient
 from .telemetry import Event, ComparisonTest
 
 from .exceptions import (
   DownloadException,
   WatermarkIDDownloadException,
   AssetNotFullyUploaded,
-  AssetChecksumMismatch,
-  AssetChecksumNotPresent
 )
 
 class FrameioDownloader(object):
@@ -88,7 +79,6 @@ class FrameioDownloader(object):
         os.remove(self.destination) # Remove the file
         self._create_file_stub() # Create a new stub
       else:
-        print(e)
         raise e
     return True
 
@@ -164,16 +154,17 @@ class FrameioDownloader(object):
 
     # Handle watermarking
     if self.watermarked == True:
-      return self.single_part_download(url)
+      return self.aws_client()._download_whole(url)
     else:
       # Don't use multi-part download for files below 25 MB
       if self.asset['filesize'] < 26214400:
-        return self.download(url)
+        return self.aws_client._download_whole(url)
       if self.multi_part == True:
-        return self.multi_part_download(url)
+        return self.aws_client.multi_thread_download(url)
       else:
-        return self.single_part_download(url)
+        return self.aws_client._download_whole(url)
 
+<<<<<<<
   def single_part_download(self, url):
     start_time = time.time()
     print("Beginning download -- {} -- {}".format(self.asset["name"], Utils.format_bytes(self.file_size, type="size")))
@@ -386,3 +377,7 @@ class FrameioDownloader(object):
     # After the function completes, we report back the # of bytes transferred
     return chunk_size
 
+
+=======
+
+>>>>>>>
