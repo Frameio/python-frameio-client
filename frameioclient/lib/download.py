@@ -35,6 +35,7 @@ class FrameioDownloader(object):
     self.futures = list()
     self.checksum = None
     self.original_checksum = None
+    self.checksum_verification = True
     self.chunk_size = (25 * 1024 * 1024) # 25 MB chunk size
     self.chunks = math.ceil(self.file_size/self.chunk_size)
     self.prefix = prefix
@@ -45,6 +46,7 @@ class FrameioDownloader(object):
     self.session = self.aws_client._get_session(auth=None)
     self.filename = Utils.normalize_filename(asset["name"])
     self.request_logs = list()
+    self.stats = True
 
     self._evaluate_asset()
     self._get_path()
@@ -142,32 +144,34 @@ class FrameioDownloader(object):
       print("Destination folder not found, creating")
       os.mkdir(self.download_folder)
 
-    if not self.replace:
-      if os.path.isfile(self.get_path()):
-        print("File already exists at this location.")
-        return self.destination
-    else:
-      url = self.get_download_key()
+    if os.path.isfile(self.get_path()) == False:
+      pass
 
-      if self.watermarked == True:
-        return self.single_part_download(url)
+    if os.path.isfile(self.get_path()) and self.replace == True:
+      os.remove(self.get_path())
+
+    if os.path.isfile(self.get_path()) and self.replace == False:
+      print("File already exists at this location.")
+      return self.destination
+
+    url = self.get_download_key()
+
+    if self.watermarked == True:
+      return self.single_part_download(url)
+    else:
+      # Don't use multi-part download for files below 25 MB
+      if self.asset['filesize'] < 26214400:
+        return self.download(url)
+      if self.multi_part == True:
+        return self.multi_part_download(url)
       else:
-        # Don't use multi-part download for files below 25 MB
-        if self.asset['filesize'] < 26214400:
-          return self.download(url)
-        if self.multi_part == True:
-          return self.multi_part_download(url)
-        else:
-          return self.single_part_download(url)
+        return self.single_part_download(url)
 
   def single_part_download(self, url):
     start_time = time.time()
     print("Beginning download -- {} -- {}".format(self.asset["name"], Utils.format_bytes(self.file_size, type="size")))
 
     # Downloading
-    r = self.session.get(url)
-    open(self.destination, "wb").write(r.content)
-
     with open(self.destination, 'wb') as handle:
       try:
         # TODO make sure this approach works for SBWM download
@@ -295,7 +299,7 @@ class FrameioDownloader(object):
       # Submit telemetry
       transfer_stats = {'speed': download_speed, 'time': download_time, 'cdn': AWSClient.check_cdn(url)}
 
-      Event(self.user_id, 'python-sdk-download-stats', transfer_stats)
+      # Event(self.user_id, 'python-sdk-download-stats', transfer_stats)
 
     # If stats = True, we return a dict with way more info, otherwise \
     if self.stats:
@@ -305,7 +309,7 @@ class FrameioDownloader(object):
         "speed": download_speed,
         "elapsed": download_time,
         "cdn": AWSClient.check_cdn(url),
-        "concurrency": self.concurrency,
+        "concurrency": self.aws_client.concurrency,
         "size": self.file_size,
         "chunks": self.chunks
       }

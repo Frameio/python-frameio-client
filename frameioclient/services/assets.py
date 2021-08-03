@@ -7,6 +7,18 @@ from ..lib.service import Service
 from ..lib import FrameioUploader, FrameioDownloader, constants
 
 class Asset(Service):
+  def _build_asset_info(self, filepath):
+    full_path = os.path.abspath(filepath)
+
+    file_info = {
+        "filepath": full_path,
+        "filename": os.path.basename(full_path),
+        "filesize": os.path.getsize(full_path),
+        "mimetype": mimetypes.guess_type(full_path)[0]
+    }
+
+    return file_info
+
   def get(self, asset_id):
     """
     Get an asset by id.
@@ -124,7 +136,6 @@ class Asset(Service):
           url="https://"
         )
     """
-    
     payload = {
       "name": name,
       "type": "file",
@@ -179,9 +190,7 @@ class Asset(Service):
         client.assets.bulk_copy("adeffee123342", asset_list=["7ee008c5-49a2-f8b5-997d-8b64de153c30", \ 
         "7ee008c5-49a2-f8b5-997d-8b64de153c30"], copy_comments=True)
     """
-    
     payload = {"batch": []}
-    new_list = list()
 
     if copy_comments:
       payload['copy_comments'] = "all"
@@ -213,30 +222,8 @@ class Asset(Service):
       Example::
         client.upload(asset, open('example.mp4'))
     """
-
     uploader = FrameioUploader(asset, file)
     uploader.upload()
-
-  # def upload_folder(self, destination_id, folderpath):
-  #   try:
-  #     if os.path.isdir(folderpath):
-  #       # Good it's a directory, we can keep going
-
-  #   except OSError:
-  #     if not os.path.exists(folderpath):
-  #       sys.exit("Folder doesn't exist, exiting...")
-
-  def build_asset_info(self, filepath):
-    full_path = os.path.abspath(filepath)
-
-    file_info = {
-        "filepath": full_path,
-        "filename": os.path.basename(full_path),
-        "filesize": os.path.getsize(full_path),
-        "mimetype": mimetypes.guess_type(full_path)[0]
-    }
-
-    return file_info
 
   def upload(self, destination_id, filepath, asset=None):
     """
@@ -248,7 +235,6 @@ class Asset(Service):
         that you want to upload.
 
       Example::
-
         client.assets.upload('1231-12414-afasfaf-aklsajflaksjfla', "./file.mov")
     """
 
