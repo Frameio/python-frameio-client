@@ -1,4 +1,4 @@
-from .service import Service
+from ..lib.service import Service
 
 class FrameioHelpers(Service):
   def get_updated_assets(self, account_id, project_id, timestamp):

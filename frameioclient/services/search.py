@@ -1,4 +1,4 @@
-from .service import Service
+from ..lib.service import Service
 
 class Search(Service):
   def library(self, query, type=None, project_id=None, account_id=None, team_id=None, uploader=None, sort=None, filter=None, page_size=10, page=1):

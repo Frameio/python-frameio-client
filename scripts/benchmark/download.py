@@ -43,12 +43,13 @@ def build_metric(s3_stats, cf_stats, baseline):
     # Report the asset_id as well
     # Report whether something was a HIT or a MISS in cache
     # Report which CDN we hit
+    print("Thing")
     pass
 
 def run_benchmark():
     s3_stats = test_s3()
     cf_stats = test_cloudfront()
-    build_metrics(s3_stats cf_stats, NetworkBandwidth)
+    # build_metrics(s3_stats, cf_stats, NetworkBandwidth)
 
     # ComparisonTest(self.user_id, transfer_stats, self.request_logs)
 

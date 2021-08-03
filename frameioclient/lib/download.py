@@ -19,12 +19,13 @@ from .exceptions import (
 )
 
 class FrameioDownloader(object):
-  def __init__(self, asset, download_folder, prefix, multi_part=False, concurrency=5, progress=True, user_id=None, stats=False):
+  def __init__(self, asset, download_folder, prefix, multi_part=False, concurrency=5, progress=True, user_id=None, stats=False, replace=False):
     self.user_id = user_id
     self.multi_part = multi_part
     self.asset = asset
     self.asset_type = None
     self.download_folder = download_folder
+    self.replace = replace
     self.resolution_map = dict()
     self.destination = None
     self.watermarked = asset['is_session_watermarked'] # Default is probably false
