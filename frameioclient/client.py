@@ -4,6 +4,8 @@ from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
 
 from .lib import (
+  APIClient,
+  Telemetry,
   ClientVersion,
   PaginatedResponse,
   Utils,
@@ -12,18 +14,9 @@ from .lib import (
   PresentationException
 )
 
-class FrameioConnection(object):
+class FrameioClient(APIClient, object):
   def __init__(self, token, host='https://api.frame.io'):
-    self.token = token
-    self.host = host
-    self.retry_strategy = Retry(
-        total=3,
-        backoff_factor=1,
-        status_forcelist=[400, 429, 500],
-        method_whitelist=["POST", "OPTIONS", "GET", "PUT"]
-    )
-    self.client_version = ClientVersion.version()
-    self.headers = Utils.format_headers(self.token, self.client_version)
+    super().__init__(token, host)
 
     self.adapter = HTTPAdapter(max_retries=self.retry_strategy)
     self.session = requests.Session()
