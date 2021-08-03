@@ -10,7 +10,6 @@ def main():
 
     ## Define args
     parser.add_argument('--token', action='store', metavar='token', type=str, nargs='+', help='Developer Token')
-    # parser.add_argument('--op', action='store', metavar='op', type=str, nargs='+', help='Operation: upload, download')
     parser.add_argument('--target', action='store', metavar='target', type=str, nargs='+', help='Target: remote project or folder, or alternatively a local file/folder')
     parser.add_argument('--destination', action='store', metavar='destination', type=str, nargs='+', help='Destination: remote project or folder, or alternatively a local file/folder')
     parser.add_argument('--threads', action='store', metavar='threads', type=int, nargs='+', help='Number of threads to use')

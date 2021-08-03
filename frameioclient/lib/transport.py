@@ -84,7 +84,6 @@ class APIClient(HTTPClient, object):
         )
 
         if r.ok:
-            pprint(r.headers.items)
             if r.headers.get('page-number'):
                 if int(r.headers.get('total-pages')) > 1:
                     return PaginatedResponse(
