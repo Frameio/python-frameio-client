@@ -140,31 +140,29 @@ class FrameioDownloader(object):
   def download_handler(self):
     """Call this to perform the actual download of your asset!
     """
+
+    # Check folders
     if os.path.isdir(os.path.join(os.path.curdir, self.download_folder)):
       print("Folder exists, don't need to create it")
     else:
       print("Destination folder not found, creating")
       os.mkdir(self.download_folder)
 
+    # Check files
     if os.path.isfile(self.get_path()) == False:
       pass
 
-<<<<<<<
     if os.path.isfile(self.get_path()) and self.replace == True:
       os.remove(self.get_path())
 
     if os.path.isfile(self.get_path()) and self.replace == False:
-=======
-  def download_handler(self):
-    """Call this to perform the actual download of your asset!
-    """
-    if os.path.isfile(self.get_path()):
->>>>>>>
       print("File already exists at this location.")
       return self.destination
 
+    # Get URL
     url = self.get_download_key()
 
+    # Handle watermarking
     if self.watermarked == True:
       return self.single_part_download(url)
     else:
@@ -179,6 +177,10 @@ class FrameioDownloader(object):
   def single_part_download(self, url):
     start_time = time.time()
     print("Beginning download -- {} -- {}".format(self.asset["name"], Utils.format_bytes(self.file_size, type="size")))
+
+    # Downloading
+    r = self.session.get(url, stream=True)
+    open(self.destination, "wb").write(r.content)
 
     # Downloading
     with open(self.destination, 'wb') as handle:
