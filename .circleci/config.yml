@@ -35,7 +35,7 @@ workflows:
 
       - docs:
           requires:
-            # - deploy
+            - deploy
             - build
 
   # upload_test:
@@ -138,3 +138,30 @@ jobs:
             cd /tmp/artifact/docs
             python publish.py
 
+  deploy:
+    docker:
+      - image: circleci/python:latest
+
+    steps:
+      - attach_workspace:
+          at: /tmp/artifact
+          name: Attach build artifact
+
+      - run:
+          name: Install dependencies
+          command: |
+            pip install setuptools wheel twine
+
+      - run:
+          name: init .pypirc
+          command: |
+            cd /tmp/artifact
+            echo -e "[pypi]" >> ~/.pypirc
+            echo -e "username = $TWINE_USERNAME" >> ~/.pypirc
+            echo -e "password = $TWINE_PASSWORD" >> ~/.pypirc
+
+      - run:
+          name: Upload to pypi
+          command: |
+            cd /tmp/artifact
+            twine upload dist/*
