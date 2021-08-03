@@ -2,9 +2,9 @@ import os
 import math
 
 from .utils import Utils
-from .logger import SDKLogger
+# from .logger import SDKLogger
 from .transfer import AWSClient
-from .telemetry import Event, ComparisonTest
+# from .telemetry import Event, ComparisonTest
 
 from .exceptions import (
   DownloadException,
