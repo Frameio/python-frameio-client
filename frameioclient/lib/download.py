@@ -34,8 +34,10 @@ class FrameioDownloader(object):
     self.chunks = math.ceil(self.file_size/self.chunk_size)
     self.prefix = prefix
     self.filename = Utils.normalize_filename(asset["name"])
+    self.request_logs = list()
     self.replace = replace
     self.checksum_verification = checksum_verification
+    self.session = AWSClient()._get_session()
 
     self._evaluate_asset()
     self._get_path()
@@ -143,8 +145,8 @@ class FrameioDownloader(object):
     print("Beginning download -- {} -- {}".format(self.asset["name"], Utils.format_bytes(self.file_size, type="size")))
 
     # Downloading
-    session = self._get_session()
-    r = session.get('GET', url, stream=True)
+    r = self.session.get(url)
+    open(self.destination, "wb").write(r.content)
 
     with open(self.destination, 'wb') as handle:
       try:
