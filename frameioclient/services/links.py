@@ -1,4 +1,4 @@
-from .service import Service
+from ..lib.service import Service
 
 class ReviewLink(Service):
   def create(self, project_id, **kwargs):

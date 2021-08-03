@@ -1,5 +1,5 @@
 import warnings
-from .service import Service
+from ..lib.service import Service
 
 class Team(Service):
   def create(self, account_id, **kwargs):

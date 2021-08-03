@@ -27,11 +27,14 @@ setuptools.setup(
   version=version,
   python_requires='>=2.7.16, <4',
   install_requires=[
+    'analytics-python',
+    'enlighten',
+    'futures; python_version == "2.7"',
+    'importlib-metadata ~= 1.0 ; python_version < "3.8"',
     'requests',
+    'speedtest-cli',
     'urllib3',
     'xxhash',
-    'importlib-metadata ~= 1.0 ; python_version < "3.8"',
-    'futures; python_version == "2.7"'
   ],
   extras_require={
     'dev': [

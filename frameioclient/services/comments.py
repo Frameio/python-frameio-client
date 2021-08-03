@@ -1,4 +1,4 @@
-from .service import Service
+from ..lib.service import Service
 
 class Comment(Service):
   def create(self, asset_id, **kwargs):

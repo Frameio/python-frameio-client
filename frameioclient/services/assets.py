@@ -1,24 +1,12 @@
 import os
 import mimetypes
 
-from .service import Service
 from .projects import Project
 
+from ..lib.service import Service
 from ..lib import FrameioUploader, FrameioDownloader
 
 class Asset(Service):
-  def _build_asset_info(self, filepath):
-    full_path = os.path.abspath(filepath)
-
-    file_info = {
-        "filepath": full_path,
-        "filename": os.path.basename(full_path),
-        "filesize": os.path.getsize(full_path),
-        "mimetype": mimetypes.guess_type(full_path)[0]
-    }
-
-    return file_info
-
   def get(self, asset_id):
     """
     Get an asset by id.
@@ -29,28 +17,14 @@ class Asset(Service):
     endpoint = '/assets/{}'.format(asset_id)
     return self.client._api_call('get', endpoint)
 
-  def get_children(self, asset_id, include=[], **kwargs):
+  def get_children(self, asset_id, **kwargs):
     """
     Get a folder.
 
     :Args:
       asset_id (string): The asset id.
-    
-    :Kwargs:
-      includes (list): List of includes you would like to add.
-
-      Example::
-      
-        client.assets.get_children(
-          asset_id='1231-12414-afasfaf-aklsajflaksjfla',
-          includes=['review_links','cover_asset','creator','presentation']
-        )
     """
     endpoint = '/assets/{}/children'.format(asset_id)
-
-    if len(include) > 0:
-      endpoint += '?include={}'.format(include.join(','))
-
     return self.client._api_call('get', endpoint, kwargs)
 
   def create(self, parent_asset_id, **kwargs):
@@ -75,24 +49,6 @@ class Asset(Service):
     endpoint = '/assets/{}/children'.format(parent_asset_id)
     return self.client._api_call('post', endpoint, payload=kwargs)
   
-  def create_folder(self, parent_asset_id, name="New Folder"):
-    """
-    Create a new folder.
-
-    :Args:
-      parent_asset_id (string): The parent asset id.
-      name (string): The name of the new folder.
-
-      Example::
-
-        client.assets.create_folder(
-          parent_asset_id="123abc",
-          name="ExampleFile.mp4",
-        )
-    """
-    endpoint = '/assets/{}/children'.format(parent_asset_id)
-    return self.client._api_call('post', endpoint, payload={"name": name, "type":"folder"})
-
   def from_url(self, parent_asset_id, name, url):
     """
     Create an asset from a URL.
@@ -153,7 +109,7 @@ class Asset(Service):
     endpoint = '/assets/{}/copy'.format(destination_folder_id)
     return self.client._api_call('post', endpoint, kwargs)
 
-  def bulk_copy(self, destination_folder_id, asset_list, copy_comments=False):
+  def bulk_copy(self, destination_folder_id, asset_list=[], copy_comments=False):
     """Bulk copy assets
 
     :Args:
@@ -167,7 +123,8 @@ class Asset(Service):
         "7ee008c5-49a2-f8b5-997d-8b64de153c30"], copy_comments=True)
     """
     
-    payload = {"batch": list()}
+    payload = {"batch": []}
+    new_list = list()
 
     if copy_comments:
       payload['copy_comments'] = "all"
@@ -197,7 +154,7 @@ class Asset(Service):
       file (file): The file to upload.
 
       Example::
-        client._upload(asset, open('example.mp4'))
+        client.upload(asset, open('example.mp4'))
     """
 
     uploader = FrameioUploader(asset, file)
@@ -212,20 +169,19 @@ class Asset(Service):
   #     if not os.path.exists(folderpath):
   #       sys.exit("Folder doesn't exist, exiting...")
 
-  def upload(self, destination_id, filepath, asset=None):
-    """
-    Upload a file. The method will exit once the file is downloaded.
+  def build_asset_info(self, filepath):
+    full_path = os.path.abspath(filepath)
 
-    :Args:
-      destination_id (uuid): The destination Project or Folder ID.
-      filepath (string): The locaiton of the file on your local filesystem \
-        that you want to upload.
+    file_info = {
+        "filepath": full_path,
+        "filename": os.path.basename(full_path),
+        "filesize": os.path.getsize(full_path),
+        "mimetype": mimetypes.guess_type(full_path)[0]
+    }
 
-      Example::
+    return file_info
 
-        client.assets.upload('1231-12414-afasfaf-aklsajflaksjfla', "./file.mov")
-    """
-
+  def upload(self, destination_id, filepath):
     # Check if destination is a project or folder
     # If it's a project, well then we look up its root asset ID, otherwise we use the folder id provided
     # Then we start our upload
@@ -237,28 +193,20 @@ class Asset(Service):
         # Then try to grab it as a project
         folder_id = Project(self.client).get_project(destination_id)['root_asset_id']
     finally:
-      file_info = self._build_asset_info(filepath)
+      file_info = self.build_asset_info(filepath)
+      try:
+        asset = self.create(folder_id,  
+            type="file",
+            name=file_info['filename'],
+            filetype=file_info['mimetype'],
+            filesize=file_info['filesize']
+        )
 
-      if not asset:
-        try:
-          asset = self.create(folder_id,  
-              type="file",
-              name=file_info['filename'],
-              filetype=file_info['mimetype'],
-              filesize=file_info['filesize']
-          )
+        with open(file_info['filepath'], "rb") as fp:
+          self._upload(asset, fp)
 
-        except Exception as e:
-            print(e)
-
-        try:
-          with open(file_info['filepath'], "rb") as fp:
-            self._upload(asset, fp)
-
-        except Exception as e:
-            print(e)
-
-    return asset
+      except Exception as e:
+          print(e)
 
   def download(self, asset, download_folder, prefix=None, multi_part=False, concurrency=5, stats=False):
     """
@@ -270,7 +218,7 @@ class Asset(Service):
 
       Example::
 
-        client.assets.download(asset, "~./Downloads")
+        client.download(asset, "~./Downloads")
     """
     downloader = FrameioDownloader(
       asset, 
@@ -281,5 +229,5 @@ class Asset(Service):
       user_id=self.client.me['id'],
       stats=stats
     )
-
+    
     return downloader.download_handler()

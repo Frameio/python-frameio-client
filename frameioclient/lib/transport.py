@@ -1,7 +1,9 @@
+import os
 import logging
 import enlighten
 import requests
 import threading
+import concurrent.futures
 
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
@@ -32,7 +34,7 @@ class HTTPClient(object):
     def _initialize_thread(self):
         self.thread_local = threading.local()
 
-    def _get_session(self):
+    def _get_session(self, auth=True):
         if not hasattr(self.thread_local, "session"):
             http = requests.Session()
             adapter = HTTPAdapter(max_retries=self.retry_strategy)
@@ -44,23 +46,24 @@ class HTTPClient(object):
 
 
 class APIClient(HTTPClient, object):
-    def __init__(self, token, host):
+    def __init__(self, token, host='https://api.frame.io'):
         super().__init__()
         self.host = host
         self.token = token
         self._initialize_thread()
-        self.session = self._get_session()
+        self.session = self._get_session(auth=token)
         self.auth_header = {
             'Authorization': 'Bearer {}'.format(self.token),
         }
-    
-    def _format_api_call(self, endpoint):
-        return '{}/v2{}'.format(self.host, endpoint)
 
     def _api_call(self, method, endpoint, payload={}, limit=None):
+        url = '{}/v2{}'.format(self.host, endpoint)
+
+        headers = {**self.shared_headers, **self.auth_header}
+
         r = self.session.request(
             method,
-            url=self._format_api_call(endpoint),
+            url,
             headers=self.auth_header,
             json=payload
         )
@@ -94,14 +97,14 @@ class APIClient(HTTPClient, object):
         Gets a specific page for that endpoint, used by Pagination Class
 
         :Args:
-            method (string): 'get', 'post'
-            endpoint (string): endpoint ('/accounts/<ACCOUNT_ID>/teams')
-            payload (dict): Request payload
-            page (int): What page to get
+        method (string): 'get', 'post'
+        endpoint (string): endpoint ('/accounts/<ACCOUNT_ID>/teams')
+        payload (dict): Request payload
+        page (int): What page to get
         """
         if method == 'get':
             endpoint = '{}?page={}'.format(endpoint, page)
-            return self._api_call(method, endpoint)
+        return self._api_call(method, endpoint)
 
         if method == 'post':
             payload['page'] = page
@@ -140,8 +143,7 @@ class AWSClient(HTTPClient, object):
     def get_byte_range(url, start_byte=0, end_byte=2048):
         """
         Get a specific byte range from a given URL. This is **not** optimized \
-            for heavily-threaded operations currently because it doesn't use a shared \
-            HTTP session object / thread
+            for heavily-threaded operations currently.
 
         :Args:
             url (string): The URL you want to fetch a byte-range from
@@ -170,7 +172,7 @@ class AWSClient(HTTPClient, object):
 class TransferJob(AWSClient):
     # These will be used to track the job and then push telemetry
     def __init__(self, job_info):
-        self.job_info = self.check_cdn(job_info)
+        self.job_info = job_info
         self.cdn = 'S3' # or 'CF' - use check_cdn to confirm
         self.progress_manager = None
 

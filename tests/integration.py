@@ -20,6 +20,8 @@ environment = os.getenv("ENVIRONMENT", default="PRODUCTION")
 slack_webhook_url = os.getenv("SLACK_WEBHOOK_URL")
 ci_job_name = os.getenv("CIRCLE_JOB", default=None)
 
+download_dir = 'downloads'
+
 retries = 0
 
 # Initialize the client
@@ -45,10 +47,10 @@ def verify_local(client, dl_children):
     dl_items = dict()
 
     # Iterate over local directory and get filenames and hashes
-    dled_files = os.listdir('downloads')
+    dled_files = os.listdir(download_dir)
     for count, fn in enumerate(dled_files, start=1):
         print("{}/{} Generating hash for: {}".format(count, len(dled_files), fn))
-        dl_file_path = os.path.join(os.path.abspath(os.path.curdir), 'downloads', fn)
+        dl_file_path = os.path.join(os.path.abspath(os.path.curdir), download_dir, fn)
         print("Path to downloaded file for hashing: {}".format(dl_file_path))
         xxhash = Utils.calculate_hash(dl_file_path)
         xxhash_name = "{}_{}".format(fn, 'xxHash')
@@ -77,9 +79,9 @@ def test_download(client, override=False):
     print("Testing download function...")
     if override:
         # Clearing download directory
-        shutil.rmtree('./downloads')
+        shutil.rmtree(download_dir)
 
-    if os.path.isdir('downloads'):
+    if os.path.isdir(download_dir):
         print("Local downloads folder detected...")
         asset_list = client.assets.get_children(
             download_asset_id,
@@ -91,7 +93,7 @@ def test_download(client, override=False):
         verify_local(client, asset_list)
         return True
     
-    os.mkdir('downloads')
+    os.mkdir(download_dir)
 
     asset_list = client.assets.get_children(
         download_asset_id,
@@ -105,7 +107,7 @@ def test_download(client, override=False):
         start_time = time.time()
         print("{}/{} Beginning to download: {}".format(count, len(asset_list), asset['name']))
         
-        client.assets.download(asset, 'downloads', multi_part=True, concurrency=20)
+        client.assets.download(asset, download_dir, multi_part=True, concurrency=10)
         
         download_time = time.time() - start_time
         download_speed = Utils.format_bytes(ceil(asset['filesize']/(download_time)))
@@ -139,11 +141,11 @@ def test_upload(client):
     print("Folder created, id: {}, name: {}".format(new_parent_id, new_folder['name']))
 
     # Upload all the files we downloaded earlier
-    dled_files = os.listdir('downloads')
+    dled_files = os.listdir(download_dir)
 
     for count, fn in enumerate(dled_files, start=1):
         start_time = time.time()
-        ul_abs_path = os.path.join(os.curdir, 'downloads', fn)
+        ul_abs_path = os.path.join(os.curdir, download_dir, fn)
         filesize = os.path.getsize(ul_abs_path)
         filename = os.path.basename(ul_abs_path)
 
