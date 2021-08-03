@@ -7,18 +7,28 @@ KB = 1024
 MB = KB * KB
 
 
+def Reference(*args, **kwargs):
+    print(kwargs['operation'])
+    def inner(func):
+        '''
+           do operations with func
+        '''
+        return func
+    return inner
+
 class Utils:
   @staticmethod
   def stream(func, page=1, page_size=20):
       """
-      Accepts a lambda of a call to a client list method, and streams the results until
-      the list has been exhausted
+      Accepts a lambda of a call to a client list method, and streams the results until \
+        the list has been exhausted.
 
-      :Args:
+      Args:
           fun (function): A 1-arity function to apply during the stream
 
-          Example:: 
-              stream(lambda pagination: client.get_collaborators(project_id, **pagination))
+      Example::
+      
+          stream(lambda pagination: client.get_collaborators(project_id, **pagination))
       """
       total_pages = page
       while page <= total_pages:

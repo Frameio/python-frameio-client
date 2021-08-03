@@ -5,17 +5,18 @@ class Comment(Service):
     """
     Create a comment.
 
-    :Args:
+    Args:
       asset_id (string): The asset id.
-    :Kwargs:
+
+    :Keyword Arguments:
       (optional) kwargs: additional request parameters.
 
-      Example::
+    Example::
 
-        client.comments.create(
-          asset_id="123abc",
-          text="Hello world"
-        )
+      client.comments.create(
+        asset_id="123abc",
+        text="Hello world"
+      )
     """
     endpoint = '/assets/{}/comments'.format(asset_id)
     return self.client._api_call('post', endpoint, payload=kwargs)
@@ -24,7 +25,7 @@ class Comment(Service):
     """
     Get a comment.
 
-    :Args:
+    Args:
       comment_id (string): The comment id.
     """
     endpoint = '/comments/{}'.format(comment_id)
@@ -34,7 +35,7 @@ class Comment(Service):
     """
     Get an asset's comments.
 
-    :Args:
+    Args:
       asset_id (string): The asset id.
     """
     endpoint = '/assets/{}/comments'.format(asset_id)
@@ -44,17 +45,18 @@ class Comment(Service):
     """
     Update a comment.
 
-    :Args:
+    Args:
       comment_id (string): The comment id.
-    :Kwargs:
+
+    :Keyword Arguments:
       (optional) kwargs: additional request parameters.
 
-      Example::
+    Example::
 
-        client.comments.update(
-          comment_id="123abc",
-          text="Hello world"
-        )
+      client.comments.update(
+        comment_id="123abc",
+        text="Hello world"
+      )
     """
     endpoint = '/comments/{}'.format(comment_id)
     return self.client._api_call('post', endpoint, payload=kwargs)
@@ -63,7 +65,7 @@ class Comment(Service):
     """
     Delete a comment.
 
-    :Args:
+    Args:
       comment_id (string): The comment id.
     """
     endpoint = '/comments/{}'.format(comment_id)
@@ -73,17 +75,18 @@ class Comment(Service):
     """
     Reply to an existing comment.
 
-    :Args:
+    Args:
       comment_id (string): The comment id.
-    :Kwargs:
+
+    :Keyword Arguments:
       (optional) kwargs: additional request parameters.
 
-      Example::
+    Example::
 
-        client.comments.reply(
-          comment_id="123abc",
-          text="Hello world"
-        )
+      client.comments.reply(
+        comment_id="123abc",
+        text="Hello world"
+      )
     """
     endpoint = '/comments/{}/replies'.format(comment_id)
     return self.client._api_call('post', endpoint, payload=kwargs)

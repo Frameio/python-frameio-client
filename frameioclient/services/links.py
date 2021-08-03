@@ -5,18 +5,19 @@ class ReviewLink(Service):
     """
     Create a review link.
 
-    :Args:
+    Args:
       project_id (string): The project id.
-    :Kwargs:
+
+    :Keyword Arguments:
       kwargs: additional request parameters.
 
-      Example::
+    Example::
 
-        client.review_links.create(
-          project_id="123",
-          name="My Review Link",
-          password="abc123"
-        )
+      client.review_links.create(
+        project_id="123",
+        name="My Review Link",
+        password="abc123"
+      )
     """
     endpoint = '/projects/{}/review_links'.format(project_id)
     return self.client._api_call('post', endpoint, payload=kwargs)
@@ -25,7 +26,7 @@ class ReviewLink(Service):
     """
     Get the review links of a project
 
-    :Args:
+    Args:
       asset_id (string): The asset id.
     """
     endpoint = '/projects/{}/review_links'.format(project_id)
@@ -35,7 +36,7 @@ class ReviewLink(Service):
     """
     Get a single review link
 
-    :Args:
+    Args:
       link_id (string): The review link id.
     """
     endpoint = '/review_links/{}'.format(link_id)
@@ -45,14 +46,14 @@ class ReviewLink(Service):
     """
     Get items from a single review link.
 
-    :Args:
+    Args:
       link_id (string): The review link id.
 
-      Example::
+    Example::
 
-        client.review_links.get_assets(
-          link_id="123"
-        )
+      client.review_links.get_assets(
+        link_id="123"
+      )
     """
     endpoint = '/review_links/{}/items'.format(link_id)
     return self.client._api_call('get', endpoint)
@@ -61,17 +62,18 @@ class ReviewLink(Service):
     """
     Add or update assets for a review link.
 
-    :Args:
+    Args:
       link_id (string): The review link id.
-    :Kwargs:
+
+    :Keyword Arguments:
       kwargs: additional request parameters.
 
-      Example::
+    Example::
 
-        client.review_links.update_assets(
-          link_id="123",
-          asset_ids=["abc","def"]
-        )
+      client.review_links.update_assets(
+        link_id="123",
+        asset_ids=["abc","def"]
+      )
     """
     endpoint = '/review_links/{}/assets'.format(link_id)
     return self.client._api_call('post', endpoint, payload=kwargs)
@@ -80,20 +82,21 @@ class ReviewLink(Service):
     """
     Updates review link settings.
 
-    :Args:
+    Args:
       link_id (string): The review link id.
-    :Kwargs:
+
+    :Keyword Arguments:
       kwargs: additional request parameters.
 
-      Example::
+    Example::
 
-        client.review_links.update_settings(
-          link_id,
-          expires_at="2020-04-08T12:00:00+00:00",
-          is_active=False,
-          name="Review Link 123",
-          password="my_fun_password",
-        )
+      client.review_links.update_settings(
+        link_id,
+        expires_at="2020-04-08T12:00:00+00:00",
+        is_active=False,
+        name="Review Link 123",
+        password="my_fun_password",
+      )
     """
     endpoint = '/review_links/{}'.format(link_id)
     return self.client._api_call('put', endpoint, payload=kwargs)
@@ -104,18 +107,19 @@ class PresentationLink(Service):
     """
     Create a presentation link.
 
-    :Args:
+    Args:
       asset_id (string): The asset id.
-    :Kwargs:
+
+    :Keyword Arguments:
       kwargs: additional request parameters.
 
-      Example::
+    Example::
 
-        client.presentation_links.create(
-          asset_id="9cee7966-4066-b326-7db1-f9e6f5e929e4",
-          title="My fresh presentation",
-          password="abc123"
-        )
+      client.presentation_links.create(
+        asset_id="9cee7966-4066-b326-7db1-f9e6f5e929e4",
+        title="My fresh presentation",
+        password="abc123"
+      )
     """
     endpoint = '/assets/{}/presentations'.format(asset_id)
     return self.client._api_call('post', endpoint, payload=kwargs)

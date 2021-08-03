@@ -1,0 +1,8 @@
+sphinx
+sphinx-jekyll-builder
+sphinxcontrib-restbuilder
+contentful_management
+python-frontmatter
+# frameioclient
+xxhash
+furo

@@ -56,6 +56,26 @@ fioctl \
 --threads 2
 ```
 
+### Links
+
+**Sphinx Documentation**
+- https://pythonhosted.org/sphinxcontrib-restbuilder/
+- https://www.npmjs.com/package/rst-selector-parser
+- https://sphinx-themes.org/sample-sites/furo/_sources/index.rst.txt
+- https://developer.mantidproject.org/Standards/DocumentationGuideForDevs.html
+- https://sublime-and-sphinx-guide.readthedocs.io/en/latest/code_blocks.html
+- https://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html
+- https://stackoverflow.com/questions/64451966/python-sphinx-how-to-embed-code-into-a-docstring
+- https://pythonhosted.org/an_example_pypi_project/sphinx.html
+
+**Decorators**
+- https://docs.python.org/3.7/library/functools.html
+- https://realpython.com/primer-on-python-decorators/
+- https://www.sphinx-doc.org/en/master/usage/quickstart.html
+- https://www.geeksforgeeks.org/decorators-with-parameters-in-python/
+- https://stackoverflow.com/questions/43544954/why-does-sphinx-autodoc-output-a-decorators-docstring-when-there-are-two-decora
+
+
 ## Usage
 
 _Note: A valid token is required to make requests to Frame.io. Go to our [Developer Portal](https://developer.frame.io/) to get a token!_
