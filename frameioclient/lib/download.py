@@ -3,6 +3,7 @@ import os
 import sys
 import math
 import time
+import requests
 import enlighten
 import threading
 import concurrent.futures
@@ -15,7 +16,9 @@ from .telemetry import Event, ComparisonTest
 from .exceptions import (
   DownloadException,
   WatermarkIDDownloadException,
-  AssetNotFullyUploaded
+  AssetNotFullyUploaded,
+  AssetChecksumMismatch,
+  AssetChecksumNotPresent
 )
 
 class FrameioDownloader(object):
@@ -38,7 +41,8 @@ class FrameioDownloader(object):
     self.bytes_started = 0
     self.bytes_completed = 0
     self.in_progress = 0
-    self.session = AWSClient()._get_session(auth=None)
+    self.aws_client = AWSClient(concurrency=5)
+    self.session = self.aws_client._get_session(auth=None)
     self.filename = Utils.normalize_filename(asset["name"])
     self.request_logs = list()
 
@@ -73,10 +77,6 @@ class FrameioDownloader(object):
       self.original_checksum = None
 
   def _create_file_stub(self):
-    if self.replace == True:
-      os.remove(self.destination) # Remove the file
-      self._create_file_stub() # Create a new stub
-      
     try:
       fp = open(self.destination, "w")
       # fp.write(b"\0" * self.file_size) # Disabled to prevent pre-allocatation of disk space
@@ -142,9 +142,10 @@ class FrameioDownloader(object):
       print("Destination folder not found, creating")
       os.mkdir(self.download_folder)
 
-    if os.path.isfile(self.get_path()):
-      print("File already exists at this location.")
-      return self.destination
+    if not self.replace:
+      if os.path.isfile(self.get_path()):
+        print("File already exists at this location.")
+        return self.destination
     else:
       url = self.get_download_key()
 
@@ -232,14 +233,14 @@ class FrameioDownloader(object):
 
       status.update(stage='Downloading', color='green')
       
-      with concurrent.futures.ThreadPoolExecutor(max_workers=self.client.concurrency) as executor:
+      with concurrent.futures.ThreadPoolExecutor(max_workers=self.aws_client.concurrency) as executor:
         for i in range(int(self.chunks)):
           # Increment by the iterable + 1 so we don't mutiply by zero
           out_byte = offset * (i+1)
           # Create task tuple
           task = (url, in_byte, out_byte, i, in_progress)
           # Stagger start for each chunk by 0.1 seconds
-          if i < self.concurrency: time.sleep(0.1)
+          if i < self.aws_client.concurrency: time.sleep(0.1)
           # Append tasks to futures list
           self.futures.append(executor.submit(self._download_chunk, task))
           # Reset new in byte equal to last out byte
@@ -258,36 +259,43 @@ class FrameioDownloader(object):
         download_time = round((time.time() - start_time), 2)
         download_speed = round((self.file_size/download_time), 2)
 
-        # Perform hash-verification
-        status.update(stage='Verifying')
 
-        VERIFICATION_FORMAT = '{desc}{desc_pad}|{bar}|{percentage:3.0f}% ' + \
-                    'Progress: {count:.2j}/{total:.2j} ' + \
-                    '[{elapsed}<{eta}, {rate:.2j}{unit}/s]'
+      if self.checksum_verification == True:
+        # Check for checksum, if not present throw error
+        if self._get_checksum() == None:
+          raise AssetChecksumNotPresent
+        else:
+          # Perform hash-verification
+          status.update(stage='Verifying')
 
-        # Add counter to track completed chunks
-        verification = manager.counter(
-          position=1,
-          total=float(self.file_size),
-          desc='Verifying',
-          unit='B',
-          bar_format=VERIFICATION_FORMAT,
-          color='purple'
-        )
+          VERIFICATION_FORMAT = '{desc}{desc_pad}|{bar}|{percentage:3.0f}% ' + \
+                      'Progress: {count:.2j}/{total:.2j} ' + \
+                      '[{elapsed}<{eta}, {rate:.2j}{unit}/s]'
 
-        # Calculate the file hash
-        Utils.calculate_hash(self.destination, progress_callback=verification)
+          # Add counter to track completed chunks
+          verification = manager.counter(
+            position=1,
+            total=float(self.file_size),
+            desc='Verifying',
+            unit='B',
+            bar_format=VERIFICATION_FORMAT,
+            color='purple'
+          )
+
+          # Calculate the file hash
+          if Utils.calculate_hash(self.destination, progress_callback=verification) != self.original_checksum:
+            raise AssetChecksumMismatch
 
         # Update the header
         status.update(stage='Download Complete!', force=True)
 
-        # Log completion event
-        SDKLogger('downloads').info("Downloaded {} at {}".format(Utils.format_bytes(self.file_size, type="size"), download_speed))
+      # Log completion event
+      SDKLogger('downloads').info("Downloaded {} at {}".format(Utils.format_bytes(self.file_size, type="size"), download_speed))
 
-        # Submit telemetry
-        transfer_stats = {'speed': download_speed, 'time': download_time, 'cdn': AWSClient.check_cdn(url)}
+      # Submit telemetry
+      transfer_stats = {'speed': download_speed, 'time': download_time, 'cdn': AWSClient.check_cdn(url)}
 
-        Event(self.user_id, 'python-sdk-download-stats', transfer_stats)
+      Event(self.user_id, 'python-sdk-download-stats', transfer_stats)
 
     # If stats = True, we return a dict with way more info, otherwise \
     if self.stats:
@@ -305,17 +313,6 @@ class FrameioDownloader(object):
 
     return self.destination
     
-    if self.checksum_verification == True:
-      # Check for checksum, if not present throw error
-      if self._get_checksum() == None:
-        raise AssetChecksumNotPresent
-      else:
-        if Utils.calculate_hash(self.destination) != self.original_checksum:
-          raise AssetChecksumMismatch
-        else:
-          return self.destination
-    else:
-      return self.destination
 
   def _download_chunk(self, task):
     # Download a particular chunk

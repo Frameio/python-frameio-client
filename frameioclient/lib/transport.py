@@ -3,13 +3,13 @@ import logging
 import enlighten
 import requests
 import threading
-import concurrent.futures
 
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
 
 from .version import ClientVersion
-from .utils import Utils, PaginatedResponse
+from .utils import PaginatedResponse
+from .exceptions import PresentationException
 from .bandwidth import NetworkBandwidth, DiskBandwidth
 
 
@@ -46,7 +46,7 @@ class HTTPClient(object):
 
 
 class APIClient(HTTPClient, object):
-    def __init__(self, token, host='https://api.frame.io'):
+    def __init__(self, token, host):
         super().__init__()
         self.host = host
         self.token = token
@@ -64,7 +64,7 @@ class APIClient(HTTPClient, object):
         r = self.session.request(
             method,
             url,
-            headers=self.auth_header,
+            headers=headers,
             json=payload
         )
 
@@ -82,6 +82,7 @@ class APIClient(HTTPClient, object):
                         payload=payload,
                         client=self
                     )
+
             if isinstance(r.json(), list):
                 return r.json()[:limit]
 
@@ -155,7 +156,10 @@ class AWSClient(HTTPClient, object):
             AWSClient.get_byte_range(asset, "~./Downloads")
         """
 
-        headers = {"Range": "bytes=%d-%d" % (start_byte, end_byte)}
+        range_header = {"Range": "bytes=%d-%d" % (start_byte, end_byte)}
+        shared_headers = {'x-frameio-client': 'python/{}'.format(self.client_version)}
+        headers = {**shared_headers, **range_header}
+
         br = requests.get(url, headers=headers).content
         return br
 

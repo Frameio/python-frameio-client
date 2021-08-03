@@ -9,9 +9,8 @@ from frameioclient.lib.bandwidth import NetworkBandwidth
 def download(asset_id='', destination='downloads', clean_up=True, size='small'):
     token = os.getenv("FRAMEIO_TOKEN")
     client = FrameioClient(token)
-    client.assets.get
     asset_info = client.assets.get(asset_id)
-    download_info = client.assets.download(asset_info, destination, multi_part=True, concurrency=10, stats=True)
+    download_info = client.assets.download(asset_info, destination, multi_part=True, replace=True)
 
     if clean_up == True:
         os.remove(download_info['destination'])
