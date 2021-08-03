@@ -41,6 +41,11 @@ setuptools.setup(
       'bump2version',
     ]
   },
+  entry_points ={
+    'console_scripts': [
+      'fiocli = frameioclient.fiocli:main'
+    ]
+  },
   classifiers=[
     'Development Status :: 5 - Production/Stable',
     'Intended Audience :: Developers',

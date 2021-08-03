@@ -8,8 +8,8 @@ from .lib import (
 )
 
 class FrameioClient(APIClient, object):
-  def __init__(self, token, host='https://api.frame.io'):
-    super().__init__(token, host)
+  def __init__(self, token, host='https://api.frame.io', threads=5, progress=False):
+    super().__init__(token, host, threads, progress)
 
   @property
   def me(self):

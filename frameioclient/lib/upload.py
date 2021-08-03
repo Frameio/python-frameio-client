@@ -4,13 +4,17 @@ import requests
 import threading
 import concurrent.futures
 
+from .utils import Utils
+
 thread_local = threading.local()
 
 class FrameioUploader(object):
-  def __init__(self, asset, file):
+  def __init__(self, asset=None, file=None):
     self.asset = asset
     self.file = file
     self.chunk_size = None
+    self.file_count = 0
+    self.file_num = 0
 
   def _calculate_chunks(self, total_size, chunk_count):
     self.chunk_size = int(math.ceil(total_size / chunk_count))
@@ -76,3 +80,50 @@ class FrameioUploader(object):
         
         task = (url, chunk_offset, i)
         executor.submit(self._upload_chunk, task)
+
+
+  def file_counter(self, folder):
+      matches = []
+      for root, dirnames, filenames in os.walk(folder):
+          for filename in filenames:
+              matches.append(os.path.join(filename))
+
+      self.file_count = len(matches)
+
+      return matches
+
+  def recursive_upload(self, client, folder, parent_asset_id):
+      # Seperate files and folders:
+      file_list = list()
+      folder_list = list()
+
+      if self.file_count == 0:
+        self.file_counter(folder)
+
+      for item in os.listdir(folder):
+          if item == ".DS_Store": # Ignore .DS_Store files on Mac
+              continue
+
+          complete_item_path = os.path.join(folder, item)
+
+          if os.path.isfile(complete_item_path):
+              file_list.append(item)
+          else:
+              folder_list.append(item)
+
+      for file_p in file_list:
+          self.file_num += 1
+
+          complete_dir_obj = os.path.join(folder, file_p)
+          print(f"Starting {self.file_num:02d}/{self.file_count}, Size: {Utils.format_bytes(os.path.getsize(complete_dir_obj), type='size')}, Name: {file_p}")
+          client.assets.upload(parent_asset_id, complete_dir_obj)
+
+      for folder_name in folder_list:
+          new_folder = os.path.join(folder, folder_name)
+          new_parent_asset_id = client.assets.create(
+            parent_asset_id=parent_asset_id,
+            name=folder_name,
+            type="folder"
+          )['id']
+
+          self.recursive_upload(client, new_folder, new_parent_asset_id)
