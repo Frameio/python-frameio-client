@@ -1,92 +1,93 @@
 from ..lib.service import Service
 
+
 class Comment(Service):
-  def create(self, asset_id, **kwargs):
-    """
-    Create a comment.
+    def create(self, asset_id, **kwargs):
+        """
+        Create a comment.
 
-    Args:
-      asset_id (string): The asset id.
+        Args:
+          asset_id (string): The asset id.
 
-    :Keyword Arguments:
-      (optional) kwargs: additional request parameters.
+        :Keyword Arguments:
+          (optional) kwargs: additional request parameters.
 
-    Example::
+        Example::
 
-      client.comments.create(
-        asset_id="123abc",
-        text="Hello world"
-      )
-    """
-    endpoint = '/assets/{}/comments'.format(asset_id)
-    return self.client._api_call('post', endpoint, payload=kwargs)
+          client.comments.create(
+            asset_id="123abc",
+            text="Hello world"
+          )
+        """
+        endpoint = "/assets/{}/comments".format(asset_id)
+        return self.client._api_call("post", endpoint, payload=kwargs)
 
-  def get(self, comment_id, **kwargs):
-    """
-    Get a comment.
+    def get(self, comment_id, **kwargs):
+        """
+        Get a comment.
 
-    Args:
-      comment_id (string): The comment id.
-    """
-    endpoint = '/comments/{}'.format(comment_id)
-    return self.client._api_call('get', endpoint, **kwargs)
+        Args:
+          comment_id (string): The comment id.
+        """
+        endpoint = "/comments/{}".format(comment_id)
+        return self.client._api_call("get", endpoint, **kwargs)
 
-  def list(self, asset_id, **kwargs):
-    """
-    Get an asset's comments.
+    def list(self, asset_id, **kwargs):
+        """
+        Get an asset's comments.
 
-    Args:
-      asset_id (string): The asset id.
-    """
-    endpoint = '/assets/{}/comments'.format(asset_id)
-    return self.client._api_call('get', endpoint, **kwargs)
+        Args:
+          asset_id (string): The asset id.
+        """
+        endpoint = "/assets/{}/comments".format(asset_id)
+        return self.client._api_call("get", endpoint, **kwargs)
 
-  def update(self, comment_id, **kwargs):
-    """
-    Update a comment.
+    def update(self, comment_id, **kwargs):
+        """
+        Update a comment.
 
-    Args:
-      comment_id (string): The comment id.
+        Args:
+          comment_id (string): The comment id.
 
-    :Keyword Arguments:
-      (optional) kwargs: additional request parameters.
+        :Keyword Arguments:
+          (optional) kwargs: additional request parameters.
 
-    Example::
+        Example::
 
-      client.comments.update(
-        comment_id="123abc",
-        text="Hello world"
-      )
-    """
-    endpoint = '/comments/{}'.format(comment_id)
-    return self.client._api_call('post', endpoint, payload=kwargs)
+          client.comments.update(
+            comment_id="123abc",
+            text="Hello world"
+          )
+        """
+        endpoint = "/comments/{}".format(comment_id)
+        return self.client._api_call("post", endpoint, payload=kwargs)
 
-  def delete(self, comment_id):
-    """
-    Delete a comment.
+    def delete(self, comment_id):
+        """
+        Delete a comment.
 
-    Args:
-      comment_id (string): The comment id.
-    """
-    endpoint = '/comments/{}'.format(comment_id)
-    return self.client._api_call('delete', endpoint)
+        Args:
+          comment_id (string): The comment id.
+        """
+        endpoint = "/comments/{}".format(comment_id)
+        return self.client._api_call("delete", endpoint)
 
-  def reply(self, comment_id, **kwargs):
-    """
-    Reply to an existing comment.
+    def reply(self, comment_id, **kwargs):
+        """
+        Reply to an existing comment.
 
-    Args:
-      comment_id (string): The comment id.
+        Args:
+          comment_id (string): The comment id.
 
-    :Keyword Arguments:
-      (optional) kwargs: additional request parameters.
+        :Keyword Arguments:
+          (optional) kwargs: additional request parameters.
 
-    Example::
+        Example::
 
-      client.comments.reply(
-        comment_id="123abc",
-        text="Hello world"
-      )
-    """
-    endpoint = '/comments/{}/replies'.format(comment_id)
-    return self.client._api_call('post', endpoint, payload=kwargs)
+          client.comments.reply(
+            comment_id="123abc",
+            text="Hello world"
+          )
+        """
+        endpoint = "/comments/{}/replies".format(comment_id)
+        return self.client._api_call("post", endpoint, payload=kwargs)

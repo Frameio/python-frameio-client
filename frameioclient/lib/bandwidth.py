@@ -1,5 +1,6 @@
 import speedtest
 
+
 class NetworkBandwidth:
     # Test the network bandwidth any time we have a new IP address
     # Persist this information to a config.json file
@@ -43,14 +44,14 @@ class NetworkBandwidth:
     def __repr__(self):
         self.results
 
+
 class DiskBandwidth:
     # Test the disk speed and write to a config.json file for re-use
     # Worth re-checking the disk every time a new one is detected (base route)
-    
+
     def __init__(self, volume):
         self.volume = volume
         self.results = dict()
 
     def __repr__(self):
         self.results
-

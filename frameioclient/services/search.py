@@ -1,8 +1,21 @@
 from ..lib.service import Service
 
+
 class Search(Service):
-  def library(self, query, type=None, project_id=None, account_id=None, team_id=None, uploader=None, sort=None, filter=None, page_size=10, page=1):
-    """
+    def library(
+        self,
+        query,
+        type=None,
+        project_id=None,
+        account_id=None,
+        team_id=None,
+        uploader=None,
+        sort=None,
+        filter=None,
+        page_size=10,
+        page=1,
+    ):
+        """
     Search for assets using the library search endpoint, documented here \
         https://developer.frame.io/docs/workflows-assets/search-for-assets.
     
@@ -31,44 +44,32 @@ class Search(Service):
             )
     """
 
-    # Define base payload
-    payload = {
-        "account_id": account_id,
-        "q": query,
-        "sort": sort,
-        "page_size": page_size,
-        "page": page
-    }
-
-    # Add fully custom filter
-    if filter is not None:
-        payload['filter'] = filter
-
-    # Add simple filters
-    if project_id is not None:
-        payload['filter']['project_id'] = {
-            "op": "eq",
-            "value": project_id
-        }
-    if team_id is not None:
-        payload['filter']['team_id'] = {
-            "op": "eq",
-            "value": team_id
-        }
-    if type is not None:
-        payload['filter']['type'] = {
-            "op": "eq",
-            "value": type
-        }
-    if uploader is not None:
-        payload['filter']['creator.name'] = {
-            "op": "match",
-            "value": uploader
+        # Define base payload
+        payload = {
+            "account_id": account_id,
+            "q": query,
+            "sort": sort,
+            "page_size": page_size,
+            "page": page,
         }
 
-    # Add sorting
-    if sort is not None:
-        payload['sort'] = sort
+        # Add fully custom filter
+        if filter is not None:
+            payload["filter"] = filter
 
-    endpoint = '/search/library'
-    return self.client._api_call('post', endpoint, payload=payload)
+        # Add simple filters
+        if project_id is not None:
+            payload["filter"]["project_id"] = {"op": "eq", "value": project_id}
+        if team_id is not None:
+            payload["filter"]["team_id"] = {"op": "eq", "value": team_id}
+        if type is not None:
+            payload["filter"]["type"] = {"op": "eq", "value": type}
+        if uploader is not None:
+            payload["filter"]["creator.name"] = {"op": "match", "value": uploader}
+
+        # Add sorting
+        if sort is not None:
+            payload["sort"] = sort
+
+        endpoint = "/search/library"
+        return self.client._api_call("post", endpoint, payload=payload)

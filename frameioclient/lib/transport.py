@@ -8,6 +8,7 @@ from .version import ClientVersion
 from .utils import PaginatedResponse
 from .constants import default_thread_count
 from .exceptions import PresentationException
+
 # from .bandwidth import NetworkBandwidth, DiskBandwidth
 
 
@@ -19,7 +20,8 @@ class HTTPClient(object):
 
     Args:
         threads (int): Number of threads to use concurrently.
-    """    
+    """
+
     def __init__(self, threads=default_thread_count):
         # Setup number of threads to use
         self.threads = threads
@@ -28,7 +30,7 @@ class HTTPClient(object):
         self.thread_local = None
         self.client_version = ClientVersion.version()
         self.shared_headers = {
-            'x-frameio-client': 'python/{}'.format(self.client_version)
+            "x-frameio-client": "python/{}".format(self.client_version)
         }
 
         # Configure retry strategy (very broad right now)
@@ -36,7 +38,7 @@ class HTTPClient(object):
             total=3,
             backoff_factor=1,
             status_forcelist=[400, 429, 500, 503],
-            method_whitelist=["GET", "POST", "PUT", "GET", "DELETE"]
+            method_whitelist=["GET", "POST", "PUT", "GET", "DELETE"],
         )
 
         # Create real thread
@@ -49,7 +51,7 @@ class HTTPClient(object):
         if not hasattr(self.thread_local, "session"):
             http = requests.Session()
             adapter = HTTPAdapter(max_retries=self.retry_strategy)
-            adapter.add_headers(self.shared_headers) # add version header
+            adapter.add_headers(self.shared_headers)  # add version header
             http.mount("https", adapter)
             self.thread_local.session = http
 
@@ -64,7 +66,8 @@ class APIClient(HTTPClient, object):
         token (str): Frame.io developer token, JWT, or OAuth access token.
         threads (int): Number of threads to concurrently use for uploads/downloads.
         progress (bool): If True, show status bars in console.
-    """    
+    """
+
     def __init__(self, token, host, threads, progress):
         super().__init__(threads)
         self.host = host
@@ -73,36 +76,31 @@ class APIClient(HTTPClient, object):
         self.progress = progress
         self._initialize_thread()
         self.session = self._get_session()
-        self.auth_header = {
-            'Authorization': 'Bearer {}'.format(self.token)
-        }
+        self.auth_header = {"Authorization": "Bearer {}".format(self.token)}
 
     def _format_api_call(self, endpoint):
-        return '{}/v2{}'.format(self.host, endpoint)
+        return "{}/v2{}".format(self.host, endpoint)
 
     def _api_call(self, method, endpoint, payload={}, limit=None):
         headers = {**self.shared_headers, **self.auth_header}
 
         r = self.session.request(
-            method,
-            self._format_api_call(endpoint),
-            headers=headers,
-            json=payload
+            method, self._format_api_call(endpoint), headers=headers, json=payload
         )
 
         if r.ok:
-            if r.headers.get('page-number'):
-                if int(r.headers.get('total-pages')) > 1:
+            if r.headers.get("page-number"):
+                if int(r.headers.get("total-pages")) > 1:
                     return PaginatedResponse(
                         results=r.json(),
                         limit=limit,
-                        page_size=r.headers['per-page'],
-                        total_pages=r.headers['total-pages'],
-                        total=r.headers['total'],
+                        page_size=r.headers["per-page"],
+                        total_pages=r.headers["total-pages"],
+                        total=r.headers["total"],
                         endpoint=endpoint,
                         method=method,
                         payload=payload,
-                        client=self
+                        client=self,
                     )
 
             if isinstance(r.json(), list):
@@ -125,11 +123,10 @@ class APIClient(HTTPClient, object):
             payload (dict): Request payload
             page (int): What page to get
         """
-        if method == 'get':
-            endpoint = '{}?page={}'.format(endpoint, page)
+        if method == "get":
+            endpoint = "{}?page={}".format(endpoint, page)
             return self._api_call(method, endpoint)
 
-        if method == 'post':
-            payload['page'] = page
+        if method == "post":
+            payload["page"] = page
         return self._api_call(method, endpoint, payload=payload)
-
