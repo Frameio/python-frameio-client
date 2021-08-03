@@ -1,10 +1,6 @@
-import os
-import logging
-import enlighten
 import requests
 import threading
 
-from pprint import pprint
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
 
@@ -16,10 +12,13 @@ from .exceptions import PresentationException
 
 
 class HTTPClient(object):
-    """[summary]
+    """HTTP Client base that automatically handles the following:
+        - Shared thread/session object
+        - Client version headers
+        - Automated retries
 
     Args:
-        object ([type]): [description]
+        threads (int): Number of threads to use concurrently.
     """    
     def __init__(self, threads=default_thread_count):
         # Setup number of threads to use
@@ -58,6 +57,14 @@ class HTTPClient(object):
 
 
 class APIClient(HTTPClient, object):
+    """Frame.io API Client that handles automatic pagination, and lots of other nice things.
+
+    Args:
+        HTTPClient (class): HTTP Client base class
+        token (str): Frame.io developer token, JWT, or OAuth access token.
+        threads (int): Number of threads to concurrently use for uploads/downloads.
+        progress (bool): If True, show status bars in console.
+    """    
     def __init__(self, token, host, threads, progress):
         super().__init__(threads)
         self.host = host
