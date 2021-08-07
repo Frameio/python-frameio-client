@@ -6,7 +6,7 @@ from pprint import pprint
 from .logger import SDKLogger
 from .version import ClientVersion
 
-segment_id = os.environ["SEGMENT_WRITE_KEY"]  # Production
+segment_id = os.getenv("SEGMENT_WRITE_KEY", "")  # Production
 analytics.write_key = segment_id
 
 
