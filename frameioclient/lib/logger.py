@@ -1,7 +1,7 @@
 import logging
 
 
-class SDKLogger(object):
+class SDKLogger:
     def __init__(self, log_name):
         self.initialize_logger()
         self.logger = logging.getLogger(log_name)

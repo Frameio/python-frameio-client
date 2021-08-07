@@ -56,6 +56,9 @@ class AWSClient(HTTPClient, object):
             else:
                 print(e)
                 raise e
+        except TypeError as e:
+            print(e)
+            raise e
         return True
 
     def _optimize_concurrency(self):

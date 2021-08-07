@@ -1,8 +1,7 @@
 import os
-import time
 import mimetypes
 import concurrent.futures
-import threading
+
 from frameioclient import FrameioClient
 from pprint import pprint
 

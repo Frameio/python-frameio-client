@@ -2,6 +2,7 @@ import os
 import mimetypes
 
 from .projects import Project
+# from .helpers import FrameioHelpers
 
 from ..lib.service import Service
 from ..lib import FrameioUploader, FrameioDownloader, constants, Reference
@@ -236,11 +237,11 @@ class Asset(Service):
 
   def upload(self, destination_id, filepath, asset=None):
     """
-    Upload a file. The method will exit once the file is downloaded.
+    Upload a file. The method will exit once the file is uploaded.
 
     :Args:
       destination_id (uuid): The destination Project or Folder ID.
-      filepath (string): The locaiton of the file on your local filesystem \
+      filepath (string): The location of the file on your local filesystem \
         that you want to upload.
 
       Example::
@@ -256,13 +257,13 @@ class Asset(Service):
         folder_id = self.get(destination_id)['id']
     except Exception as e:
         # Then try to grab it as a project
-        folder_id = Project(self.client).get_project(destination_id)['root_asset_id']
+        folder_id = Project(self.client).get(destination_id)['root_asset_id']
     finally:
       file_info = self._build_asset_info(filepath)
 
       if not asset:
         try:
-          asset = self.create(folder_id,  
+          asset = self.create(folder_id,
               type="file",
               name=file_info['filename'],
               filetype=file_info['mimetype'],
@@ -297,3 +298,30 @@ class Asset(Service):
     """
     downloader = FrameioDownloader(asset, download_folder, prefix, multi_part, replace)
     return downloader.download_handler()
+
+  def upload_folder(self, source_path, destination_id):
+    """
+    Upload a folder full of assets, maintaining hierarchy. \
+       The method will exit once the file is uploaded.
+
+    :Args:
+      filepath (path): The location of the folder on your disk.
+      destination_id (uuid): The destination Project or Folder ID.
+
+      Example::
+        client.assets.upload("./file.mov", "1231-12414-afasfaf-aklsajflaksjfla")
+    """
+
+    # Check if destination is a project or folder
+    # If it's a project, well then we look up its root asset ID, otherwise we use the folder id provided
+    # Then we start our upload
+
+    try:
+        # First try to grab it as a folder
+        folder_id = self.get(destination_id)['id']
+    except Exception as e:
+        # Then try to grab it as a project
+        folder_id = Project(self.client).get(destination_id)['root_asset_id']
+    finally:
+      return FrameioUploader().recursive_upload(self.client, source_path, folder_id)
+
