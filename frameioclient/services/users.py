@@ -7,3 +7,8 @@ class User(Service):
         Get the current user.
         """
         return self.client._api_call("get", "/me")
+
+    def get_accounts(self):
+        """Get a list of accounts the user has access to
+        """
+        return self.client._api_call("get", "/accounts")
