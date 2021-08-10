@@ -1,13 +1,13 @@
 import requests
 import threading
 
+from urllib3.util.retry import Retry
 from requests.adapters import HTTPAdapter
-from requests.packages.urllib3.util.retry import Retry
 
 from .version import ClientVersion
 from .utils import PaginatedResponse
-from .constants import default_thread_count
 from .exceptions import PresentationException
+from .constants import default_thread_count, retryable_statuses
 
 # from .bandwidth import NetworkBandwidth, DiskBandwidth
 
@@ -35,9 +35,9 @@ class HTTPClient(object):
 
         # Configure retry strategy (very broad right now)
         self.retry_strategy = Retry(
-            total=3,
-            backoff_factor=1,
-            status_forcelist=[400, 429, 500, 503],
+            total=100,
+            backoff_factor=2,
+            status_forcelist=retryable_statuses,
             method_whitelist=["GET", "POST", "PUT", "GET", "DELETE"],
         )
 
@@ -47,14 +47,17 @@ class HTTPClient(object):
     def _initialize_thread(self):
         self.thread_local = threading.local()
 
-    def _get_session(self, auth=True):
+    def _get_session(self):
+        # Create session only if needed
         if not hasattr(self.thread_local, "session"):
             http = requests.Session()
             adapter = HTTPAdapter(max_retries=self.retry_strategy)
             adapter.add_headers(self.shared_headers)  # add version header
-            http.mount("https", adapter)
+            http.mount("https://", adapter)
+            http.mount("http://", adapter)
             self.thread_local.session = http
 
+        # Return session
         return self.thread_local.session
 
 
