@@ -140,7 +140,7 @@ class FrameioUploader(object):
                 parent_asset_id=parent_asset_id, name=folder_name, type="folder"
             )["id"]
 
-            self.recursive_upload(client, new_folder, new_parent_asset_id)
+            self.recursive_upload(client, new_folder, new_parent_asset_id, project_id)
 
         if client.threads > 1:
             # Multi-threaded create + upload

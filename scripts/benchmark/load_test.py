@@ -101,7 +101,7 @@ def load_test(
     remote_project_id,
     source_folder="",
     remote_destination="",
-    environment="staging",
+    environment="",
 ):
     if environment == "staging":
         token = os.getenv("FRAMEIO_TOKEN_STAGING")
@@ -113,7 +113,7 @@ def load_test(
         token = os.getenv("FRAMEIO_TOKEN")
         api_url = "https://api.frame.io"
 
-    client = FrameioClient(token, host=api_url, threads=20)
+    client = FrameioClient(token, host=api_url, threads=100)
     client.assets.upload_folder(
         source_path=source_folder, 
         destination_id=remote_destination,
