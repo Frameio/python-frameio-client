@@ -15,32 +15,17 @@ def create_n_upload(task):
     client=task[0]
     file_p=task[1]
     parent_asset_id=task[2]
-    abs_path = os.path.abspath(file_p)
-    file_s = os.path.getsize(file_p)
-    file_n = os.path.split(file_p)[1]
-    file_mime = mimetypes.guess_type(abs_path)[0]
-    
-    asset = client.create_asset(
-      parent_asset_id=parent_asset_id,  
-      name=file_n,
-      type="file",
-      filetype=file_mime,
-      filesize=file_s
-    )
-    
-    with open(abs_path, "rb") as ul_file:
-        asset_info = client.upload(asset, ul_file)
-    
+    asset_info = client.assets.upload(parent_asset_id, file_p)
+
     return asset_info
 
 
 def create_folder(folder_n, parent_asset_id):
-    asset = client.create_asset(
+    asset = client.assets.create_folder(
       parent_asset_id=parent_asset_id,  
       name=folder_n,
-      type="folder",
     )
-    
+
     return asset['id']
 
 
@@ -80,7 +65,7 @@ def recursive_upload(client, folder, parent_asset_id):
 
     for folder_i in folder_list:
         new_folder = os.path.join(folder, folder_i)
-        new_parent_asset_id = create_folder(folder_i, parent_asset_id)
+        new_parent_asset_id = client.assets.create_folder(parent_asset_id, folder_i)['id']
         recursive_upload(client, new_folder, new_parent_asset_id)
 
 

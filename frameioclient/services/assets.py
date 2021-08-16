@@ -20,7 +20,7 @@ class Asset(Service):
 
     return file_info
 
-  @Reference(operation="#getAsset")
+  # @Reference(operation="#getAsset")
   def get(self, asset_id):
     """
     Get an asset by id.
@@ -31,7 +31,7 @@ class Asset(Service):
     endpoint = '/assets/{}'.format(asset_id)
     return self.client._api_call('get', endpoint)
 
-  @Reference(operation="#getAssets")
+  # @Reference(operation="#getAssets")
   def get_children(self, asset_id, include=[], slim=False, **kwargs):
     """
     Get a folder.
@@ -81,7 +81,7 @@ class Asset(Service):
       
     return self.client._api_call('get', endpoint, kwargs)
 
-  @Reference(operation="#createAsset")
+  # @Reference(operation="#createAsset")
   def create(self, parent_asset_id, **kwargs):
     """
     Create an asset.
@@ -104,7 +104,7 @@ class Asset(Service):
     endpoint = '/assets/{}/children'.format(parent_asset_id)
     return self.client._api_call('post', endpoint, payload=kwargs)
 
-  @Reference(operation="#createAsset")
+  # @Reference(operation="#createAsset")
   def create_folder(self, parent_asset_id, name="New Folder"):
     """
     Create a new folder.
@@ -123,7 +123,7 @@ class Asset(Service):
     endpoint = '/assets/{}/children'.format(parent_asset_id)
     return self.client._api_call('post', endpoint, payload={"name": name, "type":"folder"})
 
-  @Reference(operation="#createAsset")
+  # @Reference(operation="#createAsset")
   def from_url(self, parent_asset_id, name, url):
     """
     Create an asset from a URL.
@@ -153,7 +153,7 @@ class Asset(Service):
     endpoint = '/assets/{}/children'.format(parent_asset_id)
     return self.client._api_call('post', endpoint, payload=payload)
 
-  @Reference(operation="#updateAsset")
+  # @Reference(operation="#updateAsset")
   def update(self, asset_id, **kwargs):
     """
     Updates an asset
@@ -169,7 +169,7 @@ class Asset(Service):
     endpoint = '/assets/{}'.format(asset_id)
     return self.client._api_call('put', endpoint, kwargs)
 
-  @Reference(operation="#copyAsset")
+  # @Reference(operation="#copyAsset")
   def copy(self, destination_folder_id, **kwargs):
     """
     Copy an asset
@@ -185,7 +185,7 @@ class Asset(Service):
     endpoint = '/assets/{}/copy'.format(destination_folder_id)
     return self.client._api_call('post', endpoint, kwargs)
 
-  @Reference(operation="#batchCopyAsset")
+  # @Reference(operation="#batchCopyAsset")
   def bulk_copy(self, destination_folder_id, asset_list=[], copy_comments=False):
     """Bulk copy assets
 
@@ -210,7 +210,7 @@ class Asset(Service):
     endpoint = '/batch/assets/{}/copy'.format(destination_folder_id)
     return self.client._api_call('post', endpoint, payload)
 
-  @Reference(operation="#deleteAsset")
+  # @Reference(operation="#deleteAsset")
   def delete(self, asset_id):
     """
     Delete an asset
@@ -235,6 +235,26 @@ class Asset(Service):
     uploader = FrameioUploader(asset, file)
     uploader.upload()
 
+  def _project_or_folder(self, id):
+    """Figure out of a given id is a Project ID or a Folder ID, and return its ID.
+
+    Args:
+        id (uuid): Project or Folder id 
+    """
+    # Check if destination is a project or folder
+    # If it's a project, well then we look up its root asset ID, otherwise we use the folder id provided
+    # Then we start our upload
+
+    try:
+      # First try to grab it as a folder
+      folder_id = self.get(id)['id']
+    except Exception as e:
+      # Then try to grab it as a project
+      project_info = Project(self.client).get(id)
+      folder_id = project_info['root_asset_id']
+
+    return folder_id
+
   def upload(self, destination_id, filepath, asset=None):
     """
     Upload a file. The method will exit once the file is uploaded.
@@ -248,37 +268,28 @@ class Asset(Service):
         client.assets.upload('1231-12414-afasfaf-aklsajflaksjfla', "./file.mov")
     """
 
-    # Check if destination is a project or folder
-    # If it's a project, well then we look up its root asset ID, otherwise we use the folder id provided
-    # Then we start our upload
+    folder_id = self._project_or_folder(destination_id)
+    file_info = self._build_asset_info(filepath)
+
+    # If an asset is NOT provided, then we create one to uplaod to
+    if not asset:
+      try:
+        asset = self.create(folder_id,
+            type="file",
+            name=file_info['filename'],
+            filetype=file_info['mimetype'],
+            filesize=file_info['filesize']
+        )
+
+      except Exception as e:
+          print(e)
 
     try:
-        # First try to grab it as a folder
-        folder_id = self.get(destination_id)['id']
+      with open(file_info['filepath'], "rb") as fp:
+        self._upload(asset, fp)
+
     except Exception as e:
-        # Then try to grab it as a project
-        folder_id = Project(self.client).get(destination_id)['root_asset_id']
-    finally:
-      file_info = self._build_asset_info(filepath)
-
-      if not asset:
-        try:
-          asset = self.create(folder_id,
-              type="file",
-              name=file_info['filename'],
-              filetype=file_info['mimetype'],
-              filesize=file_info['filesize']
-          )
-
-        except Exception as e:
-            print(e)
-
-        try:
-          with open(file_info['filepath'], "rb") as fp:
-            self._upload(asset, fp)
-
-        except Exception as e:
-            print(e)
+        print(e)
 
     return asset
 
@@ -324,4 +335,3 @@ class Asset(Service):
         folder_id = Project(self.client).get(destination_id)['root_asset_id']
     finally:
       return FrameioUploader().recursive_upload(self.client, source_path, folder_id)
-

@@ -1,4 +1,5 @@
 import os
+import time
 import math
 import requests
 import threading
@@ -16,6 +17,10 @@ class FrameioUploader(object):
         self.chunk_size = None
         self.file_count = 0
         self.file_num = 0
+        self.futures = []
+        self.completed_uploads = []
+        self.completed_other_tasks = []
+        self.map = dict()
 
     def _calculate_chunks(self, total_size, chunk_count):
         """Calculate chunk size
@@ -96,6 +101,8 @@ class FrameioUploader(object):
 
                 task = (url, chunk_offset, i)
                 executor.submit(self._upload_chunk, task)
+        
+        return self.asset
 
     def file_counter(self, folder):
         matches = []
@@ -126,15 +133,7 @@ class FrameioUploader(object):
             else:
                 folder_list.append(item)
 
-        for file_p in file_list:
-            self.file_num += 1
-
-            complete_dir_obj = os.path.join(folder, file_p)
-            print(
-                f"Starting {self.file_num:02d}/{self.file_count}, Size: {Utils.format_bytes(os.path.getsize(complete_dir_obj), type='size')}, Name: {file_p}"
-            )
-            client.assets.upload(parent_asset_id, complete_dir_obj)
-
+        # Create folders first
         for folder_name in folder_list:
             new_folder = os.path.join(folder, folder_name)
             new_parent_asset_id = client.assets.create(
@@ -142,3 +141,104 @@ class FrameioUploader(object):
             )["id"]
 
             self.recursive_upload(client, new_folder, new_parent_asset_id)
+
+        if client.threads > 1:
+            # Multi-threaded create + upload
+            with concurrent.futures.ThreadPoolExecutor(max_workers=150) as executor:
+                for index, file_p in enumerate(file_list):
+                    self.file_num += 1 # Increment file number
+                    complete_dir_obj = os.path.join(folder, file_p) # Get full path
+                    task = (client, complete_dir_obj, parent_asset_id, self.file_num) # Create task tuple
+                    self.futures.append(executor.submit(self._upload_processor, task)) # Submit to futures
+
+                    # Every 50 assets, request the project
+                    if index % 10 == 0:
+                        task = (client, '2214a3b1-2ed0-46de-9350-81f49ee49bc4', index)
+                        self.futures.append(executor.submit(self._project_tester, task))
+                    
+                    if index % 5 == 0:
+                        task = (client, index)
+                        self.futures.append(executor.submit(self._account_tester, task))
+
+                    time.sleep(.05)
+
+                # Wait on threads to finish
+                for future in concurrent.futures.as_completed(self.futures):
+                    response_info = dict()
+                    index = None
+
+                    try:
+                        response_info, index = future.result()
+                        # print(response_info, index)
+                    except Exception as exc:
+                        print(exc)
+
+                    try:
+                        if response_info.get('_type') != 'asset':
+                            self.completed_other_tasks.append(index)
+                            print("It's an account or a project GET")
+                            # print("Completed {}/{}".format(len(self.completed_uploads), self.file_count))
+                    except:
+                        pass
+
+                    try:
+                        if response_info.get('_type') == 'asset' and index not in self.completed_uploads:
+                            print("Completed {}/{}".format(len(self.completed_uploads), self.file_count))
+                            self.completed_uploads.append(index)
+                    except:
+                        pass
+        else:
+            # Single threaded
+            for file_p in file_list:
+                self.file_num += 1
+
+                complete_dir_obj = os.path.join(folder, file_p)
+                print(
+                    f"Starting {self.file_num:02d}/{self.file_count}, Size: {Utils.format_bytes(os.path.getsize(complete_dir_obj), type='size')}, Name: {file_p}"
+                )
+
+                client.assets.upload(parent_asset_id, complete_dir_obj)
+
+    @staticmethod
+    def _upload_processor(task):
+        client = task[0]
+        file_p = task[1]
+        parent_asset_id = task[2]
+        index = task[3]
+        asset_info = client.assets.upload(parent_asset_id, file_p)
+
+        if asset_info.get('id') != None:
+            print(f"Uploaded asset for request: {index}")
+        else:
+            print("Failed somehow")
+        
+        return asset_info, index
+
+    @staticmethod
+    def _project_tester(task):        
+        client = task[0]
+        project_id = task[1]
+        index = task[2]
+        project_info = client.projects.get(project_id)
+        
+        if project_info.get('id') != None:
+            print(f"Got project info for request: {index}")
+        else:
+            print("Failed somehow")
+        return project_info, index
+
+    @staticmethod
+    def _account_tester(task):
+        client = task[0]
+        index = task[1]
+        accounts_info = client.users.get_accounts()
+
+        try:    
+            if len(accounts_info) > 0:
+                print(f"Got account info for request: {index}")
+            else:
+                print("Failed somehow")
+        except Exception as e:
+            pass
+
+        return accounts_info, index

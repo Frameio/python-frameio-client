@@ -114,6 +114,10 @@ class APIClient(HTTPClient, object):
         if r.status_code == 422 and "presentation" in endpoint:
             raise PresentationException
 
+        if r.status_code == 429:
+            print("Got rate limited")
+            print(r.headers.get('x-ratelimit-remaining'))
+
         return r.raise_for_status()
 
     def get_specific_page(self, method, endpoint, payload, page):
