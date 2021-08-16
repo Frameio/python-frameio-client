@@ -97,7 +97,12 @@ def create_files_and_folders(
     return base_directory
 
 
-def load_test(source_folder="", remote_destination="", environment="staging"):
+def load_test(
+    remote_project_id,
+    source_folder="",
+    remote_destination="",
+    environment="staging",
+):
     if environment == "staging":
         token = os.getenv("FRAMEIO_TOKEN_STAGING")
         api_url = "https://api.staging.frame.io"
@@ -110,14 +115,18 @@ def load_test(source_folder="", remote_destination="", environment="staging"):
 
     client = FrameioClient(token, host=api_url, threads=20)
     client.assets.upload_folder(
-        source_path=source_folder, destination_id=remote_destination
+        source_path=source_folder, 
+        destination_id=remote_destination,
+        project_id=remote_project_id
     )
 
     return True
 
 
 if __name__ == "__main__":
+    # Set the remote project ID to use
     remote_project_id = "ed5d1f58-2ab3-4f20-9bca-c9026f5a8bd6"
+    # Set the remote root directory to upload into
     remote_root_asset_id = 'cf1d7ee6-14ae-422b-99d8-1f608696e023'
 
     # Uncomment to prevent creation of files/folders
@@ -125,7 +134,7 @@ if __name__ == "__main__":
     start_time = time.time()
 
     # Runs the load test using the upload directory we get back from the file and folder seed stage
-    load_test(upload_dir, remote_root_asset_id)
+    load_test(remote_project_id, upload_dir, remote_root_asset_id)
     
     end_time = time.time()
     print(f"Took {round((end_time - start_time), 2)} seconds.")

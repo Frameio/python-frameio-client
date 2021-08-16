@@ -114,7 +114,7 @@ class FrameioUploader(object):
 
         return matches
 
-    def recursive_upload(self, client, folder, parent_asset_id):
+    def recursive_upload(self, client, folder, parent_asset_id, project_id):
         # Seperate files and folders:
         file_list = list()
         folder_list = list()
@@ -153,7 +153,7 @@ class FrameioUploader(object):
 
                     # Every 50 assets, request the project
                     if index % 10 == 0:
-                        task = (client, '2214a3b1-2ed0-46de-9350-81f49ee49bc4', index)
+                        task = (client, project_id, index)
                         self.futures.append(executor.submit(self._project_tester, task))
                     
                     if index % 5 == 0:

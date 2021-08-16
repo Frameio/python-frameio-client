@@ -310,7 +310,7 @@ class Asset(Service):
     downloader = FrameioDownloader(asset, download_folder, prefix, multi_part, replace)
     return downloader.download_handler()
 
-  def upload_folder(self, source_path, destination_id):
+  def upload_folder(self, source_path, destination_id, project_id):
     """
     Upload a folder full of assets, maintaining hierarchy. \
        The method will exit once the file is uploaded.
@@ -334,4 +334,4 @@ class Asset(Service):
         # Then try to grab it as a project
         folder_id = Project(self.client).get(destination_id)['root_asset_id']
     finally:
-      return FrameioUploader().recursive_upload(self.client, source_path, folder_id)
+      return FrameioUploader().recursive_upload(self.client, source_path, folder_id, project_id)
