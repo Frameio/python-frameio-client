@@ -327,11 +327,14 @@ class Asset(Service):
     # If it's a project, well then we look up its root asset ID, otherwise we use the folder id provided
     # Then we start our upload
 
-    try:
-        # First try to grab it as a folder
-        folder_id = self.get(destination_id)['id']
-    except Exception as e:
-        # Then try to grab it as a project
-        folder_id = Project(self.client).get(destination_id)['root_asset_id']
-    finally:
-      return FrameioUploader().recursive_upload(self.client, source_path, folder_id, project_id)
+    # try:
+    #     # First try to grab it as a folder
+    #     folder_id = self.get(destination_id)['id']
+    # except Exception as e:
+    #     # Then try to grab it as a project
+    #     folder_id = Project(self.client).get(destination_id)['root_asset_id']
+
+    folder_id = destination_id
+
+    # finally:
+    return FrameioUploader().recursive_upload(self.client, source_path, folder_id, project_id)

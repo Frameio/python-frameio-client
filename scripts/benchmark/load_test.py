@@ -130,8 +130,10 @@ if __name__ == "__main__":
     remote_root_asset_id = 'cf1d7ee6-14ae-422b-99d8-1f608696e023'
 
     # Uncomment to prevent creation of files/folders
-    upload_dir = create_files_and_folders(depth=10, clips=1) # Will create a folder depth of 10 and then make 1,440 frames
+    # upload_dir = create_files_and_folders(depth=10, clips=1) # Will create a folder depth of 10 and then make 1,440 frames
     start_time = time.time()
+
+    upload_dir = base_directory
 
     # Runs the load test using the upload directory we get back from the file and folder seed stage
     load_test(remote_project_id, upload_dir, remote_root_asset_id)
