@@ -7,7 +7,12 @@ class SDKLogger:
         self.logger = logging.getLogger(log_name)
 
     def initialize_logger(self):
-        logging.basicConfig(level=logging.INFO)
+        logging.basicConfig(
+            filename="sdk.log",
+            format='%(asctime)s:%(levelname)-s:%(filename)s:%(funcName)s:%(lineno)-3s:%(message)s', 
+            filemode='a',
+            level=logging.INFO
+        )
 
     def info(self, message):
         self.logger.info(message)

@@ -1,14 +1,18 @@
 import re
 import sys
-import xxhash
+from typing import Generator, List
+
 import enlighten
+import xxhash
+from furl import furl
 
 KB = 1024
 MB = KB * KB
 
 
 def Reference(*args, **kwargs):
-    print(kwargs["operation"])
+    # print(kwargs["operation"])
+    # Disabled for now until I figure out how I really want this to work
 
     def inner(func):
         """
@@ -21,26 +25,33 @@ def Reference(*args, **kwargs):
 
 class Utils:
     @staticmethod
-    def stream(func, page=1, page_size=20):
+    def stream_function(func, page=1, page_size=50, total_pages=2): # total_pages gets overriden on the first iteration
         """
-      Accepts a lambda of a call to a client list method, and streams the results until \
-        the list has been exhausted.
+        Accepts a lambda of a call to a client list method, and streams the results until \
+            the list has been exhausted.
 
-      Args:
-          fun (function): A 1-arity function to apply during the stream
+        Args:
+            fun (function): A 1-arity function to apply during the stream
 
-      Example::
-      
-          stream(lambda pagination: client.get_collaborators(project_id, **pagination))
-      """
-        total_pages = page
+        Example::
+            stream(lambda pagination: client.get_collaborators(project_id, **pagination))
+        """
         while page <= total_pages:
             result_list = func(page=page, page_size=page_size)
             total_pages = result_list.total_pages
             for res in result_list:
                 yield res
-
             page += 1
+
+    @staticmethod
+    def stream_results(endpoint, client=None, page=1, page_size=50, **_kwargs) -> Generator:
+        def fetch_page(page=1, page_size=50):
+            return client._api_call(
+                "get", furl(endpoint).add({"page": page, "page_size": page_size}).url
+            )
+
+        for result in Utils.stream_function(fetch_page, page=page, page_size=page_size):
+            yield result
 
     @staticmethod
     def format_bytes(size, type="speed"):
@@ -65,7 +76,7 @@ class Utils:
             return formatted
 
     @staticmethod
-    def calculate_hash(file_path, progress_callback=None):
+    def calculate_hash(file_path):
         """
         Calculate an xx64hash
         """
@@ -78,10 +89,6 @@ class Utils:
                 break
 
             xxh64_hash.update(b[:numread])
-            if progress_callback:
-                # Should only subtract 1 here when necessary, not every time!
-                progress_callback.update(float(numread - 1), force=True)
-
         xxh64_digest = xxh64_hash.hexdigest()
 
         return xxh64_digest
@@ -146,6 +153,24 @@ class Utils:
 
 
 class PaginatedResponse(object):
+    def __init__(
+        self,
+        results: List = [],
+        page: int = 0,
+        page_size: int = 0,
+        total: int = 0,
+        total_pages: int = 0,
+    ):
+        self.results = results
+        self.page = int(page)
+        self.page_size = int(page_size)
+        self.total = int(total)
+        self.total_pages = int(total_pages)
+
+    def __iter__(self):
+        return iter(self.results)
+
+class NewPaginatedResponse(object):
     def __init__(
         self,
         results=[],

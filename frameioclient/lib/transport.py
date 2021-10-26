@@ -1,15 +1,18 @@
-import requests
 import threading
 
-from urllib3.util.retry import Retry
+import requests
 from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 
-from .version import ClientVersion
-from .utils import PaginatedResponse
-from .exceptions import PresentationException
+from .logger import SDKLogger
 from .constants import default_thread_count, retryable_statuses
+from .exceptions import PresentationException
+from .utils import PaginatedResponse
+from .version import ClientVersion
 
 # from .bandwidth import NetworkBandwidth, DiskBandwidth
+
+logger = SDKLogger(__file__)
 
 
 class HTTPClient(object):
@@ -94,16 +97,15 @@ class APIClient(HTTPClient, object):
         if r.ok:
             if r.headers.get("page-number"):
                 if int(r.headers.get("total-pages")) > 1:
+                    logger.info(
+                        f"Returning PaginatedResponse, page: {r.headers.get('page-number')}"
+                    )
                     return PaginatedResponse(
-                        results=r.json(),
-                        limit=limit,
-                        page_size=r.headers["per-page"],
-                        total_pages=r.headers["total-pages"],
-                        total=r.headers["total"],
-                        endpoint=endpoint,
-                        method=method,
-                        payload=payload,
-                        client=self,
+                        r.json(),
+                        page=r.headers.get("page-number"),
+                        page_size=r.headers.get("per-page"),
+                        total=r.headers.get("total"),
+                        total_pages=r.headers.get("total-pages"),
                     )
 
             if isinstance(r.json(), list):
