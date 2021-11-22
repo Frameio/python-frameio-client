@@ -54,7 +54,7 @@ class FrameioHelpers(Service):
                 # Don't do nothing, it's a file!
                 continue
 
-            if asset["_type"] == "verson_stack":
+            if asset["_type"] == "version_stack":
                 print("Grabbing top item from version stack")
                 versions = self.client.assets.get_children(asset["id"], slim=True)
                 asset = versions[0]  # re-assign on purpose
