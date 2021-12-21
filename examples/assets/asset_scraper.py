@@ -35,7 +35,7 @@ def get_teams_from_account(client: FrameioClient) -> Dict:
     acct = client.users.get_me()
     acct_id = acct["account_id"]
     team_name_kv = dict()
-    for team in client.teams.list(acct_id)[3:4]:
+    for team in client.teams.list(acct_id):
         team_name_kv[team["id"]] = team["name"]
     return team_name_kv
 
@@ -80,7 +80,7 @@ def scrape_asset_data_from_projects(
     Returns a list of asset metadata for all assets contained in the project.
     """
     assets_in_projects = []
-    for project in projects[1:2]:
+    for project in projects:
         print("Debug: Scanning project: {} for assets".format(project["name"]))
         assets_in_project = []
         proj_root_asset_id = project.get("root_asset_id")
