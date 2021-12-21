@@ -1,14 +1,13 @@
 import re
 import sys
 import xxhash
-import enlighten
 
 KB = 1024
 MB = KB * KB
 
 
 def Reference(*args, **kwargs):
-    print(kwargs["operation"])
+    # print(kwargs["operation"])
 
     def inner(func):
         """
