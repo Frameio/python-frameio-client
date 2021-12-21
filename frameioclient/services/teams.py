@@ -26,12 +26,12 @@ class Team(Service):
 
     def list(self, account_id, **kwargs):
         """
-    Get teams owned by the specified account. \
-      (To return all teams, use list_all())
-    
-    Args:
-      account_id (string): The account id.
-    """
+        Get teams owned by the specified account. \
+          (To return all teams, use list_all())
+        
+        Args:
+          account_id (string): The account id.
+        """
         endpoint = "/accounts/{}/teams".format(account_id)
         return self.client._api_call("get", endpoint, kwargs)
 
