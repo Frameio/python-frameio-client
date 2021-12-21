@@ -116,7 +116,7 @@ class FrameioUploader(object):
             # Add counter to track completed chunks
             initializing = manager.counter(
                 position=2,
-                total=float(self.asset['filesize']),
+                total=float(self.asset["filesize"]),
                 desc="Progress",
                 unit="B",
                 bar_format=BAR_FORMAT,
@@ -149,7 +149,6 @@ class FrameioUploader(object):
                         )
                     except Exception as exc:
                         print(exc)
-
 
     def file_counter(self, folder):
         matches = []

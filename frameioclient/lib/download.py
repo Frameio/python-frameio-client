@@ -8,13 +8,14 @@ from .transfer import AWSClient
 
 # from .telemetry import Event, ComparisonTest
 
-logger = SDKLogger('downloads')
+logger = SDKLogger("downloads")
 
 from .exceptions import (
     DownloadException,
     WatermarkIDDownloadException,
     AssetNotFullyUploaded,
 )
+
 
 class FrameioDownloader(object):
     def __init__(self, asset, download_folder, prefix, multi_part=False, replace=False):

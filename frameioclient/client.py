@@ -15,7 +15,7 @@ class FrameioClient(APIClient):
         token,
         host: str = Config.api_host,
         threads: int = Config.default_concurrency,
-        progress=False
+        progress=False,
     ):
         super().__init__(token, host, threads, progress)
 
