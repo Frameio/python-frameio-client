@@ -6,16 +6,24 @@ from frameioclient import FrameioClient
 from frameioclient.lib.bandwidth import NetworkBandwidth
 
 
-def download(asset_id='', destination='downloads', clean_up=True, size='small'):
+def download(
+    asset_id: str = "",
+    destination: str = "downloads",
+    clean_up: bool = True,
+    size: str = "small",
+):
     token = os.getenv("FRAMEIO_TOKEN")
     client = FrameioClient(token)
     asset_info = client.assets.get(asset_id)
-    download_info = client.assets.download(asset_info, destination, multi_part=True, replace=True)
+    download_info = client.assets.download(
+        asset_info, destination, multi_part=True, replace=True
+    )
 
     if clean_up == True:
-        os.remove(download_info['destination'])
+        os.remove(download_info["destination"])
 
     return download_info
+
 
 def test_s3():
     asset_list = []
@@ -26,14 +34,20 @@ def test_s3():
 
     return stats
 
+
 def test_cloudfront():
-    asset_list = ['811baf7a-3248-4c7c-9d94-cc1c6c496a76','35f8ac33-a710-440e-8dcc-f98cfd90e0e5','e981f087-edbb-448d-baad-c8363b78f5ae']
+    asset_list = [
+        "811baf7a-3248-4c7c-9d94-cc1c6c496a76",
+        "35f8ac33-a710-440e-8dcc-f98cfd90e0e5",
+        "e981f087-edbb-448d-baad-c8363b78f5ae",
+    ]
     stats = []
     for asset in asset_list:
         report = download(asset_id=asset)
         stats.append(report)
 
     return stats
+
 
 def build_metric(s3_stats, cf_stats, baseline):
     # Compare S3 against the baseline after calculating the average of the runs
@@ -44,6 +58,7 @@ def build_metric(s3_stats, cf_stats, baseline):
     # Report which CDN we hit
     print("Thing")
     pass
+
 
 def run_benchmark():
     s3_stats = test_s3()

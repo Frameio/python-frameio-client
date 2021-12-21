@@ -5,6 +5,7 @@ import enlighten
 import requests
 import concurrent.futures
 
+
 from .utils import Utils
 from .logger import SDKLogger
 
@@ -19,11 +20,15 @@ from .transport import HTTPClient
 
 
 class AWSClient(HTTPClient, object):
-    def __init__(self, concurrency=None, progress=True):
+    def __init__(self, downloader, concurrency=None, progress=True):
         super().__init__()  # Initialize via inheritance
         self.progress = progress
         self.progress_manager = None
         self.destination = None
+        self.bytes_started = 0
+        self.bytes_completed = 0
+        self.downloader = downloader
+        self.futures = []
 
         # Ensure this is a valid number before assigning
         if concurrency is not None and type(concurrency) == int and concurrency > 0:
@@ -46,12 +51,12 @@ class AWSClient(HTTPClient, object):
 
     def _create_file_stub(self):
         try:
-            fp = open(self.destination, "w")
+            fp = open(self.downloader.destination, "w")
             # fp.write(b"\0" * self.file_size) # Disabled to prevent pre-allocatation of disk space
             fp.close()
         except FileExistsError as e:
             if self.replace == True:
-                os.remove(self.destination)  # Remove the file
+                os.remove(self.downloader.destination)  # Remove the file
                 self._create_file_stub()  # Create a new stub
             else:
                 print(e)
@@ -61,24 +66,24 @@ class AWSClient(HTTPClient, object):
             raise e
         return True
 
-    def _optimize_concurrency(self):
-        """
-        This method looks as the net_stats and disk_stats that we've run on \
-            the current environment in order to suggest the best optimized \
-            number of concurrent TCP connections.
+    # def _optimize_concurrency(self):
+    #     """
+    #     This method looks as the net_stats and disk_stats that we've run on \
+    #         the current environment in order to suggest the best optimized \
+    #         number of concurrent TCP connections.
 
-        Example::
-            AWSClient._optimize_concurrency()
-        """
+    #     Example::
+    #         AWSClient._optimize_concurrency()
+    #     """
 
-        net_stats = NetworkBandwidth
-        disk_stats = DiskBandwidth
+    #     net_stats = NetworkBandwidth
+    #     disk_stats = DiskBandwidth
 
-        # Algorithm ensues
-        #
-        #
+    #     # Algorithm ensues
+    #     #
+    #     #
 
-        return 5
+    #     return 5
 
     def _get_byte_range(self, url, start_byte=0, end_byte=2048):
         """
@@ -101,11 +106,11 @@ class AWSClient(HTTPClient, object):
         br = requests.get(url, headers=headers).content
         return br
 
-    def _download_whole(self, url):
+    def _download_whole(self, url: str):
         start_time = time.time()
         print(
             "Beginning download -- {} -- {}".format(
-                self.asset["name"], Utils.format_bytes(self.file_size, type="size")
+                self.asset["name"], Utils.format_bytes(self.downloader.file_size, type="size")
             )
         )
 
@@ -113,7 +118,7 @@ class AWSClient(HTTPClient, object):
         r = self.session.get(url, stream=True)
 
         # Downloading
-        with open(self.destination, "wb") as handle:
+        with open(self.downloader.destination, "wb") as handle:
             try:
                 # TODO make sure this approach works for SBWM download
                 for chunk in r.iter_content(chunk_size=4096):
@@ -123,10 +128,10 @@ class AWSClient(HTTPClient, object):
                 raise e
 
         download_time = time.time() - start_time
-        download_speed = Utils.format_bytes(math.ceil(self.file_size / (download_time)))
+        download_speed = Utils.format_bytes(math.ceil(self.downloader.file_size / (download_time)))
         print(
             "Downloaded {} at {}".format(
-                Utils.format_bytes(self.file_size, type="size"), download_speed
+                Utils.format_bytes(self.downloader.file_size, type="size"), download_speed
             )
         )
 
@@ -146,9 +151,9 @@ class AWSClient(HTTPClient, object):
         # Set the initial chunk_size, but prepare to overwrite
         chunk_size = end_byte - start_byte
 
-        if self.bytes_started + (chunk_size) > self.file_size:
+        if self.bytes_started + (chunk_size) > self.downloader.file_size:
             difference = abs(
-                self.file_size - (self.bytes_started + chunk_size)
+                self.downloader.file_size - (self.bytes_started + chunk_size)
             )  # should be negative
             chunk_size = chunk_size - difference
             print(f"Chunk size as done via math: {chunk_size}")
@@ -184,11 +189,11 @@ class AWSClient(HTTPClient, object):
 
         # Increase the count for bytes_completed, but only if it doesn't overrun file length
         self.bytes_completed += chunk_size
-        if self.bytes_completed > self.file_size:
-            self.bytes_completed = self.file_size
+        if self.bytes_completed > self.downloader.file_size:
+            self.bytes_completed = self.downloader.file_size
 
         # Update the in_progress bar
-        self._update_in_progress()
+        self.downloader._update_in_progress()
 
         # After the function completes, we report back the # of bytes transferred
         return chunk_size
@@ -199,16 +204,15 @@ class AWSClient(HTTPClient, object):
         # Generate stub
         try:
             self._create_file_stub()
-
         except Exception as e:
             raise DownloadException(message=e)
 
-        offset = math.ceil(self.file_size / self.chunks)
+        offset = math.ceil(self.downloader.file_size / self.downloader.chunks)
         in_byte = 0  # Set initially here, but then override
 
         print(
             "Multi-part download -- {} -- {}".format(
-                self.asset["name"], Utils.format_bytes(self.file_size, type="size")
+                self.downloader.asset["name"], Utils.format_bytes(self.downloader.file_size, type="size")
             )
         )
 
@@ -234,7 +238,7 @@ class AWSClient(HTTPClient, object):
             # Add counter to track completed chunks
             initializing = manager.counter(
                 position=2,
-                total=float(self.file_size),
+                total=float(self.downloader.file_size),
                 desc="Progress",
                 unit="B",
                 bar_format=BAR_FORMAT,
@@ -250,15 +254,15 @@ class AWSClient(HTTPClient, object):
             status.update(stage="Downloading", color="green")
 
             with concurrent.futures.ThreadPoolExecutor(
-                max_workers=self.aws_client.concurrency
+                max_workers=self.concurrency
             ) as executor:
-                for i in range(int(self.chunks)):
+                for i in range(int(self.downloader.chunks)):
                     # Increment by the iterable + 1 so we don't mutiply by zero
                     out_byte = offset * (i + 1)
                     # Create task tuple
                     task = (url, in_byte, out_byte, i, in_progress)
                     # Stagger start for each chunk by 0.1 seconds
-                if i < self.aws_client.concurrency:
+                if i < self.concurrency:
                     time.sleep(0.1)
                     # Append tasks to futures list
                     self.futures.append(executor.submit(self._download_chunk, task))
@@ -278,11 +282,11 @@ class AWSClient(HTTPClient, object):
 
                 # Calculate and print stats
                 download_time = round((time.time() - start_time), 2)
-                download_speed = round((self.file_size / download_time), 2)
+                download_speed = round((self.downloader.file_size / download_time), 2)
 
-            if self.checksum_verification == True:
+            if self.downloader.checksum_verification == True:
                 # Check for checksum, if not present throw error
-                if self._get_checksum() == None:
+                if self.downloader._get_checksum() == None:
                     raise AssetChecksumNotPresent
                 else:
                     # Perform hash-verification
@@ -297,7 +301,7 @@ class AWSClient(HTTPClient, object):
                 # Add counter to track completed chunks
                 verification = manager.counter(
                     position=1,
-                    total=float(self.file_size),
+                    total=float(self.downloader.file_size),
                     desc="Verifying",
                     unit="B",
                     bar_format=VERIFICATION_FORMAT,
@@ -319,7 +323,7 @@ class AWSClient(HTTPClient, object):
             # Log completion event
             SDKLogger("downloads").info(
                 "Downloaded {} at {}".format(
-                    Utils.format_bytes(self.file_size, type="size"), download_speed
+                    Utils.format_bytes(self.downloader.file_size, type="size"), download_speed
                 )
             )
 
@@ -340,9 +344,9 @@ class AWSClient(HTTPClient, object):
                     "speed": download_speed,
                     "elapsed": download_time,
                     "cdn": AWSClient.check_cdn(url),
-                    "concurrency": self.aws_client.concurrency,
-                    "size": self.file_size,
-                    "chunks": self.chunks,
+                    "concurrency": self.concurrency,
+                    "size": self.downloader.file_size,
+                    "chunks": self.downloader.chunks,
                 }
                 return dl_info
             else:

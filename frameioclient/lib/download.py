@@ -1,5 +1,6 @@
 import os
 import math
+from typing import Dict
 
 from .utils import Utils
 
@@ -18,7 +19,14 @@ from .exceptions import (
 
 
 class FrameioDownloader(object):
-    def __init__(self, asset, download_folder, prefix, multi_part=False, replace=False):
+    def __init__(
+        self,
+        asset: Dict,
+        download_folder: str,
+        prefix: str,
+        multi_part: bool = False,
+        replace: bool = False,
+    ):
         self.multi_part = multi_part
         self.asset = asset
         self.asset_type = None
@@ -38,8 +46,8 @@ class FrameioDownloader(object):
         self.bytes_started = 0
         self.bytes_completed = 0
         self.in_progress = 0
-        self.aws_client = AWSClient(concurrency=5)
-        self.session = self.aws_client._get_session()
+        self.aws_client = None
+        self.session = None
         self.filename = Utils.normalize_filename(asset["name"])
         self.request_logs = list()
         self.stats = True
@@ -162,9 +170,13 @@ class FrameioDownloader(object):
         # Get URL
         url = self.get_download_key()
 
+        # AWS Client
+        self.aws_client = AWSClient(downloader=self, concurrency=5)
+
         # Handle watermarking
         if self.watermarked == True:
-            return self.aws_client()._download_whole(url)
+            return self.aws_client._download_whole(url)
+
         else:
             # Don't use multi-part download for files below 25 MB
             if self.asset["filesize"] < 26214400:
