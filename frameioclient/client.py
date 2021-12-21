@@ -3,12 +3,20 @@ client.py
 ====================================
 The core module of the frameioclient
 """
-from .lib import APIClient, Telemetry, ClientVersion, ClientVersion, FrameioDownloader
+
+from .config import Config
+from .lib import APIClient, ClientVersion, FrameioDownloader, Telemetry
 from .services import *
 
 
 class FrameioClient(APIClient):
-    def __init__(self, token, host="https://api.frame.io", threads=5, progress=False):
+    def __init__(
+        self,
+        token,
+        host: str = Config.api_host,
+        threads: int = Config.default_concurrency,
+        progress=False
+    ):
         super().__init__(token, host, threads, progress)
 
     @property
