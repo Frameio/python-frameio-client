@@ -39,7 +39,7 @@ class FrameioDownloader(object):
         self.bytes_completed = 0
         self.in_progress = 0
         self.aws_client = AWSClient(concurrency=5)
-        self.session = self.aws_client._get_session(auth=None)
+        self.session = self.aws_client._get_session()
         self.filename = Utils.normalize_filename(asset["name"])
         self.request_logs = list()
         self.stats = True
