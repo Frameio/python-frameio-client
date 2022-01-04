@@ -38,9 +38,9 @@ class Telemetry(object):
             status = analytics.track(
                 self.user_id,
                 event_name,
-                properties={**properties},
-                context={**self.build_context()},
-                integrations={**self.integrations},
+                properties=properties,
+                context=self.build_context(),
+                integrations=self.integrations,
             )
         except Exception as e:
             self.logger.info(e, event_name, properties)
