@@ -101,7 +101,6 @@ class FrameioHelpers(Service):
         # print(f"Downloading {Utils.format_bytes(total_bytes, type='size')}")
 
     def recursive_downloader(self, directory, asset, count=0):
-        # TODO resolve this clusterfuck of downloads
         print(f"Directory {directory}")
 
         try:
