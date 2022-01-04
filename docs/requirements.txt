@@ -8,3 +8,4 @@ xxhash
 furo
 analytics-python
 token-bucket
+speedtest-cli
