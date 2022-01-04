@@ -14,7 +14,7 @@ def ApiReference(*args, **kwargs):
         do operations with func
         """
         if ENV == 'build':
-            print(f"API Operation: {kwargs.get('operation')}")
+            print("API Operation: {}".format(kwargs.get('operation')))
 
         return func
 
