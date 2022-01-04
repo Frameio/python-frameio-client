@@ -32,6 +32,7 @@ setuptools.setup(
     'futures; python_version == "2.7"',
     'importlib-metadata ~= 1.0 ; python_version < "3.8"',
     'requests',
+    'token-bucket',
     'speedtest-cli',
     'urllib3',
     'xxhash',
