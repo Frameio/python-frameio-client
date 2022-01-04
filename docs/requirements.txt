@@ -3,6 +3,7 @@ sphinx-jekyll-builder
 sphinxcontrib-restbuilder
 contentful_management
 python-frontmatter
-# frameioclient
+frameioclient
 xxhash
 furo
+analytics-python
