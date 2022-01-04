@@ -1,15 +1,16 @@
-import requests
+import concurrent.futures
 import threading
+import time
 
-from urllib3.util.retry import Retry
+import requests
 from requests.adapters import HTTPAdapter
+from token_bucket import Limiter, MemoryStorage
+from urllib3.util.retry import Retry
 
-from .version import ClientVersion
-from .utils import PaginatedResponse
-from .exceptions import PresentationException
 from .constants import default_thread_count, retryable_statuses
-
-# from .bandwidth import NetworkBandwidth, DiskBandwidth
+from .exceptions import PresentationException
+from .utils import PaginatedResponse
+from .version import ClientVersion
 
 
 class HTTPClient(object):
@@ -133,3 +134,43 @@ class APIClient(HTTPClient, object):
         if method == "post":
             payload["page"] = page
         return self._api_call(method, endpoint, payload=payload)
+
+    def exec_stream(callable, iterable, sync=lambda _: False, capacity=10, rate=10):
+        """
+        Executes a stream according to a defined rate limit.
+        """
+        limiter = Limiter(capacity, rate, MemoryStorage())
+        futures = set()
+
+        def execute(operation):
+            return (operation, callable(operation))
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=capacity) as executor:
+            while True:
+                if not limiter.consume("stream", 1):
+                    start = int(time.time())
+                    done, pending = concurrent.futures.wait(
+                        futures, return_when=concurrent.futures.FIRST_COMPLETED
+                    )
+                    for future in done:
+                        yield future.result()
+
+                    futures = pending
+                    if (int(time.time()) - start) < 1:
+                        time.sleep(
+                            1.0 / rate
+                        )  # guarantee there's capacity in the rate limit at end of the loop
+
+                operation = next(iterable, None)
+
+                if not operation:
+                    done, _ = concurrent.futures.wait(futures)
+                    for future in done:
+                        yield future.result()
+                    break
+
+                if sync(operation):
+                    yield execute(operation)
+                    continue
+
+                futures.add(executor.submit(execute, operation))

@@ -1,18 +1,21 @@
+import os
 import re
 import sys
+
 import xxhash
 
 KB = 1024
 MB = KB * KB
+ENV = os.getenv('FRAMEIO_ENVIRONMENT', 'prod')
 
-
-def Reference(*args, **kwargs):
-    # print(kwargs["operation"])
-
+def ApiReference(*args, **kwargs):
     def inner(func):
         """
         do operations with func
         """
+        if ENV == 'build':
+            print(f"API Operation: {kwargs.get('operation')}")
+
         return func
 
     return inner

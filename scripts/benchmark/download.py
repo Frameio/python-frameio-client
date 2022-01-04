@@ -2,7 +2,8 @@ import os
 import sys
 
 from utils import timefunc
-from frameioclient import FrameioClient
+import frameioclient
+
 from frameioclient.lib.bandwidth import NetworkBandwidth
 
 
@@ -13,7 +14,7 @@ def download(
     size: str = "small",
 ):
     token = os.getenv("FRAMEIO_TOKEN")
-    client = FrameioClient(token)
+    client = frameioclient.FrameioClient(token)
     asset_info = client.assets.get(asset_id)
     download_info = client.assets.download(
         asset_info, destination, multi_part=True, replace=True

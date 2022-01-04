@@ -24,7 +24,7 @@ download_dir = 'downloads'
 retries = 0
 
 # Initialize the client
-def init_client():
+def init_client() -> FrameioClient:
     if len(token) < 5:
         print("Bad token, exiting test.")
         sys.exit(1)
@@ -40,7 +40,7 @@ def init_client():
     return client
 
 # Verify local and source
-def verify_local(client, dl_children):
+def verify_local(client: FrameioClient, dl_children):
     # Compare remote filenames and hashes
     global dl_items
     dl_items = dict()
@@ -74,7 +74,7 @@ def verify_local(client, dl_children):
         return True
 
 # Test download functionality
-def test_download(client, override=False):
+def test_download(client: FrameioClient, override=False):
     print("Testing download function...")
     if override:
         # Clearing download directory
@@ -122,7 +122,7 @@ def test_download(client, override=False):
     return True
 
 # Test upload functionality       
-def test_upload(client):
+def test_upload(client: FrameioClient):
     print("Beginning upload test")
     # Create new parent asset
     project_info = client.projects.get(project_id)
@@ -316,7 +316,7 @@ def send_to_slack(message):
     else:
         return False
 
-def clean_up(client, asset_to_delete):
+def clean_up(client: FrameioClient, asset_to_delete):
     print("Removing files from test...")
 
     try:

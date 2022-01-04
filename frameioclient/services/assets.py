@@ -1,11 +1,13 @@
 import os
 import mimetypes
 
+from frameioclient.lib.transfer import AWSClient
+
 from .projects import Project
 # from .helpers import FrameioHelpers
 
 from ..lib.service import Service
-from ..lib import FrameioUploader, FrameioDownloader, constants, Reference
+from ..lib import FrameioUploader, FrameioDownloader, ApiReference, constants
 
 class Asset(Service):
   def _build_asset_info(self, filepath):
@@ -20,7 +22,7 @@ class Asset(Service):
 
     return file_info
 
-  @Reference(operation="#getAsset")
+  @ApiReference(operation="#getAsset")
   def get(self, asset_id):
     """
     Get an asset by id.
@@ -31,7 +33,7 @@ class Asset(Service):
     endpoint = '/assets/{}'.format(asset_id)
     return self.client._api_call('get', endpoint)
 
-  @Reference(operation="#getAssets")
+  @ApiReference(operation="#getAssets")
   def get_children(self, asset_id, include=[], slim=False, **kwargs):
     """
     Get a folder.
@@ -81,7 +83,7 @@ class Asset(Service):
       
     return self.client._api_call('get', endpoint, kwargs)
 
-  @Reference(operation="#createAsset")
+  @ApiReference(operation="#createAsset")
   def create(self, parent_asset_id, **kwargs):
     """
     Create an asset.
@@ -104,7 +106,7 @@ class Asset(Service):
     endpoint = '/assets/{}/children'.format(parent_asset_id)
     return self.client._api_call('post', endpoint, payload=kwargs)
 
-  @Reference(operation="#createAsset")
+  @ApiReference(operation="#createAsset")
   def create_folder(self, parent_asset_id, name="New Folder"):
     """
     Create a new folder.
@@ -123,7 +125,7 @@ class Asset(Service):
     endpoint = '/assets/{}/children'.format(parent_asset_id)
     return self.client._api_call('post', endpoint, payload={"name": name, "type":"folder"})
 
-  @Reference(operation="#createAsset")
+  @ApiReference(operation="#createAsset")
   def from_url(self, parent_asset_id, name, url):
     """
     Create an asset from a URL.
@@ -153,7 +155,7 @@ class Asset(Service):
     endpoint = '/assets/{}/children'.format(parent_asset_id)
     return self.client._api_call('post', endpoint, payload=payload)
 
-  @Reference(operation="#updateAsset")
+  @ApiReference(operation="#updateAsset")
   def update(self, asset_id, **kwargs):
     """
     Updates an asset
@@ -169,7 +171,7 @@ class Asset(Service):
     endpoint = '/assets/{}'.format(asset_id)
     return self.client._api_call('put', endpoint, kwargs)
 
-  @Reference(operation="#copyAsset")
+  @ApiReference(operation="#copyAsset")
   def copy(self, destination_folder_id, **kwargs):
     """
     Copy an asset
@@ -185,7 +187,7 @@ class Asset(Service):
     endpoint = '/assets/{}/copy'.format(destination_folder_id)
     return self.client._api_call('post', endpoint, kwargs)
 
-  @Reference(operation="#batchCopyAsset")
+  @ApiReference(operation="#batchCopyAsset")
   def bulk_copy(self, destination_folder_id, asset_list=[], copy_comments=False):
     """Bulk copy assets
 
@@ -210,7 +212,7 @@ class Asset(Service):
     endpoint = '/batch/assets/{}/copy'.format(destination_folder_id)
     return self.client._api_call('post', endpoint, payload)
 
-  @Reference(operation="#deleteAsset")
+  @ApiReference(operation="#deleteAsset")
   def delete(self, asset_id):
     """
     Delete an asset
@@ -297,7 +299,7 @@ class Asset(Service):
         client.assets.download(asset, "~./Downloads")
     """
     downloader = FrameioDownloader(asset, download_folder, prefix, multi_part, replace)
-    return downloader.download_handler()
+    return AWSClient(downloader, concurrency=5).multi_thread_download()
 
   def upload_folder(self, source_path, destination_id):
     """

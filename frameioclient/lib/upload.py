@@ -1,7 +1,6 @@
 import os
 import math
 import requests
-import enlighten
 import threading
 import concurrent.futures
 
@@ -59,7 +58,6 @@ class FrameioUploader(object):
         url = task[0]
         chunk_offset = task[1]
         chunk_id = task[2]
-        in_progress = task[3]
         chunks_total = len(self.asset["upload_urls"])
 
         is_final_chunk = False
@@ -68,9 +66,7 @@ class FrameioUploader(object):
             is_final_chunk = True
 
         session = self._get_session()
-
         chunk_data = self._smart_read_chunk(chunk_offset, is_final_chunk)
-        in_progress.update(len(chunk_data))
 
         try:
             r = session.put(
@@ -94,61 +90,22 @@ class FrameioUploader(object):
         upload_urls = self.asset["upload_urls"]
 
         chunk_offsets = self._calculate_chunks(total_size, chunk_count=len(upload_urls))
+        with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
+            for i in range(len(upload_urls)):
+                url = upload_urls[i]
+                chunk_offset = chunk_offsets[i]
 
-        with enlighten.get_manager() as manager:
-            status = manager.status_bar(
-                position=3,
-                status_format="{fill}Stage: {stage}{fill}{elapsed}",
-                color="bold_underline_bright_white_on_lightslategray",
-                justify=enlighten.Justify.CENTER,
-                stage="Initializing",
-                autorefresh=True,
-                min_delta=0.5,
-            )
+                task = (url, chunk_offset, i)
+                self.futures.append(executor.submit(self._upload_chunk, task))
 
-            BAR_FORMAT = (
-                "{desc}{desc_pad}|{bar}|{percentage:3.0f}% "
-                + "Uploading: {count_1:.2j}/{total:.2j} "
-                + "Completed: {count_2:.2j}/{total:.2j} "
-                + "[{elapsed}<{eta}, {rate:.2j}{unit}/s]"
-            )
-
-            # Add counter to track completed chunks
-            initializing = manager.counter(
-                position=2,
-                total=float(self.asset["filesize"]),
-                desc="Progress",
-                unit="B",
-                bar_format=BAR_FORMAT,
-            )
-
-            # Add additional counter
-            in_progress = initializing.add_subcounter("yellow", all_fields=True)
-            completed = initializing.add_subcounter("green", all_fields=True)
-
-            # Set default state
-            initializing.refresh()
-
-            status.update(stage="Uploading", color="green")
-
-            with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
-                for i in range(len(upload_urls)):
-                    url = upload_urls[i]
-                    chunk_offset = chunk_offsets[i]
-
-                    task = (url, chunk_offset, i, in_progress)
-                    self.futures.append(executor.submit(self._upload_chunk, task))
-
-                # Keep updating the progress while we have > 0 bytes left.
-                # Wait on threads to finish
-                for future in concurrent.futures.as_completed(self.futures):
-                    try:
-                        chunk_size = future.result()
-                        completed.update_from(
-                            in_progress, float((chunk_size - 1)), force=True
-                        )
-                    except Exception as exc:
-                        print(exc)
+            # Keep updating the progress while we have > 0 bytes left.
+            # Wait on threads to finish
+            for future in concurrent.futures.as_completed(self.futures):
+                try:
+                    chunk_size = future.result()
+                    print(chunk_size)
+                except Exception as exc:
+                    print(exc)
 
     def file_counter(self, folder):
         matches = []

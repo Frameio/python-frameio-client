@@ -1,43 +1,214 @@
-import os
-import math
-import time
-import enlighten
-import requests
 import concurrent.futures
+import math
+import os
+import time
+from pprint import pprint
+from typing import Dict, List
+from random import randint
 
-
-from .utils import Utils
-from .logger import SDKLogger
+import requests
 
 from .exceptions import (
-    DownloadException,
     AssetChecksumMismatch,
     AssetChecksumNotPresent,
+    DownloadException,
 )
+from .logger import SDKLogger
+from .utils import Utils
 
-from .bandwidth import NetworkBandwidth, DiskBandwidth
+logger = SDKLogger("downloads")
+
+from .bandwidth import DiskBandwidth, NetworkBandwidth
+from .exceptions import (
+    AssetNotFullyUploaded,
+    DownloadException,
+    WatermarkIDDownloadException,
+)
 from .transport import HTTPClient
 
 
+class FrameioDownloader(object):
+    def __init__(
+        self,
+        asset: Dict,
+        download_folder: str,
+        prefix: str,
+        multi_part: bool = False,
+        replace: bool = False,
+    ):
+        self.multi_part = multi_part
+        self.asset = asset
+        self.asset_type = None
+        self.download_folder = download_folder
+        self.replace = replace
+        self.resolution_map = dict()
+        self.destination = None
+        self.watermarked = asset["is_session_watermarked"]  # Default is probably false
+        self.filesize = asset["filesize"]
+        self.futures = list()
+        self.checksum = None
+        self.original_checksum = None
+        self.checksum_verification = True
+        self.chunk_size = 25 * 1024 * 1024  # 25 MB chunk size
+        self.chunks = math.ceil(self.filesize / self.chunk_size)
+        self.prefix = prefix
+        self.bytes_started = 0
+        self.bytes_completed = 0
+        self.in_progress = 0
+        self.aws_client = None
+        self.session = None
+        self.filename = Utils.normalize_filename(asset["name"])
+        self.request_logs = list()
+        self.stats = True
+
+        self._evaluate_asset()
+        self._get_path()
+
+    def get_path(self):
+        if self.prefix != None:
+            self.filename = self.prefix + self.filename
+
+        if self.destination == None:
+            final_destination = os.path.join(self.download_folder, self.filename)
+            self.destination = final_destination
+
+        return self.destination
+
+    def _evaluate_asset(self):
+        if self.asset.get("_type") != "file":
+            raise DownloadException(
+                message="Unsupport Asset type: {}".format(self.asset.get("_type"))
+            )
+
+        # This logic may block uploads that were started before this field was introduced
+        if self.asset.get("upload_completed_at") == None:
+            raise AssetNotFullyUploaded
+
+        try:
+            self.original_checksum = self.asset["checksums"]["xx_hash"]
+        except (TypeError, KeyError):
+            self.original_checksum = None
+
+    def _create_file_stub(self):
+        try:
+            fp = open(self.destination, "w")
+            # fp.write(b"\0" * self.filesize) # Disabled to prevent pre-allocatation of disk space
+            fp.close()
+        except FileExistsError as e:
+            if self.replace == True:
+                os.remove(self.destination)  # Remove the file
+                self._create_file_stub()  # Create a new stub
+            else:
+                raise e
+        return True
+
+    def _get_path(self):
+        logger.info("prefix: {}".format(self.prefix))
+        if self.prefix != None:
+            self.filename = self.prefix + self.filename
+
+        if self.destination == None:
+            final_destination = os.path.join(self.download_folder, self.filename)
+            self.destination = final_destination
+
+        return self.destination
+
+    def _get_checksum(self):
+        try:
+            self.original_checksum = self.asset["checksums"]["xx_hash"]
+        except (TypeError, KeyError):
+            self.original_checksum = None
+
+        return self.original_checksum
+
+    def get_download_key(self):
+        try:
+            url = self.asset["original"]
+        except KeyError as e:
+            if self.watermarked == True:
+                resolution_list = list()
+                try:
+                    for resolution_key, download_url in sorted(
+                        self.asset["downloads"].items()
+                    ):
+                        resolution = resolution_key.split("_")[
+                            1
+                        ]  # Grab the item at index 1 (resolution)
+                        try:
+                            resolution = int(resolution)
+                        except ValueError:
+                            continue
+
+                        if download_url is not None:
+                            resolution_list.append(download_url)
+
+                    # Grab the highest resolution (first item) now
+                    url = resolution_list[0]
+                except KeyError:
+                    raise DownloadException
+            else:
+                raise WatermarkIDDownloadException
+
+        return url
+
+    def download(self):
+        """Call this to perform the actual download of your asset!"""
+
+        # Check folders
+        if os.path.isdir(os.path.join(os.path.curdir, self.download_folder)):
+            logger.info("Folder exists, don't need to create it")
+        else:
+            logger.info("Destination folder not found, creating")
+            os.mkdir(self.download_folder)
+
+        # Check files
+        if os.path.isfile(self.get_path()) == False:
+            pass
+
+        if os.path.isfile(self.get_path()) and self.replace == True:
+            os.remove(self.get_path())
+
+        if os.path.isfile(self.get_path()) and self.replace == False:
+            logger.info("File already exists at this location.")
+            return self.destination
+
+        # Get URL
+        url = self.get_download_key()
+
+        # AWS Client
+        self.aws_client = AWSClient(downloader=self, concurrency=5)
+
+        # Handle watermarking
+        if self.watermarked == True:
+            return self.aws_client._download_whole(url)
+
+        else:
+            # Don't use multi-part download for files below 25 MB
+            if self.asset["filesize"] < 26214400:
+                return self.aws_client._download_whole(url)
+            if self.multi_part == True:
+                return self.aws_client.multi_thread_download(url)
+            else:
+                return self.aws_client._download_whole(url)
+
+
 class AWSClient(HTTPClient, object):
-    def __init__(self, downloader, concurrency=None, progress=True):
-        super().__init__()  # Initialize via inheritance
+    def __init__(self, downloader: FrameioDownloader, concurrency=None, progress=True):
+        super().__init__(self)  # Initialize via inheritance
         self.progress = progress
         self.progress_manager = None
-        self.destination = None
+        self.destination = downloader.destination
         self.bytes_started = 0
         self.bytes_completed = 0
         self.downloader = downloader
         self.futures = []
+        self.original = self.downloader.asset['original']
 
         # Ensure this is a valid number before assigning
         if concurrency is not None and type(concurrency) == int and concurrency > 0:
             self.concurrency = concurrency
-        else:
-            self.concurrency = self._optimize_concurrency()
-
-        if self.progress:
-            self.progress_manager = enlighten.get_manager()
+        # else:
+        #     self.concurrency = self._optimize_concurrency()
 
     @staticmethod
     def check_cdn(url):
@@ -52,7 +223,7 @@ class AWSClient(HTTPClient, object):
     def _create_file_stub(self):
         try:
             fp = open(self.downloader.destination, "w")
-            # fp.write(b"\0" * self.file_size) # Disabled to prevent pre-allocatation of disk space
+            # fp.write(b"\0" * self.filesize) # Disabled to prevent pre-allocatation of disk space
             fp.close()
         except FileExistsError as e:
             if self.replace == True:
@@ -66,24 +237,24 @@ class AWSClient(HTTPClient, object):
             raise e
         return True
 
-    # def _optimize_concurrency(self):
-    #     """
-    #     This method looks as the net_stats and disk_stats that we've run on \
-    #         the current environment in order to suggest the best optimized \
-    #         number of concurrent TCP connections.
+    def _optimize_concurrency(self):
+        """
+        This method looks as the net_stats and disk_stats that we've run on \
+            the current environment in order to suggest the best optimized \
+            number of concurrent TCP connections.
 
-    #     Example::
-    #         AWSClient._optimize_concurrency()
-    #     """
+        Example::
+            AWSClient._optimize_concurrency()
+        """
 
-    #     net_stats = NetworkBandwidth
-    #     disk_stats = DiskBandwidth
+        net_stats = NetworkBandwidth
+        disk_stats = DiskBandwidth
 
-    #     # Algorithm ensues
-    #     #
-    #     #
+        # Algorithm ensues
+        #
+        #
 
-    #     return 5
+        return 5
 
     def _get_byte_range(self, url, start_byte=0, end_byte=2048):
         """
@@ -110,11 +281,13 @@ class AWSClient(HTTPClient, object):
         start_time = time.time()
         print(
             "Beginning download -- {} -- {}".format(
-                self.asset["name"], Utils.format_bytes(self.downloader.file_size, type="size")
+                self.asset["name"],
+                Utils.format_bytes(self.downloader.filesize, type="size"),
             )
         )
 
         # Downloading
+        self.session = self._get_session()
         r = self.session.get(url, stream=True)
 
         # Downloading
@@ -128,16 +301,19 @@ class AWSClient(HTTPClient, object):
                 raise e
 
         download_time = time.time() - start_time
-        download_speed = Utils.format_bytes(math.ceil(self.downloader.file_size / (download_time)))
+        download_speed = Utils.format_bytes(
+            math.ceil(self.downloader.filesize / (download_time))
+        )
         print(
             "Downloaded {} at {}".format(
-                Utils.format_bytes(self.downloader.file_size, type="size"), download_speed
+                Utils.format_bytes(self.downloader.filesize, type="size"),
+                download_speed,
             )
         )
 
         return self.destination, download_speed
 
-    def _download_chunk(self, task):
+    def _download_chunk(self, task: List):
         # Download a particular chunk
         # Called by the threadpool executor
 
@@ -146,14 +322,14 @@ class AWSClient(HTTPClient, object):
         start_byte = task[1]
         end_byte = task[2]
         chunk_number = task[3]
-        in_progress = task[4]
+        # in_progress = task[4]
 
         # Set the initial chunk_size, but prepare to overwrite
         chunk_size = end_byte - start_byte
 
-        if self.bytes_started + (chunk_size) > self.downloader.file_size:
+        if self.bytes_started + (chunk_size) > self.downloader.filesize:
             difference = abs(
-                self.downloader.file_size - (self.bytes_started + chunk_size)
+                self.downloader.filesize - (self.bytes_started + chunk_size)
             )  # should be negative
             chunk_size = chunk_size - difference
             print(f"Chunk size as done via math: {chunk_size}")
@@ -163,13 +339,11 @@ class AWSClient(HTTPClient, object):
         # Set chunk size in a smarter way
         self.bytes_started += chunk_size
 
-        # Update the bar for in_progress chunks
-        in_progress.update(float(chunk_size))
-
         # Specify the start and end of the range request
         headers = {"Range": "bytes=%d-%d" % (start_byte, end_byte)}
 
         # Grab the data as a stream
+        self.session = self._get_session()
         r = self.session.get(url, headers=headers, stream=True)
 
         # Write the file to disk
@@ -179,7 +353,7 @@ class AWSClient(HTTPClient, object):
             fp.write(r.content)  # Write the data
 
         # Save requests logs
-        self.request_logs.append(
+        self.downloader.request_logs.append(
             {
                 "headers": r.headers,
                 "http_status": r.status_code,
@@ -189,16 +363,13 @@ class AWSClient(HTTPClient, object):
 
         # Increase the count for bytes_completed, but only if it doesn't overrun file length
         self.bytes_completed += chunk_size
-        if self.bytes_completed > self.downloader.file_size:
-            self.bytes_completed = self.downloader.file_size
-
-        # Update the in_progress bar
-        self.downloader._update_in_progress()
+        if self.bytes_completed > self.downloader.filesize:
+            self.bytes_completed = self.downloader.filesize
 
         # After the function completes, we report back the # of bytes transferred
         return chunk_size
 
-    def multi_thread_download(self, url):
+    def multi_thread_download(self):
         start_time = time.time()
 
         # Generate stub
@@ -207,150 +378,92 @@ class AWSClient(HTTPClient, object):
         except Exception as e:
             raise DownloadException(message=e)
 
-        offset = math.ceil(self.downloader.file_size / self.downloader.chunks)
+        pprint(self.downloader)
+
+        offset = math.ceil(self.downloader.filesize / self.downloader.chunks)
         in_byte = 0  # Set initially here, but then override
 
         print(
             "Multi-part download -- {} -- {}".format(
-                self.downloader.asset["name"], Utils.format_bytes(self.downloader.file_size, type="size")
+                self.downloader.asset["name"],
+                Utils.format_bytes(self.downloader.filesize, type="size"),
             )
         )
 
-        # Queue up threads
-        with enlighten.get_manager() as manager:
-            status = manager.status_bar(
-                position=3,
-                status_format="{fill}Stage: {stage}{fill}{elapsed}",
-                color="bold_underline_bright_white_on_lightslategray",
-                justify=enlighten.Justify.CENTER,
-                stage="Initializing",
-                autorefresh=True,
-                min_delta=0.5,
-            )
+        with concurrent.futures.ThreadPoolExecutor(
+            max_workers=self.concurrency
+        ) as executor:
+            for i in range(int(self.downloader.chunks)):
+                # Increment by the iterable + 1 so we don't mutiply by zero
+                out_byte = offset * (i + 1)
 
-            BAR_FORMAT = (
-                "{desc}{desc_pad}|{bar}|{percentage:3.0f}% "
-                + "Downloading: {count_1:.2j}/{total:.2j} "
-                + "Completed: {count_2:.2j}/{total:.2j} "
-                + "[{elapsed}<{eta}, {rate:.2j}{unit}/s]"
-            )
+                # Create task tuple
+                task = (self.downloader.asset['original'], in_byte, out_byte, i)
 
-            # Add counter to track completed chunks
-            initializing = manager.counter(
-                position=2,
-                total=float(self.downloader.file_size),
-                desc="Progress",
-                unit="B",
-                bar_format=BAR_FORMAT,
-            )
-
-            # Add additional counter
-            in_progress = initializing.add_subcounter("yellow", all_fields=True)
-            completed = initializing.add_subcounter("green", all_fields=True)
-
-            # Set default state
-            initializing.refresh()
-
-            status.update(stage="Downloading", color="green")
-
-            with concurrent.futures.ThreadPoolExecutor(
-                max_workers=self.concurrency
-            ) as executor:
-                for i in range(int(self.downloader.chunks)):
-                    # Increment by the iterable + 1 so we don't mutiply by zero
-                    out_byte = offset * (i + 1)
-                    # Create task tuple
-                    task = (url, in_byte, out_byte, i, in_progress)
-                    # Stagger start for each chunk by 0.1 seconds
+                # Stagger start for each chunk by 0.1 seconds
                 if i < self.concurrency:
-                    time.sleep(0.1)
-                    # Append tasks to futures list
-                    self.futures.append(executor.submit(self._download_chunk, task))
-                    # Reset new in byte equal to last out byte
-                    in_byte = out_byte
+                    time.sleep(randint(1, 5) / 10)
 
-                # Keep updating the progress while we have > 0 bytes left.
-                # Wait on threads to finish
-                for future in concurrent.futures.as_completed(self.futures):
-                    try:
-                        chunk_size = future.result()
-                        completed.update_from(
-                            in_progress, float((chunk_size - 1)), force=True
-                        )
-                    except Exception as exc:
-                        print(exc)
+                # Append tasks to futures list
+                self.futures.append(executor.submit(self._download_chunk, task))
 
-                # Calculate and print stats
-                download_time = round((time.time() - start_time), 2)
-                download_speed = round((self.downloader.file_size / download_time), 2)
+                # Reset new in byte equal to last out byte
+                in_byte = out_byte
 
-            if self.downloader.checksum_verification == True:
-                # Check for checksum, if not present throw error
-                if self.downloader._get_checksum() == None:
-                    raise AssetChecksumNotPresent
-                else:
-                    # Perform hash-verification
-                    status.update(stage="Verifying")
+            # Wait on threads to finish
+            for future in concurrent.futures.as_completed(self.futures):
+                try:
+                    chunk_size = future.result()
+                    print(chunk_size)
+                except Exception as exc:
+                    print(exc)
 
-                VERIFICATION_FORMAT = (
-                    "{desc}{desc_pad}|{bar}|{percentage:3.0f}% "
-                    + "Progress: {count:.2j}/{total:.2j} "
-                    + "[{elapsed}<{eta}, {rate:.2j}{unit}/s]"
-                )
+        # Calculate and print stats
+        download_time = round((time.time() - start_time), 2)
+        pprint(self.downloader)
+        download_speed = round((self.downloader.filesize / download_time), 2)
 
-                # Add counter to track completed chunks
-                verification = manager.counter(
-                    position=1,
-                    total=float(self.downloader.file_size),
-                    desc="Verifying",
-                    unit="B",
-                    bar_format=VERIFICATION_FORMAT,
-                    color="purple",
-                )
+        if self.downloader.checksum_verification == True:
+            # Check for checksum, if not present throw error
+            if self.downloader._get_checksum() == None:
+                raise AssetChecksumNotPresent
 
-                # Calculate the file hash
-                if (
-                    Utils.calculate_hash(
-                        self.destination, progress_callback=verification
-                    )
-                    != self.original_checksum
-                ):
-                    raise AssetChecksumMismatch
+            # Calculate the file hash
+            if Utils.calculate_hash(self.destination) != self.downloader.original_checksum:
+                raise AssetChecksumMismatch
 
-                # Update the header
-                status.update(stage="Download Complete!", force=True)
-
-            # Log completion event
-            SDKLogger("downloads").info(
-                "Downloaded {} at {}".format(
-                    Utils.format_bytes(self.downloader.file_size, type="size"), download_speed
-                )
+        # Log completion event
+        SDKLogger("downloads").info(
+            "Downloaded {} at {}".format(
+                Utils.format_bytes(self.downloader.filesize, type="size"),
+                download_speed,
             )
+        )
 
-            # Submit telemetry
-            transfer_stats = {
+        # Submit telemetry
+        transfer_stats = {
+            "speed": download_speed,
+            "time": download_time,
+            "cdn": AWSClient.check_cdn(self.original)
+        }
+
+        # Event(self.user_id, 'python-sdk-download-stats', transfer_stats)
+
+        # If stats = True, we return a dict with way more info, otherwise \
+        if self.downloader.stats:
+            # We end by returning a dict with info about the download
+            dl_info = {
+                "destination": self.destination,
                 "speed": download_speed,
-                "time": download_time,
-                "cdn": AWSClient.check_cdn(url),
+                "elapsed": download_time,
+                "cdn": AWSClient.check_cdn(self.original),
+                "concurrency": self.concurrency,
+                "size": self.downloader.filesize,
+                "chunks": self.downloader.chunks,
             }
-
-            # Event(self.user_id, 'python-sdk-download-stats', transfer_stats)
-
-            # If stats = True, we return a dict with way more info, otherwise \
-            if self.stats:
-                # We end by returning a dict with info about the download
-                dl_info = {
-                    "destination": self.destination,
-                    "speed": download_speed,
-                    "elapsed": download_time,
-                    "cdn": AWSClient.check_cdn(url),
-                    "concurrency": self.concurrency,
-                    "size": self.downloader.file_size,
-                    "chunks": self.downloader.chunks,
-                }
-                return dl_info
-            else:
-                return self.destination
+            return dl_info
+        else:
+            return self.destination
 
 
 class TransferJob(AWSClient):

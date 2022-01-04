@@ -35,13 +35,13 @@ class FrameioDownloader(object):
         self.resolution_map = dict()
         self.destination = None
         self.watermarked = asset["is_session_watermarked"]  # Default is probably false
-        self.file_size = asset["filesize"]
+        self.filesize = asset["filesize"]
         self.futures = list()
         self.checksum = None
         self.original_checksum = None
         self.checksum_verification = True
         self.chunk_size = 25 * 1024 * 1024  # 25 MB chunk size
-        self.chunks = math.ceil(self.file_size / self.chunk_size)
+        self.chunks = math.ceil(self.filesize / self.chunk_size)
         self.prefix = prefix
         self.bytes_started = 0
         self.bytes_completed = 0
@@ -146,7 +146,7 @@ class FrameioDownloader(object):
 
         return url
 
-    def download_handler(self):
+    def download(self):
         """Call this to perform the actual download of your asset!"""
 
         # Check folders
