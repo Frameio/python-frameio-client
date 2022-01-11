@@ -20,7 +20,7 @@ def create_n_upload(task):
     file_n = os.path.split(file_p)[1]
     file_mime = mimetypes.guess_type(abs_path)[0]
     
-    asset = client.create_asset(
+    asset = client.assets.create(
       parent_asset_id=parent_asset_id,  
       name=file_n,
       type="file",
@@ -29,13 +29,13 @@ def create_n_upload(task):
     )
     
     with open(abs_path, "rb") as ul_file:
-        asset_info = client.upload(asset, ul_file)
+        asset_info = client.assets._upload(asset, ul_file)
     
     return asset_info
 
 
 def create_folder(folder_n, parent_asset_id):
-    asset = client.create_asset(
+    asset = client.assets.create(
       parent_asset_id=parent_asset_id,  
       name=folder_n,
       type="folder",
