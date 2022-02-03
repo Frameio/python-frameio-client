@@ -87,7 +87,7 @@ class Team(Service):
         payload["batch"] = list(map(lambda email: {"email": email}, emails))
 
         endpoint = "/batch/teams/{}/members".format(team_id)
-        return self._api_call("post", endpoint, payload=payload)
+        return self.client._api_call("post", endpoint, payload=payload)
 
     def remove_members(self, team_id, emails):
         """
@@ -102,4 +102,4 @@ class Team(Service):
         payload["batch"] = list(map(lambda email: {"email": email}, emails))
 
         endpoint = "/batch/teams/{}/members".format(team_id)
-        return self._api_call("delete", endpoint, payload=payload)
+        return self.client._api_call("delete", endpoint, payload=payload)

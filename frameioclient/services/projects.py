@@ -140,7 +140,7 @@ class Project(Service):
 
         payload = {"email": email}
         endpoint = "/projects/{}/collaborators".format(project_id)
-        return self._api_call("post", endpoint, payload=payload)
+        return self.client._api_call("post", endpoint, payload=payload)
 
     def remove_collaborator(self, project_id, email):
         """
@@ -159,4 +159,4 @@ class Project(Service):
         """
 
         endpoint = "/projects/{}/collaborators/_?email={}".format(project_id, email)
-        return self._api_call("delete", endpoint)
+        return self.client._api_call("delete", endpoint)
