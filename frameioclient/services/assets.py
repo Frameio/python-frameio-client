@@ -36,7 +36,7 @@ class Asset(Service):
             asset_id='1231-12414-afasfaf-aklsajflaksjfla',
           )
 
-          """
+        """
         endpoint = "/assets/{}".format(asset_id)
         return self.client._api_call("get", endpoint)
 
@@ -62,7 +62,7 @@ class Asset(Service):
               asset_id='1231-12414-afasfaf-aklsajflaksjfla',
               include=['review_links','cover_asset','creator','presentation']
             )
-          """
+        """
         endpoint = "/assets/{}/children".format(asset_id)
 
         if slim == True:
@@ -132,7 +132,7 @@ class Asset(Service):
               filetype="video/mp4",
               filesize=123456
             )
-          """
+        """
         kwargs = {
             "name": name,
             "type": type,
@@ -157,7 +157,7 @@ class Asset(Service):
               parent_asset_id="123abc",
               name="ExampleFile.mp4",
             )
-          """
+        """
         endpoint = "/assets/{}/children".format(parent_asset_id)
         return self.client._api_call(
             "post", endpoint, payload={"name": name, "type": "folder"}
@@ -180,7 +180,7 @@ class Asset(Service):
               type="file",
               url="https://"
             )
-          """
+        """
         payload = {"name": name, "type": "file", "source": {"url": url}}
 
         endpoint = "/assets/{}/children".format(parent_asset_id)
@@ -199,13 +199,15 @@ class Asset(Service):
         Example::
 
             client.assets.update("adeffee123342", name="updated_filename.mp4")
-          """
+        """
         endpoint = "/assets/{}".format(asset_id)
         return self.client._api_call("put", endpoint, kwargs)
 
     @ApiReference(operation="#copyAsset")
     def copy(
-        self, destination_folder_id: Union[str, UUID], target_asset_id: Union[str, UUID]
+        self,
+        destination_folder_id: Union[str, UUID],
+        target_asset_id: Union[str, UUID],
     ):
         """
         Copy an asset
@@ -216,7 +218,10 @@ class Asset(Service):
         Example::
 
             client.assets.copy("adeffee123342", id="7ee008c5-49a2-f8b5-997d-8b64de153c30")
-          """
+        """
+        kwargs = {
+          "id": target_asset_id
+        }
         endpoint = "/assets/{}/copy".format(destination_folder_id)
         return self.client._api_call("post", endpoint, kwargs)
 
@@ -244,7 +249,7 @@ class Asset(Service):
               ],
               copy_comments=True
             )
-          """
+        """
         payload = {"batch": []}
 
         if copy_comments:
@@ -271,7 +276,7 @@ class Asset(Service):
               destination_id="123",
               next_asset_id="234"
             )
-          """
+        """
 
         payload = {"next_asset_id": new_version_id}
 
@@ -285,7 +290,7 @@ class Asset(Service):
         Delete an asset
 
         :param asset_id: the asset's id
-          """
+        """
         endpoint = "/assets/{}".format(asset_id)
         return self.client._api_call("delete", endpoint)
 
@@ -299,7 +304,7 @@ class Asset(Service):
         Example::
 
             client.upload(asset, open('example.mp4'))
-          """
+        """
         uploader = FrameioUploader(asset, file)
         uploader.upload()
 
@@ -318,7 +323,7 @@ class Asset(Service):
         Example::
 
           client.assets.upload('1231-12414-afasfaf-aklsajflaksjfla', "./file.mov")
-          """
+        """
 
         # Check if destination is a project or folder
         # If it's a project, well then we look up its root asset ID, otherwise we use the folder id provided
@@ -374,7 +379,7 @@ class Asset(Service):
         Example::
 
             client.assets.download(asset, "~./Downloads")
-          """
+        """
         downloader = FrameioDownloader(
             asset, download_folder, prefix, multi_part, replace
         )
