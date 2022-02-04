@@ -4,26 +4,20 @@ import os
 import time
 from pprint import pprint
 from random import randint
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 import requests
 
-from .exceptions import (
-    AssetChecksumMismatch,
-    AssetChecksumNotPresent,
-    DownloadException,
-)
+from .exceptions import (AssetChecksumMismatch, AssetChecksumNotPresent,
+                         DownloadException)
 from .logger import SDKLogger
 from .utils import FormatTypes, Utils
 
 logger = SDKLogger("downloads")
 
 from .bandwidth import DiskBandwidth, NetworkBandwidth
-from .exceptions import (
-    AssetNotFullyUploaded,
-    DownloadException,
-    WatermarkIDDownloadException,
-)
+from .exceptions import (AssetNotFullyUploaded, DownloadException,
+                         WatermarkIDDownloadException)
 from .transport import HTTPClient
 
 
@@ -256,7 +250,7 @@ class AWSClient(HTTPClient, object):
 
         return 5
 
-    def _get_byte_range(self, url, start_byte=0, end_byte=2048):
+    def _get_byte_range(self, url: str, start_byte: Optional[int] = 0, end_byte: Optional[int] = 2048):
         """
         Get a specific byte range from a given URL. This is **not** optimized \
             for heavily-threaded operations currently.
