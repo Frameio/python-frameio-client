@@ -207,16 +207,36 @@
 <dt class="sig sig-object py" id="frameioclient.Asset">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">frameioclient.</span></span><span class="sig-name descname"><span class="pre">Asset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#frameioclient.Asset" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="py method">
+<dt class="sig sig-object py" id="frameioclient.Asset.add_version">
+<span class="sig-name descname"><span class="pre">add_version</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target_asset_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_version_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#frameioclient.Asset.add_version" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a new version to a version stack, or create a new one!</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target_asset_id</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">UUID</span></code>]) – The main/destination Asset or Version Stack.</p></li>
+<li><p><strong>new_version_id</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">UUID</span></code>]) – The id for the asset you want to add to the Version Stack or create a new one with.</p></li>
+</ul>
+</dd>
+</dl>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">client</span><span class="o">.</span><span class="n">add_version_to_asset</span><span class="p">(</span>
+  <span class="n">destination_id</span><span class="o">=</span><span class="s2">"123"</span><span class="p">,</span>
+  <span class="n">next_asset_id</span><span class="o">=</span><span class="s2">"234"</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+<dl class="py method">
 <dt class="sig sig-object py" id="frameioclient.Asset.bulk_copy">
 <span class="sig-name descname"><span class="pre">bulk_copy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">destination_folder_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">asset_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy_comments</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#frameioclient.Asset.bulk_copy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bulk copy assets</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>destination_folder_id</strong> (<em>string</em>) – The id of the folder you want to copy into.</p>
-</dd>
-<dt class="field-even">Keyword Arguments</dt>
-<dd class="field-even"><p>asset_list (list): A list of the asset IDs you want to copy.
-copy_comments (boolean): Whether or not to copy comments: True or False.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>destination_folder_id</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">UUID</span></code>]) – The id of the folder you want to copy into.</p></li>
+<li><p><strong>asset_list</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>]) – A list of the asset IDs you want to copy.</p></li>
+<li><p><strong>copy_comments</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>]) – Whether or not to copy comments: True or False.</p></li>
+</ul>
 </dd>
 </dl>
 <p>Example:</p>
@@ -233,14 +253,14 @@ copy_comments (boolean): Whether or not to copy comments: True or False.</p>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="frameioclient.Asset.copy">
-<span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">destination_folder_id</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#frameioclient.Asset.copy" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">destination_folder_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_asset_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#frameioclient.Asset.copy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Copy an asset</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>destination_folder_id</strong> (<em>string</em>) – The id of the folder you want to copy into.</p>
-</dd>
-<dt class="field-even">Keyword Arguments</dt>
-<dd class="field-even"><p>id (string): The id of the asset you want to copy.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>destination_folder_id</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">UUID</span></code>]) – The id of the folder you want to copy into.</p></li>
+<li><p><strong>target_asset_id</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">UUID</span></code>]) – The id of the asset you want to copy.</p></li>
+</ul>
 </dd>
 </dl>
 <p>Example:</p>
@@ -250,14 +270,17 @@ copy_comments (boolean): Whether or not to copy comments: True or False.</p>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="frameioclient.Asset.create">
-<span class="sig-name descname"><span class="pre">create</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent_asset_id</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#frameioclient.Asset.create" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">create</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent_asset_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'file'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filetype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filesize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#frameioclient.Asset.create" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create an asset.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>parent_asset_id</strong> (<em>string</em>) – The parent asset id.</p>
-</dd>
-<dt class="field-even">Keyword Arguments</dt>
-<dd class="field-even"><p>(optional) kwargs: additional request parameters.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>parent_asset_id</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">UUID</span></code>]) – The parent asset id</p></li>
+<li><p><strong>name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – The asset’s display name</p></li>
+<li><p><strong>type</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – The type of asset (‘file’, ‘folder’)</p></li>
+<li><p><strong>filesize</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – The size of the asset in bytes</p></li>
+<li><p><strong>filetype</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – The MIME-type of the asset</p></li>
+</ul>
 </dd>
 </dl>
 <p>Example:</p>
@@ -297,21 +320,21 @@ copy_comments (boolean): Whether or not to copy comments: True or False.</p>
 <dd><p>Delete an asset</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>asset_id</strong> (<em>string</em>) – the asset’s id</p>
+<dd class="field-odd"><p><strong>asset_id</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">UUID</span></code>]) – the asset’s id</p>
 </dd>
 </dl>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="frameioclient.Asset.download">
-<span class="sig-name descname"><span class="pre">download</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">asset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">download_folder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">multi_part</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">replace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#frameioclient.Asset.download" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">download</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">asset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">download_folder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">multi_part</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">replace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#frameioclient.Asset.download" title="Permalink to this definition">¶</a></dt>
 <dd><p>Download an asset. The method will exit once the file is downloaded.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>asset</strong> (<em>object</em>) – The asset object.</p></li>
-<li><p><strong>download_folder</strong> (<em>path</em>) – The location to download the file to.</p></li>
-<li><p><strong>multi_part</strong> (<em>bool</em>) – Attempt to do a multi-part download (non-WMID assets).</p></li>
-<li><p><strong>replace</strong> (<em>bool</em>) – Whether or not you want to replace a file if one is found at the destination path.</p></li>
+<li><p><strong>asset</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>) – The asset object.</p></li>
+<li><p><strong>download_folder</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – The location to download the file to.</p></li>
+<li><p><strong>multi_part</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>]) – Attempt to do a multi-part download (non-WMID assets).</p></li>
+<li><p><strong>replace</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>]) – Whether or not you want to replace a file if one is found at the destination path.</p></li>
 </ul>
 </dd>
 </dl>
@@ -327,9 +350,9 @@ copy_comments (boolean): Whether or not to copy comments: True or False.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>parent_asset_id</strong> (<em>string</em>) – The parent asset id.</p></li>
-<li><p><strong>name</strong> (<em>string</em>) – The filename.</p></li>
-<li><p><strong>url</strong> (<em>string</em>) – The remote URL.</p></li>
+<li><p><strong>parent_asset_id</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">UUID</span></code>]) – The parent asset id.</p></li>
+<li><p><strong>name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – The filename.</p></li>
+<li><p><strong>url</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – The remote URL.</p></li>
 </ul>
 </dd>
 </dl>
@@ -349,17 +372,23 @@ copy_comments (boolean): Whether or not to copy comments: True or False.</p>
 <dd><p>Get an asset by id.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>asset_id</strong> (<em>string</em>) – The asset id.</p>
+<dd class="field-odd"><p><strong>asset_id</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">UUID</span></code>]) – The asset id.</p>
 </dd>
 </dl>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">client</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+  <span class="n">asset_id</span><span class="o">=</span><span class="s1">'1231-12414-afasfaf-aklsajflaksjfla'</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="frameioclient.Asset.get_children">
-<span class="sig-name descname"><span class="pre">get_children</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">asset_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#frameioclient.Asset.get_children" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_children</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">asset_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">includes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#frameioclient.Asset.get_children" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get a folder.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>asset_id</strong> (<em>string</em>) – The asset id.</p>
+<dd class="field-odd"><p><strong>asset_id</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">UUID</span></code>]) – The asset id.</p>
 </dd>
 <dt class="field-even">Keyword Arguments</dt>
 <dd class="field-even"><p>includes (list): List of includes you would like to add.</p>
@@ -379,7 +408,7 @@ copy_comments (boolean): Whether or not to copy comments: True or False.</p>
 <dd><p>Updates an asset</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>asset_id</strong> (<em>string</em>) – the asset’s id</p>
+<dd class="field-odd"><p><strong>asset_id</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">UUID</span></code>]) – The asset’s id</p>
 </dd>
 <dt class="field-even">Keyword Arguments</dt>
 <dd class="field-even"><p>the fields to update</p>
@@ -397,8 +426,8 @@ copy_comments (boolean): Whether or not to copy comments: True or False.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>destination_id</strong> (<em>uuid</em>) – The destination Project or Folder ID.</p></li>
-<li><p><strong>filepath</strong> (<em>string</em>) – The location of the file on your local filesystem         that you want to upload.</p></li>
+<li><p><strong>destination_id</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">UUID</span></code>]) – The destination Project or Folder ID.</p></li>
+<li><p><strong>filepath</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – The location of the file on your local filesystem that you want to upload.</p></li>
 </ul>
 </dd>
 </dl>
@@ -410,16 +439,19 @@ copy_comments (boolean): Whether or not to copy comments: True or False.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="frameioclient.Asset.upload_folder">
 <span class="sig-name descname"><span class="pre">upload_folder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">destination_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#frameioclient.Asset.upload_folder" title="Permalink to this definition">¶</a></dt>
-<dd><p>Upload a folder full of assets, maintaining hierarchy.        The method will exit once the file is uploaded.</p>
+<dd><p>Upload a folder full of assets, maintaining hierarchy.           The method will exit once the file is uploaded.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>filepath</strong> (<em>path</em>) – The location of the folder on your disk.</p></li>
-<li><p><strong>destination_id</strong> (<em>uuid</em>) – The destination Project or Folder ID.</p></li>
-<li><p><strong>Example::</strong> – client.assets.upload(“./file.mov”, “1231-12414-afasfaf-aklsajflaksjfla”)</p></li>
+<li><p><strong>filepath</strong> – The location of the folder on your disk.</p></li>
+<li><p><strong>destination_id</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">UUID</span></code>]) – The destination Project or Folder ID.</p></li>
 </ul>
 </dd>
 </dl>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">client</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">upload</span><span class="p">(</span><span class="s2">"./file.mov"</span><span class="p">,</span> <span class="s2">"1231-12414-afasfaf-aklsajflaksjfla"</span><span class="p">)</span>
+</pre></div>
+</div>
 </dd></dl>
 </dd></dl>
 </section>
