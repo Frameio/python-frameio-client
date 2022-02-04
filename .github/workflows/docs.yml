@@ -19,4 +19,4 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           branch: gh-pages
           documentation_path: "./docs"
-          requirements_path: "requirements.txt"
+          requirements_path: "./docs/requirements.txt"
