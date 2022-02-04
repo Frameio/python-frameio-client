@@ -1,48 +1,48 @@
+from typing import Optional, Union
+from uuid import UUID
+
 from ..lib.service import Service
 
 
 class Search(Service):
     def library(
         self,
-        query,
-        type=None,
-        project_id=None,
-        account_id=None,
-        team_id=None,
-        uploader=None,
-        sort=None,
-        filter=None,
-        page_size=10,
-        page=1,
+        query: str,
+        type: Optional[str] = None,
+        project_id: Union[str, UUID] = None,
+        account_id: Union[str, UUID] = None,
+        team_id: Union[str, UUID] = None,
+        uploader: Optional[str] = None,
+        sort: Optional[str] = None,
+        filter: Optional[str] = None,
+        page_size: Optional[int] = 10,
+        page: Optional[int] = 1,
     ):
         """
-    Search for assets using the library search endpoint, documented here \
-        https://developer.frame.io/docs/workflows-assets/search-for-assets.
-    
-    For more information check out https://developer.frame.io/api/reference/operation/librarySearchPost/.
+        Search for assets using the library search endpoint, documented at https://developer.frame.io/docs/workflows-assets/search-for-assets.
+        For more information check out https://developer.frame.io/api/reference/operation/librarySearchPost/.
 
-    :Args:
-        query (string): The search keyword you want to search with.
-        account_id (string): The account ID you want to be searching within. #TODO, confirm that this is required or not, could we use self.me?
+        # TODO, confirm that account_id is required or not, could we use self.me?
 
-    :Kwargs:
-        type (string): The type of frame.io asset you want to search: [file, folder, review_link, presentation].
-        project_id (uuid): The frame.io project you want to constrain your search to.
-        account_id (uuid): The frame.io account want you to contrain your search to (you may only have one, but some users have 20+ that they have acces to).
-        team_id (uuid): The frame.io team you want to constrain your search to.
-        uploader (string): The name of the uploader, this includes first + last name with a space.
-        sort (string): The field you want to sort by.
-        filter (string): This is only necessary if you want to build a fully custom query, the most common functionality is exposed using other kwargs though.
-        page_size (int): Useful if you want to increase the number of items returned by the search API here.
-        page (int): The page of results you're requesting.
+        :param query: The search keyword you want to search with.
+        :param account_id: The frame.io account want you to contrain your search to (you may only have one, but some users have 20+ that they have acces to).
+        :param type: The type of frame.io asset you want to search: [file, folder, review_link, presentation].
+        :param project_id: The frame.io project you want to constrain your search to.
+        :param team_id: The frame.io team you want to constrain your search to.
+        :param uploader: The name of the uploader, this includes first + last name with a space.
+        :param sort: The field you want to sort by.
+        :param filter: This is only necessary if you want to build a fully custom query, the most common functionality is exposed using other kwargs though.
+        :param page_size: Useful if you want to increase the number of items returned by the search API here.
+        :param page: The page of results you're requesting.
 
         Example::
+
             client.assets.search(
                 query="Final",
                 type="file",
                 sort="name"
             )
-    """
+        """
 
         # Define base payload
         payload = {

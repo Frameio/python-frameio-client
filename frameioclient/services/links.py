@@ -1,7 +1,9 @@
+from ..lib.utils import ApiReference
 from ..lib.service import Service
 
 
 class ReviewLink(Service):
+    @ApiReference(operation="#reviewLinkCreate")
     def create(self, project_id, **kwargs):
         """
         Create a review link.
@@ -23,6 +25,7 @@ class ReviewLink(Service):
         endpoint = "/projects/{}/review_links".format(project_id)
         return self.client._api_call("post", endpoint, payload=kwargs)
 
+    @ApiReference(operation="#reviewLinksList")
     def list(self, project_id):
         """
         Get the review links of a project
@@ -33,6 +36,7 @@ class ReviewLink(Service):
         endpoint = "/projects/{}/review_links".format(project_id)
         return self.client._api_call("get", endpoint)
 
+    @ApiReference(operation="#reviewLinkGet")
     def get(self, link_id, **kwargs):
         """
         Get a single review link
@@ -43,6 +47,7 @@ class ReviewLink(Service):
         endpoint = "/review_links/{}".format(link_id)
         return self.client._api_call("get", endpoint, payload=kwargs)
 
+    @ApiReference(operation="#reviewLinkItemsList")
     def get_assets(self, link_id):
         """
         Get items from a single review link.
@@ -59,6 +64,7 @@ class ReviewLink(Service):
         endpoint = "/review_links/{}/items".format(link_id)
         return self.client._api_call("get", endpoint)
 
+    @ApiReference(operation="#reviewLinkItemsUpdate")
     def update_assets(self, link_id, **kwargs):
         """
         Add or update assets for a review link.
@@ -79,6 +85,7 @@ class ReviewLink(Service):
         endpoint = "/review_links/{}/assets".format(link_id)
         return self.client._api_call("post", endpoint, payload=kwargs)
 
+    @ApiReference(operation="#reviewLinkUpdate")
     def update_settings(self, link_id, **kwargs):
         """
         Updates review link settings.
@@ -104,6 +111,7 @@ class ReviewLink(Service):
 
 
 class PresentationLink(Service):
+    @ApiReference(operation="#createPresentation")
     def create(self, asset_id, **kwargs):
         """
         Create a presentation link.

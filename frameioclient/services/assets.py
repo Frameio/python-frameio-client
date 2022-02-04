@@ -1,13 +1,12 @@
-import os
 import mimetypes
+import os
 
 from frameioclient.lib.transfer import AWSClient
 
-from .projects import Project
-# from .helpers import FrameioHelpers
-
+from ..lib import ApiReference, FrameioDownloader, FrameioUploader, constants
 from ..lib.service import Service
-from ..lib import FrameioUploader, FrameioDownloader, ApiReference, constants
+from .projects import Project
+
 
 class Asset(Service):
   def _build_asset_info(self, filepath):
@@ -27,7 +26,7 @@ class Asset(Service):
     """
     Get an asset by id.
 
-    :Args:
+    Args:
       asset_id (string): The asset id.
     """
     endpoint = '/assets/{}'.format(asset_id)
@@ -38,13 +37,13 @@ class Asset(Service):
     """
     Get a folder.
 
-    :Args:
+    Args:
       asset_id (string): The asset id.
     
-    :Kwargs:
+    :Keyword Arguments:
       includes (list): List of includes you would like to add.
 
-      Example::
+    Example::
       
         client.assets.get_children(
           asset_id='1231-12414-afasfaf-aklsajflaksjfla',
@@ -88,12 +87,12 @@ class Asset(Service):
     """
     Create an asset.
 
-    :Args:
+    Args:
       parent_asset_id (string): The parent asset id.
-    :Kwargs:
+    :Keyword Arguments:
       (optional) kwargs: additional request parameters.
 
-      Example::
+    Example::
 
         client.assets.create(
           parent_asset_id="123abc",
@@ -107,15 +106,15 @@ class Asset(Service):
     return self.client._api_call('post', endpoint, payload=kwargs)
 
   @ApiReference(operation="#createAsset")
-  def create_folder(self, parent_asset_id, name="New Folder"):
+  def create_folder(self, parent_asset_id: str, name: str ="New Folder"):
     """
     Create a new folder.
 
-    :Args:
-      parent_asset_id (string): The parent asset id.
-      name (string): The name of the new folder.
+    Args:
+      parent_asset_id: The parent asset id.
+      name: The name of the new folder.
 
-      Example::
+    Example::
 
         client.assets.create_folder(
           parent_asset_id="123abc",
@@ -126,16 +125,16 @@ class Asset(Service):
     return self.client._api_call('post', endpoint, payload={"name": name, "type":"folder"})
 
   @ApiReference(operation="#createAsset")
-  def from_url(self, parent_asset_id, name, url):
+  def from_url(self, parent_asset_id: str, name: str, url: str):
     """
     Create an asset from a URL.
 
-    :Args:
+    Args:
       parent_asset_id (string): The parent asset id.
       name (string): The filename.
       url (string): The remote URL.
 
-      Example::
+    Example::
 
         client.assets.from_url(
           parent_asset_id="123abc",
@@ -143,7 +142,7 @@ class Asset(Service):
           type="file",
           url="https://"
         )
-    """
+      """
     payload = {
       "name": name,
       "type": "file",
@@ -160,14 +159,15 @@ class Asset(Service):
     """
     Updates an asset
 
-    :Args:
+    Args:
       asset_id (string): the asset's id
-    :Kwargs:
+    :Keyword Arguments:
       the fields to update
 
-      Example::
+    Example::
+
         client.assets.update("adeffee123342", name="updated_filename.mp4")
-    """
+      """
     endpoint = '/assets/{}'.format(asset_id)
     return self.client._api_call('put', endpoint, kwargs)
 
@@ -176,14 +176,15 @@ class Asset(Service):
     """
     Copy an asset
 
-    :Args:
+    Args:
       destination_folder_id (string): The id of the folder you want to copy into.
-    :Kwargs:
+    :Keyword Arguments:
       id (string): The id of the asset you want to copy.
 
-      Example::
+    Example::
+      
         client.assets.copy("adeffee123342", id="7ee008c5-49a2-f8b5-997d-8b64de153c30")
-    """
+      """
     endpoint = '/assets/{}/copy'.format(destination_folder_id)
     return self.client._api_call('post', endpoint, kwargs)
 
@@ -191,16 +192,24 @@ class Asset(Service):
   def bulk_copy(self, destination_folder_id, asset_list=[], copy_comments=False):
     """Bulk copy assets
 
-    :Args:
+    Args:
       destination_folder_id (string): The id of the folder you want to copy into.
-    :Kwargs:
+      
+    :Keyword Arguments:
       asset_list (list): A list of the asset IDs you want to copy.
       copy_comments (boolean): Whether or not to copy comments: True or False.
 
-      Example::
-        client.assets.bulk_copy("adeffee123342", asset_list=["7ee008c5-49a2-f8b5-997d-8b64de153c30", \ 
-        "7ee008c5-49a2-f8b5-997d-8b64de153c30"], copy_comments=True)
-    """
+    Example::
+
+        client.assets.bulk_copy(
+          "adeffee123342", 
+          asset_list=[
+            "7ee008c5-49a2-f8b5-997d-8b64de153c30",
+            "7ee008c5-49a2-f8b5-997d-8b64de153c30"
+          ],
+          copy_comments=True
+        )
+      """
     payload = {"batch": []}
 
     if copy_comments:
@@ -217,9 +226,9 @@ class Asset(Service):
     """
     Delete an asset
 
-    :Args:
+    Args:
       asset_id (string): the asset's id
-    """
+      """
     endpoint = '/assets/{}'.format(asset_id)
     return self.client._api_call('delete', endpoint)
 
@@ -227,13 +236,14 @@ class Asset(Service):
     """
     Upload an asset. The method will exit once the file is uploaded.
 
-    :Args:
-      asset (object): The asset object.
-      file (file): The file to upload.
+    Args:
+      asset: The asset object.
+      file: The file to upload.
 
-      Example::
+    Example::
+
         client.upload(asset, open('example.mp4'))
-    """
+      """
     uploader = FrameioUploader(asset, file)
     uploader.upload()
 
@@ -241,14 +251,16 @@ class Asset(Service):
     """
     Upload a file. The method will exit once the file is uploaded.
 
-    :Args:
+    Args:
+
       destination_id (uuid): The destination Project or Folder ID.
       filepath (string): The location of the file on your local filesystem \
         that you want to upload.
 
-      Example::
-        client.assets.upload('1231-12414-afasfaf-aklsajflaksjfla', "./file.mov")
-    """
+    Example::
+
+      client.assets.upload('1231-12414-afasfaf-aklsajflaksjfla', "./file.mov")
+      """
 
     # Check if destination is a project or folder
     # If it's a project, well then we look up its root asset ID, otherwise we use the folder id provided
@@ -288,16 +300,16 @@ class Asset(Service):
     """
     Download an asset. The method will exit once the file is downloaded.
 
-    :Args:
+    Args:
       asset (object): The asset object.
       download_folder (path): The location to download the file to.
       multi_part (bool): Attempt to do a multi-part download (non-WMID assets).
       replace (bool): Whether or not you want to replace a file if one is found at the destination path.
 
-      Example::
+    Example::
 
         client.assets.download(asset, "~./Downloads")
-    """
+      """
     downloader = FrameioDownloader(asset, download_folder, prefix, multi_part, replace)
     return AWSClient(downloader, concurrency=5).multi_thread_download()
 
@@ -306,7 +318,7 @@ class Asset(Service):
     Upload a folder full of assets, maintaining hierarchy. \
        The method will exit once the file is uploaded.
 
-    :Args:
+    Args:
       filepath (path): The location of the folder on your disk.
       destination_id (uuid): The destination Project or Folder ID.
 

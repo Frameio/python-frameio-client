@@ -19,7 +19,7 @@ version = RELEASE.split('.')[0]
 # -- Project information -----------------------------------------------------
 
 project = PACKAGE_TITLE
-copyright = 'MIT License 2021, Frame.io'
+copyright = 'MIT License 2022, Frame.io'
 author = AUTHOR_NAME
 
 # The full version, including alpha/beta/rc tags
@@ -36,6 +36,7 @@ extensions = [
     'sphinx.ext.napoleon',
     'sphinxcontrib.restbuilder',
     'sphinx_jekyll_builder',
+    'sphinx_autodoc_typehints'
 ]
 
 # Add any paths that contain templates here, relative to this directory.

@@ -1,35 +1,43 @@
+import enum
 import os
 import re
 import sys
+from typing import Any, Dict, Optional
 
 import xxhash
 
 KB = 1024
 MB = KB * KB
-ENV = os.getenv('FRAMEIO_ENVIRONMENT', 'prod')
+ENV = os.getenv("FRAMEIO_ENVIRONMENT", "prod")
+
 
 def ApiReference(*args, **kwargs):
     def inner(func):
         """
         do operations with func
         """
-        if ENV == 'build':
-            print("API Operation: {}".format(kwargs.get('operation')))
+        if ENV == "build":
+            print("API Operation: {}".format(kwargs.get("operation")))
 
         return func
 
     return inner
 
 
+class FormatTypes(enum.Enum):
+    SPEED = 0
+    SIZE = 1
+
+
 class Utils:
     @staticmethod
     def stream(func, page=1, page_size=20):
         """
-      Accepts a lambda of a call to a client list method, and streams the results until \
+        Accepts a lambda of a call to a client list method, and streams the results until \
         the list has been exhausted.
 
       Args:
-          fun (function): A 1-arity function to apply during the stream
+        fun (function): A 1-arity function to apply during the stream
 
       Example::
       
@@ -45,31 +53,37 @@ class Utils:
             page += 1
 
     @staticmethod
-    def format_bytes(size, type="speed"):
+    def format_value(value: int, type: FormatTypes = FormatTypes.SIZE) -> str:
         """
         Convert bytes to KB/MB/GB/TB/s
+
+        :param value: a numeric value
+        :param type: the FormatType specified
         """
         # 2**10 = 1024
         power = 2 ** 10
         n = 0
         power_labels = {0: "B", 1: "KB", 2: "MB", 3: "GB", 4: "TB"}
 
-        while size > power:
-            size /= power
+        while value > power:
+            value /= power
             n += 1
 
-        formatted = " ".join((str(round(size, 2)), power_labels[n]))
+        formatted = " ".join((str(round(value, 2)), power_labels[n]))
 
-        if type == "speed":
+        if type == FormatTypes.SPEED:
             return formatted + "/s"
 
-        elif type == "size":
+        elif type == FormatTypes.SIZE:
             return formatted
 
     @staticmethod
-    def calculate_hash(file_path, progress_callback=None):
+    def calculate_hash(file_path: str, progress_callback: Optional[Any] = None):
         """
         Calculate an xx64hash
+
+        :param file_path: The path on your system to the file you'd like to checksum
+        :param progress_callback: A progress callback to use when you want to callback w/ progress
         """
         xxh64_hash = xxhash.xxh64()
         b = bytearray(MB * 8)
@@ -80,18 +94,22 @@ class Utils:
                 break
 
             xxh64_hash.update(b[:numread])
+
             if progress_callback:
                 # Should only subtract 1 here when necessary, not every time!
-                progress_callback.update(float(numread - 1), force=True)
+                progress_callback(float(numread - 1), force=True)
 
         xxh64_digest = xxh64_hash.hexdigest()
 
         return xxh64_digest
 
     @staticmethod
-    def compare_items(dict1, dict2):
+    def compare_items(dict1: Dict, dict2: Dict) -> bool:
         """
         Python 2 and 3 compatible way of comparing 2x dictionaries
+
+        :param dict1: Dictionary 1 for comparison
+        :param dict2: Dictionary 2 for comparison
         """
         comparison = None
 
@@ -110,17 +128,21 @@ class Utils:
         return comparison
 
     @staticmethod
-    def get_valid_filename(s):
+    def get_valid_filename(s: str) -> str:
         """
         Strip out invalid characters from a filename using regex
+
+        :param s: Filename to remove invalid characters from
         """
         s = str(s).strip().replace(" ", "_")
         return re.sub(r"(?u)[^-\w.]", "", s)
 
     @staticmethod
-    def normalize_filename(fn):
+    def normalize_filename(fn: str) -> str:
         """
         Normalize filename using pure python
+
+        :param fn: Filename to normalize using pure python
         """
         validchars = "-_.() "
         out = ""
@@ -140,7 +162,12 @@ class Utils:
         return out
 
     @staticmethod
-    def format_headers(token, version):
+    def format_headers(token: str, version: str) -> Dict:
+        """[summary]
+
+        :param token: Frame.io OAuth/Dev Token to use
+        :param version: The version of the frameioclient sdk to add to our HTTP header
+        """
         return {
             "Authorization": "Bearer {}".format(token),
             "x-frameio-client": "python/{}".format(version),

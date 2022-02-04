@@ -1,6 +1,7 @@
 import concurrent.futures
 import threading
 import time
+from typing import Dict, Optional
 
 import requests
 from requests.adapters import HTTPAdapter
@@ -13,17 +14,27 @@ from .utils import PaginatedResponse
 from .version import ClientVersion
 
 
+class HTTPMethods:
+    GET = 'get'
+    POST = 'post'
+    PUT = 'put'
+    DELETE = 'delete'
+    PATCH = 'patch'
+    HEAD = 'head'
+
 class HTTPClient(object):
     """HTTP Client base that automatically handles the following:
-        - Shared thread/session object
-        - Client version headers
-        - Automated retries
+    - Shared thread/session object
+    - Client version headers
+    - Automated retries
 
-    Args:
-        threads (int): Number of threads to use concurrently.
     """
 
-    def __init__(self, threads=default_thread_count):
+    def __init__(self, threads: Optional[int] = default_thread_count):
+        """
+        :param threads: Number of threads to use concurrently.
+        """
+
         # Setup number of threads to use
         self.threads = threads
 
@@ -72,7 +83,7 @@ class APIClient(HTTPClient, object):
         progress (bool): If True, show status bars in console.
     """
 
-    def __init__(self, token, host, threads, progress):
+    def __init__(self, token: str, host: str, threads: int, progress: bool):
         super().__init__(threads)
         self.host = host
         self.token = token
@@ -82,10 +93,10 @@ class APIClient(HTTPClient, object):
         self.session = self._get_session()
         self.auth_header = {"Authorization": "Bearer {}".format(self.token)}
 
-    def _format_api_call(self, endpoint):
+    def _format_api_call(self, endpoint: str):
         return "{}/v2{}".format(self.host, endpoint)
 
-    def _api_call(self, method, endpoint, payload={}, limit=None):
+    def _api_call(self, method, endpoint: str, payload: Dict = {}, limit: Optional[int] = None):
         headers = {**self.shared_headers, **self.auth_header}
 
         r = self.session.request(
@@ -117,7 +128,7 @@ class APIClient(HTTPClient, object):
 
         return r.raise_for_status()
 
-    def get_specific_page(self, method, endpoint, payload, page):
+    def get_specific_page(self, method: HTTPMethods, endpoint: str, payload: Dict, page: int):
         """
         Gets a specific page for that endpoint, used by Pagination Class
 
@@ -127,11 +138,11 @@ class APIClient(HTTPClient, object):
             payload (dict): Request payload
             page (int): What page to get
         """
-        if method == "get":
+        if method == HTTPMethods.GET:
             endpoint = "{}?page={}".format(endpoint, page)
             return self._api_call(method, endpoint)
 
-        if method == "post":
+        if method == HTTPMethods.POST:
             payload["page"] = page
         return self._api_call(method, endpoint, payload=payload)
 

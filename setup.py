@@ -25,11 +25,10 @@ class VerifyVersionCommand(install):
 setuptools.setup(
   name='frameioclient',
   version=version,
-  python_requires='>=2.7.16, <4',
+  python_requires='>=3.6.5, <4',
   install_requires=[
     'analytics-python',
     'enlighten',
-    'futures; python_version == "2.7"',
     'importlib-metadata ~= 1.0 ; python_version < "3.8"',
     'requests',
     'token-bucket',

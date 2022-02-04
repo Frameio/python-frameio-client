@@ -1,10 +1,12 @@
-import os
-import math
-import requests
-import threading
 import concurrent.futures
+import math
+import os
+import threading
+from typing import List
 
-from .utils import Utils
+import requests
+
+from .utils import FormatTypes, Utils
 
 thread_local = threading.local()
 
@@ -18,15 +20,14 @@ class FrameioUploader(object):
         self.file_num = 0
         self.futures = []
 
-    def _calculate_chunks(self, total_size, chunk_count):
-        """Calculate chunk size
+    def _calculate_chunks(self, total_size: int, chunk_count: int) -> List[int]:
+        """
+        Calculate chunk size
 
-        Args:
-            total_size (int): Total filesize in bytes
-            chunk_count (int): Total number of URL's we got back from the API
+        :param total_size: Total filesize in bytes
+        :param chunk_count: Total number of URL's we got back from the API
 
-        Returns:
-            chunk_offsets (list): List of chunk offsets
+        :return chunk_offsets: List of chunk offsets
         """
         self.chunk_size = int(math.ceil(total_size / chunk_count))
 
@@ -43,7 +44,7 @@ class FrameioUploader(object):
             thread_local.session = requests.Session()
         return thread_local.session
 
-    def _smart_read_chunk(self, chunk_offset, is_final_chunk):
+    def _smart_read_chunk(self, chunk_offset: int, is_final_chunk: bool) -> bytes:
         with open(os.path.realpath(self.file.name), "rb") as file:
             file.seek(chunk_offset, 0)
             if (
@@ -54,7 +55,7 @@ class FrameioUploader(object):
                 data = file.read(self.chunk_size)
             return data
 
-    def _upload_chunk(self, task):
+    def _upload_chunk(self, task) -> int:
         url = task[0]
         chunk_offset = task[1]
         chunk_id = task[2]
@@ -141,7 +142,7 @@ class FrameioUploader(object):
 
             complete_dir_obj = os.path.join(folder, file_p)
             print(
-                "Starting {:02d}/{}, Size: {}, Name: {}".format(self.file_num, self.file_count, Utils.format_bytes(os.path.getsize(complete_dir_obj), type='size'), file_p)
+                "Starting {:02d}/{}, Size: {}, Name: {}".format(self.file_num, self.file_count, Utils.format_value(os.path.getsize(complete_dir_obj), type=FormatTypes.SIZE), file_p)
             )
             client.assets.upload(parent_asset_id, complete_dir_obj)
 

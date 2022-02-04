@@ -1,3 +1,5 @@
+from typing import Dict
+
 from ..lib.service import Service
 
 
@@ -9,5 +11,7 @@ class User(Service):
         return self.client._api_call("get", "/me")
 
     def get_accounts(self):
-        """Get a list of accounts the user has access to"""
+        """
+        Get a list of accounts the user has access to
+        """
         return self.client._api_call("get", "/accounts")

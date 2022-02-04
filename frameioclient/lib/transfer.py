@@ -3,27 +3,21 @@ import math
 import os
 import time
 from pprint import pprint
-from typing import Dict, List
 from random import randint
+from typing import Dict, List
 
 import requests
 
-from .exceptions import (
-    AssetChecksumMismatch,
-    AssetChecksumNotPresent,
-    DownloadException,
-)
+from .exceptions import (AssetChecksumMismatch, AssetChecksumNotPresent,
+                         DownloadException)
 from .logger import SDKLogger
-from .utils import Utils
+from .utils import FormatTypes, Utils
 
 logger = SDKLogger("downloads")
 
 from .bandwidth import DiskBandwidth, NetworkBandwidth
-from .exceptions import (
-    AssetNotFullyUploaded,
-    DownloadException,
-    WatermarkIDDownloadException,
-)
+from .exceptions import (AssetNotFullyUploaded, DownloadException,
+                         WatermarkIDDownloadException)
 from .transport import HTTPClient
 
 
@@ -282,7 +276,7 @@ class AWSClient(HTTPClient, object):
         print(
             "Beginning download -- {} -- {}".format(
                 self.asset["name"],
-                Utils.format_bytes(self.downloader.filesize, type="size"),
+                Utils.format_value(self.downloader.filesize, type=FormatTypes.SIZE),
             )
         )
 
@@ -301,12 +295,12 @@ class AWSClient(HTTPClient, object):
                 raise e
 
         download_time = time.time() - start_time
-        download_speed = Utils.format_bytes(
+        download_speed = Utils.format_value(
             math.ceil(self.downloader.filesize / (download_time))
         )
         print(
             "Downloaded {} at {}".format(
-                Utils.format_bytes(self.downloader.filesize, type="size"),
+                Utils.format_value(self.downloader.filesize, type=FormatTypes.SIZE),
                 download_speed,
             )
         )
@@ -386,7 +380,7 @@ class AWSClient(HTTPClient, object):
         print(
             "Multi-part download -- {} -- {}".format(
                 self.downloader.asset["name"],
-                Utils.format_bytes(self.downloader.filesize, type="size"),
+                Utils.format_value(self.downloader.filesize, type=FormatTypes.SIZE),
             )
         )
 
@@ -435,7 +429,7 @@ class AWSClient(HTTPClient, object):
         # Log completion event
         SDKLogger("downloads").info(
             "Downloaded {} at {}".format(
-                Utils.format_bytes(self.downloader.filesize, type="size"),
+                Utils.format_value(self.downloader.filesize, type=FormatTypes.SIZE),
                 download_speed,
             )
         )

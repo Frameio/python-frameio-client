@@ -30,3 +30,7 @@ rst:
 
 html:
 	sphinx-build -b html . dist/html
+
+dev:
+	sphinx-autobuild -b html . _build/html
+

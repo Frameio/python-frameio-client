@@ -20,7 +20,7 @@ class Team(Service):
             name="My Awesome Project",
           )
         """
-        warnings.warn("Note: Your token must support team.create scopes")
+        warnings.warn("Note: Your token must support the team.create scope")
         endpoint = "/accounts/{}/teams".format(account_id)
         return self.client._api_call("post", endpoint, payload=kwargs)
 

@@ -1,4 +1,4 @@
-from frameioclient.lib.utils import Utils
+from frameioclient.lib.utils import FormatTypes, Utils
 import os
 from pathlib import Path
 
@@ -34,7 +34,7 @@ def demo_project_download(project_id):
 	# pdb.set_trace()
 
 	print(f"Found {item_count} items")
-	print(f"Took {elapsed} second to download {Utils.format_bytes(folder_size, type='size')} for project: {client.projects.get(project_id)['name']}")
+	print(f"Took {elapsed} second to download {Utils.format_value(folder_size, type=FormatTypes.SIZE)} for project: {client.projects.get(project_id)['name']}")
 	print("\n")
 
 if __name__ == "__main__":

@@ -31,5 +31,8 @@ run-benchmark:
 format:
 	black frameioclient
 
+view-docs:
+	cd docs && pip install -r requirements.txt && make dev
+
 publish-docs:
 	cd docs && pip install -r requirements.txt && make jekyll && make publish

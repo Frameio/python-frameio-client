@@ -1,13 +1,16 @@
+from ..lib.utils import ApiReference
 from ..lib.service import Service
+from typing import Union
+from uuid import UUID
 
 
 class Comment(Service):
-    def create(self, asset_id, **kwargs):
+    @ApiReference(operation="#createComment")
+    def create(self, asset_id: Union[str, UUID], **kwargs):
         """
         Create a comment.
 
-        Args:
-          asset_id (string): The asset id.
+        :param asset_id: The asset id.
 
         :Keyword Arguments:
           (optional) kwargs: additional request parameters.
@@ -18,36 +21,36 @@ class Comment(Service):
             asset_id="123abc",
             text="Hello world"
           )
-        """
+          """
         endpoint = "/assets/{}/comments".format(asset_id)
         return self.client._api_call("post", endpoint, payload=kwargs)
 
-    def get(self, comment_id, **kwargs):
+    @ApiReference(operation="#getComment")
+    def get(self, comment_id: Union[str, UUID], **kwargs):
         """
         Get a comment.
 
-        Args:
-          comment_id (string): The comment id.
-        """
+        :param comment_id: The comment id.
+          """
         endpoint = "/comments/{}".format(comment_id)
         return self.client._api_call("get", endpoint, **kwargs)
 
-    def list(self, asset_id, **kwargs):
+    @ApiReference(operation="#getComments")
+    def list(self, asset_id: Union[str, UUID], **kwargs):
         """
         Get an asset's comments.
 
-        Args:
-          asset_id (string): The asset id.
-        """
+        :param asset_id: The asset id.
+          """
         endpoint = "/assets/{}/comments".format(asset_id)
         return self.client._api_call("get", endpoint, **kwargs)
 
-    def update(self, comment_id, **kwargs):
+    @ApiReference(operation="#updateComment")
+    def update(self, comment_id: Union[str, UUID], **kwargs):
         """
         Update a comment.
 
-        Args:
-          comment_id (string): The comment id.
+        :param comment_id: The comment id.
 
         :Keyword Arguments:
           (optional) kwargs: additional request parameters.
@@ -58,20 +61,21 @@ class Comment(Service):
             comment_id="123abc",
             text="Hello world"
           )
-        """
+          """
         endpoint = "/comments/{}".format(comment_id)
         return self.client._api_call("post", endpoint, payload=kwargs)
 
-    def delete(self, comment_id):
+    @ApiReference(operation="#deleteComment")
+    def delete(self, comment_id: Union[str, UUID]):
         """
         Delete a comment.
 
-        Args:
-          comment_id (string): The comment id.
-        """
+        :param comment_id: The comment id.
+          """
         endpoint = "/comments/{}".format(comment_id)
         return self.client._api_call("delete", endpoint)
 
+    @ApiReference(operation="#createReply")
     def reply(self, comment_id, **kwargs):
         """
         Reply to an existing comment.
@@ -88,6 +92,6 @@ class Comment(Service):
             comment_id="123abc",
             text="Hello world"
           )
-        """
+          """
         endpoint = "/comments/{}/replies".format(comment_id)
         return self.client._api_call("post", endpoint, payload=kwargs)

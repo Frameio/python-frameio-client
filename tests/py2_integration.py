@@ -109,7 +109,7 @@ def test_download(client, override=False):
         client.assets.download(asset, download_dir, multi_part=True)
         
         download_time = time.time() - start_time
-        download_speed = Utils.format_bytes(ceil(asset['filesize']/(download_time)))
+        download_speed = Utils.format_value(ceil(asset['filesize']/(download_time)))
 
         print("{}/{} Download completed in {:.2f}s @ {}".format((count), len(asset_list), download_time, download_speed))
 
@@ -153,7 +153,7 @@ def test_upload(client):
         client.assets.upload(new_parent_id, ul_abs_path)
 
         upload_time = time.time() - start_time
-        upload_speed = Utils.format_bytes(ceil(filesize/(upload_time)))
+        upload_speed = Utils.format_value(ceil(filesize/(upload_time)))
 
         print("{}/{} Upload completed in {:.2f}s @ {}".format((count), len(dled_files), upload_time, upload_speed))
 

@@ -1,13 +1,15 @@
+from typing import Union
+from uuid import UUID
+
 from ..lib.service import Service
 
 
 class AuditLogs(Service):
-    def list(self, account_id):
+    def list(self, account_id: Union[str, UUID]):
         """
         Get audit logs for the currently authenticated account.
 
-        Args:
-            account_id (uuid): Account ID you want to get audit logs for.
+        :param account_id: Account ID you want to get audit logs for.
 
         Example::
 
