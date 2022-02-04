@@ -51,9 +51,9 @@ def get_projects_from_team(
         # Add project_name and team_name to the dict
         proj["project_name"] = proj.get("name")
         proj["team_name"] = team_name
-        print("Debug: Found project: {}".format(proj["project_name"]))
+        print(f"Debug: Found project: {proj['project_name']}")
         projects_in_team.append(proj)
-        print("Debug: projects in team now: {}".format(len(projects_in_team)))
+        print(f"Debug: projects in team now: {len(projects_in_team)}")
 
     return projects_in_team
 
@@ -64,10 +64,10 @@ def get_projects_from_account(client) -> List[Dict]:
     teams = get_teams_from_account(client)
 
     for team_id, team_name in teams.items():
-        print("Debug: === Found team: {} ===".format(team_name))
+        print(f"Debug: === Found team: {team_name} ===")
         projects_in_team = get_projects_from_team(client, team_id, team_name)
         projects_in_account.extend(projects_in_team)
-        print("Debug: projects in account now: {}".format(len(projects_in_account)))
+        print(f"Debug: projects in account now: {len(projects_in_account)}")
 
     return projects_in_account
 
@@ -81,7 +81,7 @@ def scrape_asset_data_from_projects(
     """
     assets_in_projects = []
     for project in projects:
-        print("Debug: Scanning project: {} for assets".format(project["name"]))
+        print(f"Debug: Scanning project: {project['name']} for assets")
         assets_in_project = []
         proj_root_asset_id = project.get("root_asset_id")
         assets_in_project = scrape_asset_data(
@@ -182,7 +182,7 @@ def write_assets_to_csv(asset_list: List[Dict], filename: str) -> None:
     for a in asset_list:
         flat_assets_list.append(flatten_dict(a))
 
-    with open("asset_record_for_account_id-{}".format(filename), "w") as f:
+    with open(f"asset_record_for_account_id-{filename}", "w") as f:
         f_csv = csv.DictWriter(f, headers, extrasaction="ignore")
         f_csv.writeheader()
         f_csv.writerows(flat_assets_list)

@@ -15,12 +15,13 @@ from .version import ClientVersion
 
 
 class HTTPMethods:
-    GET = 'get'
-    POST = 'post'
-    PUT = 'put'
-    DELETE = 'delete'
-    PATCH = 'patch'
-    HEAD = 'head'
+    GET = "get"
+    POST = "post"
+    PUT = "put"
+    DELETE = "delete"
+    PATCH = "patch"
+    HEAD = "head"
+
 
 class HTTPClient(object):
     """HTTP Client base that automatically handles the following:
@@ -41,9 +42,7 @@ class HTTPClient(object):
         # Initialize empty thread object
         self.thread_local = None
         self.client_version = ClientVersion.version()
-        self.shared_headers = {
-            "x-frameio-client": "python/{}".format(self.client_version)
-        }
+        self.shared_headers = {"x-frameio-client": f"python/{self.client_version}"}
 
         # Configure retry strategy (very broad right now)
         self.retry_strategy = Retry(
@@ -91,12 +90,14 @@ class APIClient(HTTPClient, object):
         self.progress = progress
         self._initialize_thread()
         self.session = self._get_session()
-        self.auth_header = {"Authorization": "Bearer {}".format(self.token)}
+        self.auth_header = {"Authorization": f"Bearer {self.token}"}
 
     def _format_api_call(self, endpoint: str):
-        return "{}/v2{}".format(self.host, endpoint)
+        return f"{self.host}/v2{endpoint}"
 
-    def _api_call(self, method, endpoint: str, payload: Dict = {}, limit: Optional[int] = None):
+    def _api_call(
+        self, method, endpoint: str, payload: Dict = {}, limit: Optional[int] = None
+    ):
         headers = {**self.shared_headers, **self.auth_header}
 
         r = self.session.request(
@@ -128,7 +129,9 @@ class APIClient(HTTPClient, object):
 
         return r.raise_for_status()
 
-    def get_specific_page(self, method: HTTPMethods, endpoint: str, payload: Dict, page: int):
+    def get_specific_page(
+        self, method: HTTPMethods, endpoint: str, payload: Dict, page: int
+    ):
         """
         Gets a specific page for that endpoint, used by Pagination Class
 
@@ -139,7 +142,7 @@ class APIClient(HTTPClient, object):
             page (int): What page to get
         """
         if method == HTTPMethods.GET:
-            endpoint = "{}?page={}".format(endpoint, page)
+            endpoint = "{endpoint}?page={page}"
             return self._api_call(method, endpoint)
 
         if method == HTTPMethods.POST:

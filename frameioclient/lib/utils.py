@@ -169,8 +169,8 @@ class Utils:
         :param version: The version of the frameioclient sdk to add to our HTTP header
         """
         return {
-            "Authorization": "Bearer {}".format(token),
-            "x-frameio-client": "python/{}".format(version),
+            "Authorization": f"Bearer {token}",
+            "x-frameio-client": f"python/{version}",
         }
 
 

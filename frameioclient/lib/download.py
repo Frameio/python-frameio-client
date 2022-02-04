@@ -72,7 +72,7 @@ class FrameioDownloader(object):
     def _evaluate_asset(self):
         if self.asset.get("_type") != "file":
             raise DownloadException(
-                message="Unsupport Asset type: {}".format(self.asset.get("_type"))
+                message=f"Unsupport Asset type: {self.asset.get('_type')}"
             )
 
         # This logic may block uploads that were started before this field was introduced
@@ -98,7 +98,7 @@ class FrameioDownloader(object):
         return True
 
     def _get_path(self):
-        logger.info("prefix: {}".format(self.prefix))
+        logger.info(f"prefix: {self.prefix}")
         if self.prefix != None:
             self.filename = self.prefix + self.filename
 

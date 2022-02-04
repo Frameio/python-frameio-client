@@ -31,7 +31,7 @@ class Telemetry(object):
 
     def push(self, event_name, properties):
         self.logger.info(
-            ("Pushing '{}' event to segment".format(event_name), properties)
+            (f"Pushing '{event_name}' event to segment", properties)
         )
 
         try:

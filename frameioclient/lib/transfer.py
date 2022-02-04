@@ -8,16 +8,22 @@ from typing import Dict, List
 
 import requests
 
-from .exceptions import (AssetChecksumMismatch, AssetChecksumNotPresent,
-                         DownloadException)
+from .exceptions import (
+    AssetChecksumMismatch,
+    AssetChecksumNotPresent,
+    DownloadException,
+)
 from .logger import SDKLogger
 from .utils import FormatTypes, Utils
 
 logger = SDKLogger("downloads")
 
 from .bandwidth import DiskBandwidth, NetworkBandwidth
-from .exceptions import (AssetNotFullyUploaded, DownloadException,
-                         WatermarkIDDownloadException)
+from .exceptions import (
+    AssetNotFullyUploaded,
+    DownloadException,
+    WatermarkIDDownloadException,
+)
 from .transport import HTTPClient
 
 
@@ -71,7 +77,7 @@ class FrameioDownloader(object):
     def _evaluate_asset(self):
         if self.asset.get("_type") != "file":
             raise DownloadException(
-                message="Unsupport Asset type: {}".format(self.asset.get("_type"))
+                message=f"Unsupport Asset type: {self.asset.get('_type')}"
             )
 
         # This logic may block uploads that were started before this field was introduced
@@ -196,7 +202,7 @@ class AWSClient(HTTPClient, object):
         self.bytes_completed = 0
         self.downloader = downloader
         self.futures = []
-        self.original = self.downloader.asset['original']
+        self.original = self.downloader.asset["original"]
 
         # Ensure this is a valid number before assigning
         if concurrency is not None and type(concurrency) == int and concurrency > 0:
@@ -299,10 +305,7 @@ class AWSClient(HTTPClient, object):
             math.ceil(self.downloader.filesize / (download_time))
         )
         print(
-            "Downloaded {} at {}".format(
-                Utils.format_value(self.downloader.filesize, type=FormatTypes.SIZE),
-                download_speed,
-            )
+            f"Downloaded {Utils.format_value(self.downloader.filesize, type=FormatTypes.SIZE)} at {download_speed}"
         )
 
         return self.destination, download_speed
@@ -378,10 +381,7 @@ class AWSClient(HTTPClient, object):
         in_byte = 0  # Set initially here, but then override
 
         print(
-            "Multi-part download -- {} -- {}".format(
-                self.downloader.asset["name"],
-                Utils.format_value(self.downloader.filesize, type=FormatTypes.SIZE),
-            )
+            f"Multi-part download -- {self.downloader.asset['name']} -- {Utils.format_value(self.downloader.filesize, type=FormatTypes.SIZE)}"
         )
 
         with concurrent.futures.ThreadPoolExecutor(
@@ -392,7 +392,7 @@ class AWSClient(HTTPClient, object):
                 out_byte = offset * (i + 1)
 
                 # Create task tuple
-                task = (self.downloader.asset['original'], in_byte, out_byte, i)
+                task = (self.downloader.asset["original"], in_byte, out_byte, i)
 
                 # Stagger start for each chunk by 0.1 seconds
                 if i < self.concurrency:
@@ -423,22 +423,22 @@ class AWSClient(HTTPClient, object):
                 raise AssetChecksumNotPresent
 
             # Calculate the file hash
-            if Utils.calculate_hash(self.destination) != self.downloader.original_checksum:
+            if (
+                Utils.calculate_hash(self.destination)
+                != self.downloader.original_checksum
+            ):
                 raise AssetChecksumMismatch
 
         # Log completion event
         SDKLogger("downloads").info(
-            "Downloaded {} at {}".format(
-                Utils.format_value(self.downloader.filesize, type=FormatTypes.SIZE),
-                download_speed,
-            )
+            f"Downloaded {Utils.format_value(self.downloader.filesize, type=FormatTypes.SIZE)} at {download_speed}"
         )
 
         # Submit telemetry
         transfer_stats = {
             "speed": download_speed,
             "time": download_time,
-            "cdn": AWSClient.check_cdn(self.original)
+            "cdn": AWSClient.check_cdn(self.original),
         }
 
         # Event(self.user_id, 'python-sdk-download-stats', transfer_stats)
