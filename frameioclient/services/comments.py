@@ -8,12 +8,12 @@ from ..lib.utils import ApiReference
 class Comment(Service):
     @ApiReference(operation="#createComment")
     def create(
-      self, 
-      asset_id: Union[str, UUID],
-      text: Optional[str] = None,
-      timestamp: Optional[int] = None,
-      annotation: Optional[str] = None,
-      **kwargs
+        self,
+        asset_id: Union[str, UUID],
+        text: Optional[str] = None,
+        timestamp: Optional[int] = None,
+        annotation: Optional[str] = None,
+        **kwargs
     ):
         """
         Create a comment.
@@ -33,7 +33,7 @@ class Comment(Service):
             text="Hello world",
             timestamp=10
           )
-          """
+        """
         kwargs = {"text": text, "annotation": annotation, "timestamp": timestamp}
 
         endpoint = "/assets/{}/comments".format(asset_id)

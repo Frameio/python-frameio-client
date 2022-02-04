@@ -30,9 +30,7 @@ class Telemetry(object):
         }
 
     def push(self, event_name, properties):
-        self.logger.info(
-            (f"Pushing '{event_name}' event to segment", properties)
-        )
+        self.logger.info((f"Pushing '{event_name}' event to segment", properties))
 
         try:
             status = analytics.track(

@@ -219,9 +219,7 @@ class Asset(Service):
 
             client.assets.copy("adeffee123342", id="7ee008c5-49a2-f8b5-997d-8b64de153c30")
         """
-        kwargs = {
-          "id": target_asset_id
-        }
+        kwargs = {"id": target_asset_id}
         endpoint = "/assets/{}/copy".format(destination_folder_id)
         return self.client._api_call("post", endpoint, kwargs)
 

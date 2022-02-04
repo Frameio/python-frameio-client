@@ -142,7 +142,14 @@ class FrameioUploader(object):
 
             complete_dir_obj = os.path.join(folder, file_p)
             print(
-                "Starting {:02d}/{}, Size: {}, Name: {}".format(self.file_num, self.file_count, Utils.format_value(os.path.getsize(complete_dir_obj), type=FormatTypes.SIZE), file_p)
+                "Starting {:02d}/{}, Size: {}, Name: {}".format(
+                    self.file_num,
+                    self.file_count,
+                    Utils.format_value(
+                        os.path.getsize(complete_dir_obj), type=FormatTypes.SIZE
+                    ),
+                    file_p,
+                )
             )
             client.assets.upload(parent_asset_id, complete_dir_obj)
 

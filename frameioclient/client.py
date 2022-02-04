@@ -6,6 +6,7 @@ The core module of the frameioclient
 
 from .config import Config
 from .lib import APIClient, ClientVersion, FrameioDownloader
+
 # from .lib import Telemetry
 from .services import *
 
