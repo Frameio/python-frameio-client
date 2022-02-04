@@ -37,7 +37,7 @@ class Search(Service):
 
         Example::
 
-            client.assets.search(
+            client.search.library(
                 query="Final",
                 type="file",
                 sort="name"
