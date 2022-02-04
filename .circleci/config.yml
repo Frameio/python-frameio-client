@@ -15,7 +15,7 @@ workflows:
             - build
           matrix:
             parameters:
-              python-version: ["2.7.16", "2.7.18", "3.5.10", "3.6.5", "3.7.7", "3.8.6", "3.9.3", "latest"]
+              python-version: ["3.6.5", "3.7.7", "3.8.6", "3.9.3", "latest"]
 
       - hold:
           type: approval
@@ -33,10 +33,10 @@ workflows:
           requires:
             - hold
 
-      - docs:
-          requires:
-            - deploy
-            - build
+      # - docs:
+      #     requires:
+      #       - deploy
+      #       - build
 
   # upload_test:
   #   triggers:
@@ -113,32 +113,32 @@ jobs:
             cd /tmp/artifact
             twine upload dist/*
 
-  docs:
-    docker:
-      - image: circleci/python:latest
+  # docs:
+  #   docker:
+  #     - image: circleci/python:latest
 
-    steps:
-      - attach_workspace:
-          at: /tmp/artifact
-          name: Attach build artifact
+  #   steps:
+  #     - attach_workspace:
+  #         at: /tmp/artifact
+  #         name: Attach build artifact
 
-      - run:
-          name: Install dependencies
-          command: |
-            cd /tmp/artifact/docs
-            pip install -r requirements.txt
+  #     - run:
+  #         name: Install dependencies
+  #         command: |
+  #           cd /tmp/artifact/docs
+  #           pip install -r requirements.txt
       
-      - run:
-          name: Build autodocs
-          command: |
-            cd /tmp/artifact/docs
-            make jekyll
+  #     - run:
+  #         name: Build autodocs
+  #         command: |
+  #           cd /tmp/artifact/docs
+  #           make jekyll
 
-      - run:
-          name: Publish autodocs
-          command: |
-            cd /tmp/artifact/docs
-            python publish.py
+  #     - run:
+  #         name: Publish autodocs
+  #         command: |
+  #           cd /tmp/artifact/docs
+  #           python publish.py
 
   deploy:
     docker:
