@@ -13,7 +13,7 @@ from .services import *
 class FrameioClient(APIClient):
     def __init__(
         self,
-        token,
+        token: str,
         host: str = Config.api_host,
         threads: int = Config.default_concurrency,
         progress=False,

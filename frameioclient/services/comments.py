@@ -1,16 +1,27 @@
-from ..lib.utils import ApiReference
-from ..lib.service import Service
-from typing import Union
+from typing import Optional, Union
 from uuid import UUID
+
+from ..lib.service import Service
+from ..lib.utils import ApiReference
 
 
 class Comment(Service):
     @ApiReference(operation="#createComment")
-    def create(self, asset_id: Union[str, UUID], **kwargs):
+    def create(
+      self, 
+      asset_id: Union[str, UUID],
+      text: Optional[str] = None,
+      timestamp: Optional[int] = None,
+      annotation: Optional[str] = None,
+      **kwargs
+    ):
         """
         Create a comment.
 
         :param asset_id: The asset id.
+        :param text: The comment text.
+        :param timestamp: The timestamp of the comment.
+        :param annotation: The serialized contents of the annotation.
 
         :Keyword Arguments:
           (optional) kwargs: additional request parameters.
@@ -19,9 +30,12 @@ class Comment(Service):
 
           client.comments.create(
             asset_id="123abc",
-            text="Hello world"
+            text="Hello world",
+            timestamp=10
           )
           """
+        kwargs = {"text": text, "annotation": annotation, "timestamp": timestamp}
+
         endpoint = "/assets/{}/comments".format(asset_id)
         return self.client._api_call("post", endpoint, payload=kwargs)
 
@@ -31,7 +45,7 @@ class Comment(Service):
         Get a comment.
 
         :param comment_id: The comment id.
-          """
+        """
         endpoint = "/comments/{}".format(comment_id)
         return self.client._api_call("get", endpoint, **kwargs)
 
@@ -41,16 +55,26 @@ class Comment(Service):
         Get an asset's comments.
 
         :param asset_id: The asset id.
-          """
+        """
         endpoint = "/assets/{}/comments".format(asset_id)
         return self.client._api_call("get", endpoint, **kwargs)
 
     @ApiReference(operation="#updateComment")
-    def update(self, comment_id: Union[str, UUID], **kwargs):
+    def update(
+        self,
+        comment_id: Union[str, UUID],
+        text: Optional[str] = None,
+        timestamp: Optional[int] = None,
+        annotation: Optional[str] = None,
+        **kwargs
+    ):
         """
         Update a comment.
 
         :param comment_id: The comment id.
+        :param text: The comment text.
+        :param timestamp: The timestamp of the comment.
+        :param annotation: The serialized contents of the annotation.
 
         :Keyword Arguments:
           (optional) kwargs: additional request parameters.
@@ -59,9 +83,13 @@ class Comment(Service):
 
           client.comments.update(
             comment_id="123abc",
-            text="Hello world"
+            text="Hello world",
+            timestamp=10
           )
-          """
+        """
+
+        kwargs = {"text": text, "annotation": annotation, "timestamp": timestamp}
+
         endpoint = "/comments/{}".format(comment_id)
         return self.client._api_call("post", endpoint, payload=kwargs)
 
@@ -71,7 +99,7 @@ class Comment(Service):
         Delete a comment.
 
         :param comment_id: The comment id.
-          """
+        """
         endpoint = "/comments/{}".format(comment_id)
         return self.client._api_call("delete", endpoint)
 
@@ -92,6 +120,6 @@ class Comment(Service):
             comment_id="123abc",
             text="Hello world"
           )
-          """
+        """
         endpoint = "/comments/{}/replies".format(comment_id)
         return self.client._api_call("post", endpoint, payload=kwargs)
