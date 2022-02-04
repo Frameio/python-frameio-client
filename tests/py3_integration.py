@@ -11,6 +11,7 @@ from math import ceil
 from pprint import pprint, pformat
 from datetime import datetime
 from frameioclient import FrameioClient, Utils, KB, MB
+from frameioclient.lib.utils import FormatTypes
 
 token = os.getenv("FRAMEIO_TOKEN") # Your Frame.io token
 project_id = os.getenv("PROJECT_ID") # Project you want to upload files back into
@@ -109,7 +110,7 @@ def test_download(client: FrameioClient, override=False):
         client.assets.download(asset, download_dir, multi_part=True)
         
         download_time = time.time() - start_time
-        download_speed = Utils.format_value(ceil(asset['filesize']/(download_time)))
+        download_speed = Utils.format_value(ceil(asset['filesize']/(download_time)), type=FormatTypes.SPEED)
 
         print("{}/{} Download completed in {:.2f}s @ {}".format((count), len(asset_list), download_time, download_speed))
 
@@ -153,7 +154,7 @@ def test_upload(client: FrameioClient):
         client.assets.upload(new_parent_id, ul_abs_path)
 
         upload_time = time.time() - start_time
-        upload_speed = Utils.format_value(ceil(filesize/(upload_time)))
+        upload_speed = Utils.format_value(ceil(filesize/(upload_time)), type=FormatTypes.SPEED)
 
         print("{}/{} Upload completed in {:.2f}s @ {}".format((count), len(dled_files), upload_time, upload_speed))
 

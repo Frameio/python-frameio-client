@@ -305,7 +305,7 @@ class AWSClient(HTTPClient, object):
             math.ceil(self.downloader.filesize / (download_time))
         )
         print(
-            f"Downloaded {Utils.format_value(self.downloader.filesize, type=FormatTypes.SIZE)} at {download_speed}"
+            f"Downloaded {Utils.format_value(self.downloader.filesize, type=FormatTypes.SIZE)} at {Utils.format_value(download_speed, type=FormatTypes.SPEED)}"
         )
 
         return self.destination, download_speed
@@ -431,7 +431,7 @@ class AWSClient(HTTPClient, object):
 
         # Log completion event
         SDKLogger("downloads").info(
-            f"Downloaded {Utils.format_value(self.downloader.filesize, type=FormatTypes.SIZE)} at {download_speed}"
+            f"Downloaded {Utils.format_value(self.downloader.filesize, type=FormatTypes.SIZE)} at {Utils.format_value(download_speed, type=FormatTypes.SPEED)}"
         )
 
         # Submit telemetry
