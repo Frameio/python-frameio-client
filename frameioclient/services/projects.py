@@ -53,7 +53,7 @@ class Project(Service):
             thumbnail, \
             creator_id, \
             inserted_at (date created), \
-            path (represented like a filesystem) \
+            path (represented like a filesystem)
 
         Example::
 

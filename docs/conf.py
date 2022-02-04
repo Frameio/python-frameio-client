@@ -34,6 +34,7 @@ release = RELEASE
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.napoleon',
+    'sphinx.ext.githubpages',
     'sphinxcontrib.restbuilder',
     'sphinx_jekyll_builder',
     'sphinx_autodoc_typehints'
