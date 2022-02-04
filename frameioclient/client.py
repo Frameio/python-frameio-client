@@ -5,7 +5,8 @@ The core module of the frameioclient
 """
 
 from .config import Config
-from .lib import APIClient, ClientVersion, FrameioDownloader, Telemetry
+from .lib import APIClient, ClientVersion, FrameioDownloader
+# from .lib import Telemetry
 from .services import *
 
 
@@ -23,8 +24,8 @@ class FrameioClient(APIClient):
     def me(self):
         return self.users.get_me()
 
-    def telemetry(self):
-        return Telemetry(self)
+    # def telemetry(self):
+    #     return Telemetry(self)
 
     def _auth(self):
         return self.token
