@@ -23,7 +23,7 @@ workflows:
                 - gh-pages
           matrix:
             parameters:
-              python-version: ["3.6.5", "3.7.7", "3.8.6", "3.9.3", "latest"]
+              python-version: ["3.6.5", "3.7.7", "3.8.6", "3.9.3", "3.9.9", "3.9.10", "latest"]
 
       - hold:
           type: approval
@@ -39,25 +39,6 @@ workflows:
       - deploy:
           requires:
             - hold
-
-      # - docs:
-      #     requires:
-      #       - deploy
-      #       - build
-
-  # upload_test:
-  #   triggers:
-  #     - schedule:
-  #         cron: "0,30 * * * *"
-  #         filters:
-  #           branches:
-  #             only:
-  #               - jh/use-xxhash-for-integration-test
-  #   jobs:
-  #     - build
-  #     - upload_test_job:
-  #         requires:
-  #           - build
 
 jobs:
   build:
@@ -95,47 +76,6 @@ jobs:
           name: Run integration test
           command: |
             python /tmp/artifact/tests/integration.py
-
-  upload_test_job:
-    description: Upload test
-    docker:
-      - image: circleci/python:latest
-    steps:
-      - attach_workspace:
-          at: /tmp/artifact
-          name: Attach build artifact
-      - run:
-          name: Upload to pypi
-          command: |
-            cd /tmp/artifact
-            twine upload dist/*
-
-  # docs:
-  #   docker:
-  #     - image: circleci/python:latest
-
-  #   steps:
-  #     - attach_workspace:
-  #         at: /tmp/artifact
-  #         name: Attach build artifact
-
-  #     - run:
-  #         name: Install dependencies
-  #         command: |
-  #           cd /tmp/artifact/docs
-  #           pip install -r requirements.txt
-
-  #     - run:
-  #         name: Build autodocs
-  #         command: |
-  #           cd /tmp/artifact/docs
-  #           make jekyll
-
-  #     - run:
-  #         name: Publish autodocs
-  #         command: |
-  #           cd /tmp/artifact/docs
-  #           python publish.py
 
   deploy:
     docker:
