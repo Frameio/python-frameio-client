@@ -8,11 +8,19 @@ workflows:
   version: 2
   build_test_deploy:
     jobs:
-      - build
+      - build:
+          filters:
+            branches:
+              ignore:
+                - gh-pages
 
       - test_integration:
           requires:
             - build
+          filters:
+            branches:
+              ignore:
+                - gh-pages
           matrix:
             parameters:
               python-version: ["3.6.5", "3.7.7", "3.8.6", "3.9.3", "latest"]
@@ -21,7 +29,6 @@ workflows:
           type: approval
           requires:
             - test_integration
-
           filters:
             branches:
               only:
@@ -59,54 +66,44 @@ jobs:
     steps:
       - checkout:
           name: Checkout Git
-
       - run:
           name: Build Package
           command: |
             echo -e "Running sdist"
             python setup.py sdist
-
       - persist_to_workspace:
           root: /home/circleci/project/
           paths:
             - .
-
 
   test_integration:
     description: Python << parameters.python-version >>
     parameters:
       python-version:
         type: string
-
     docker:
       - image: circleci/python:<< parameters.python-version >>
-
     steps:
       - attach_workspace:
           at: /tmp/artifact
           name: Attach build artifact
-
       - run:
           name: Install package
           command: |
             pip install --user '/tmp/artifact'
-
       - run:
           name: Run integration test
           command: |
             python /tmp/artifact/tests/integration.py
 
-
   upload_test_job:
     description: Upload test
     docker:
       - image: circleci/python:latest
-
     steps:
       - attach_workspace:
           at: /tmp/artifact
           name: Attach build artifact
-
       - run:
           name: Upload to pypi
           command: |
@@ -127,7 +124,7 @@ jobs:
   #         command: |
   #           cd /tmp/artifact/docs
   #           pip install -r requirements.txt
-      
+
   #     - run:
   #         name: Build autodocs
   #         command: |
@@ -143,17 +140,14 @@ jobs:
   deploy:
     docker:
       - image: circleci/python:latest
-
     steps:
       - attach_workspace:
           at: /tmp/artifact
           name: Attach build artifact
-
       - run:
           name: Install dependencies
           command: |
             pip install setuptools wheel twine
-
       - run:
           name: init .pypirc
           command: |
@@ -161,7 +155,6 @@ jobs:
             echo -e "[pypi]" >> ~/.pypirc
             echo -e "username = $TWINE_USERNAME" >> ~/.pypirc
             echo -e "password = $TWINE_PASSWORD" >> ~/.pypirc
-
       - run:
           name: Upload to pypi
           command: |
