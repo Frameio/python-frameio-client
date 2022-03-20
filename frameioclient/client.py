@@ -7,8 +7,7 @@ The core module of the frameioclient
 from .config import Config
 from .lib import APIClient, ClientVersion, FrameioDownloader
 
-# from .lib import Telemetry
-from .services import *
+from .resources import *
 
 
 class FrameioClient(APIClient):
@@ -26,6 +25,7 @@ class FrameioClient(APIClient):
         return self.users.get_me()
 
     # def telemetry(self):
+        # from .lib import Telemetry
     #     return Telemetry(self)
 
     def _auth(self):
@@ -39,54 +39,54 @@ class FrameioClient(APIClient):
 
     @property
     def users(self):
-        from .services import User
+        from .resources import User
 
         return User(self)
 
     @property
     def assets(self):
-        from .services import Asset
+        from .resources import Asset
 
         return Asset(self)
 
     @property
     def comments(self):
-        from .services import Comment
+        from .resources import Comment
 
         return Comment(self)
 
     @property
     def logs(self):
-        from .services import AuditLogs
+        from .resources import AuditLogs
 
         return AuditLogs(self)
 
     @property
     def review_links(self):
-        from .services import ReviewLink
+        from .resources import ReviewLink
 
         return ReviewLink(self)
 
     @property
     def presentation_links(self):
-        from .services import PresentationLink
+        from .resources import PresentationLink
 
         return PresentationLink(self)
 
     @property
     def projects(self):
-        from .services import Project
+        from .resources import Project
 
         return Project(self)
 
     @property
     def teams(self):
-        from .services import Team
+        from .resources import Team
 
         return Team(self)
 
     @property
     def helpers(self):
-        from .services import FrameioHelpers
+        from .resources import FrameioHelpers
 
         return FrameioHelpers(self)

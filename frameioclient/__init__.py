@@ -1,3 +1,3 @@
 from .lib import *
-from .services import *
+from .resources import *
 from .client import FrameioClient
