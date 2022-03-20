@@ -259,6 +259,7 @@ class Asset(Service):
         endpoint = "/batch/assets/{}/copy".format(destination_folder_id)
         return self.client._api_call("post", endpoint, payload)
 
+    @ApiReference(operation="#addVersionToAsset")
     def add_version(
         self, target_asset_id: Union[str, UUID], new_version_id: Union[str, UUID]
     ):
