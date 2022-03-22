@@ -111,3 +111,4 @@ Pipfile.lock
 .vscode/settings.json
 
 pyproject.toml
+.vscode/settings.json

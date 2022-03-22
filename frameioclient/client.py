@@ -24,10 +24,6 @@ class FrameioClient(APIClient):
     def me(self):
         return self.users.get_me()
 
-    # def telemetry(self):
-        # from .lib import Telemetry
-    #     return Telemetry(self)
-
     def _auth(self):
         return self.token
 

@@ -22,8 +22,6 @@ class Search(Service):
         Search for assets using the library search endpoint, documented at https://developer.frame.io/docs/workflows-assets/search-for-assets.
         For more information check out https://developer.frame.io/api/reference/operation/librarySearchPost/.
 
-        # TODO, confirm that account_id is required or not, could we use self.me?
-
         :param query: The search keyword you want to search with.
         :param account_id: The frame.io account want you to contrain your search to (you may only have one, but some users have 20+ that they have acces to).
         :param type: The type of frame.io asset you want to search: [file, folder, review_link, presentation].

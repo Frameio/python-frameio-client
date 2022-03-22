@@ -1,4 +1,4 @@
-Welcome to Frame.io's Python SDK documentation!
+Welcome to the documentation for `frameioclient` !
 ===============================================
 
 .. toctree::

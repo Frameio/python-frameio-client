@@ -108,7 +108,7 @@ class FrameioUploader(object):
                 except Exception as exc:
                     print(exc)
 
-    def file_counter(self, folder):
+    def count_files(self, folder):
         matches = []
         for root, dirnames, filenames in os.walk(folder):
             for filename in filenames:
@@ -118,13 +118,13 @@ class FrameioUploader(object):
 
         return matches
 
-    def recursive_upload(self, client, folder, parent_asset_id):
+    def upload_recursive(self, client, folder, parent_asset_id):
         # Seperate files and folders:
         file_list = list()
         folder_list = list()
 
         if self.file_count == 0:
-            self.file_counter(folder)
+            self.count_files(folder)
 
         for item in os.listdir(folder):
             if item == ".DS_Store":  # Ignore .DS_Store files on Mac

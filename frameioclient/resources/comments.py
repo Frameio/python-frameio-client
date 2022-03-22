@@ -104,7 +104,7 @@ class Comment(Service):
         return self.client._api_call("delete", endpoint)
 
     @ApiReference(operation="#createReply")
-    def reply(self, comment_id, **kwargs):
+    def reply(self, comment_id: Union[str, UUID], **kwargs):
         """
         Reply to an existing comment.
 

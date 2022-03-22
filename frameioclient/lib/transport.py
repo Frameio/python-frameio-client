@@ -1,7 +1,7 @@
 import concurrent.futures
 import threading
 import time
-from typing import Dict, Optional
+from typing import Dict, Iterable, Optional
 
 import requests
 from requests.adapters import HTTPAdapter
@@ -52,10 +52,7 @@ class HTTPClient(object):
             method_whitelist=["GET", "POST", "PUT", "GET", "DELETE"],
         )
 
-        # Create real thread
-        self._initialize_thread()
-
-    def _initialize_thread(self):
+        # Initialize thread
         self.thread_local = threading.local()
 
     def _get_session(self):
@@ -88,7 +85,6 @@ class APIClient(HTTPClient, object):
         self.token = token
         self.threads = threads
         self.progress = progress
-        self._initialize_thread()
         self.session = self._get_session()
         self.auth_header = {"Authorization": f"Bearer {self.token}"}
 
@@ -149,7 +145,7 @@ class APIClient(HTTPClient, object):
             payload["page"] = page
         return self._api_call(method, endpoint, payload=payload)
 
-    def exec_stream(callable, iterable, sync=lambda _: False, capacity=10, rate=10):
+    def exec_stream(callable, iterable: Iterable, sync=lambda _: False, capacity=10, rate=10):
         """
         Executes a stream according to a defined rate limit.
         """

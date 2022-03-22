@@ -13,11 +13,10 @@ analytics.write_key = segment_id
 class Telemetry(object):
     def __init__(self, user_id):
         self.user_id = user_id
-        self.speedtest = None
         self.identity = None
         self.context = None
         self.integrations = {"all": False, "Amplitude": True}
-        self.logger = SDKLogger("telemetry")
+        self.logger = SDKLogger("frameioclient.telemetry")
 
         self.build_context()
 
@@ -84,7 +83,6 @@ class ComparisonTest(Event, object):
             # self.logger.info(pprint(chunk))
 
         # Collect info to build message
-
         # Build payload for transfer tracking
         # stats_payload = self._build_transfer_stats_payload()
 

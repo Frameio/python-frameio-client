@@ -141,7 +141,7 @@ class Asset(Service):
         }
 
         endpoint = "/assets/{}/children".format(parent_asset_id)
-        return self.client._api_call("post", endpoint, payload=kwargs)
+        return self.client._api_call("post", endpoint, payload={**kwargs})
 
     @ApiReference(operation="#createAsset")
     def create_folder(self, parent_asset_id: str, name: str = "New Folder"):
@@ -379,9 +379,11 @@ class Asset(Service):
 
             client.assets.download(asset, "~./Downloads")
         """
+
         downloader = FrameioDownloader(
             asset, download_folder, prefix, multi_part, replace
         )
+
         return AWSClient(downloader, concurrency=5).multi_thread_download()
 
     def upload_folder(self, source_path: str, destination_id: Union[str, UUID]):

@@ -20,4 +20,4 @@ asset_excludes = {
 
 default_thread_count = 5
 
-retryable_statuses = [400, 429, 500, 503]
+retryable_statuses = [400, 429, 500, 502, 503]
