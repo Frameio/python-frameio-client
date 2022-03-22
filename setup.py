@@ -30,7 +30,6 @@ setuptools.setup(
     'importlib-metadata ~= 1.0 ; python_version < "3.8"',
     'requests',
     'token-bucket',
-    'speedtest-cli',
     'urllib3',
     'xxhash',
   ],

@@ -17,10 +17,13 @@ clean:
 	find . -name "*.pyc" -exec rm -f {} \;
 
 test:
-	cd tests && pipenv run python integration.py
+	cd tests && poetry run python test_integration.py
 
 package:
-	pipenv run python3 setup.py sdist bdist_wheel
+	poetry build
+
+publish:
+	poetry publish
 
 build-docker:
 	docker build . -t benchmark
@@ -32,7 +35,7 @@ format:
 	black frameioclient
 
 view-docs:
-	cd docs && pip install -r requirements.txt && make dev
+	cd docs && poetry run make dev
 
 publish-docs:
-	cd docs && pip install -r requirements.txt && make jekyll && make publish
+	cd docs && poetry run make jekyll
