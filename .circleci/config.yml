@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  python: circleci/python@0.2.1
+  python: circleci/python@2.0.3
 
 workflows:
   version: 2
@@ -22,7 +22,7 @@ workflows:
                 - gh-pages
           matrix:
             parameters:
-              python-version: ["3.6.5", "3.7.7", "3.8.6", "3.9.3", "3.9.9", "3.9.10", "latest"]
+              python-version: ["3.6.9", "3.7.7", "3.8.6", "3.9.3", "3.9.9", "3.9.10", "latest"]
 
       - hold:
           type: approval
@@ -41,14 +41,13 @@ workflows:
 
 jobs:
   build:
-    docker:
-      - image: cimg/python:3.9.10
+    executor: python/default
     steps:
       - checkout:
           name: Checkout Git
-      - run:
-          command: |
-            pip install poetry -U
+      - python/install-packages:
+          pkg-manager: 
+            poetry
       - run:
           name: Build Package
           command: |
@@ -65,11 +64,14 @@ jobs:
       python-version:
         type: string
     docker:
-      - image: circleci/python:<< parameters.python-version >>
+      - image: cimg/python:<< parameters.python-version >>
     steps:
       - attach_workspace:
           at: /tmp/artifact
           name: Attach build artifact
+      - python/install-packages:
+          pkg-manager: 
+            poetry
       - run:
           command: |
             pip install poetry -U  
@@ -85,11 +87,14 @@ jobs:
 
   deploy:
     docker:
-      - image: circleci/python:latest
+      - image: cimg/python:3.10.2
     steps:
       - attach_workspace:
           at: /tmp/artifact
           name: Attach build artifact
+      - python/install-packages:
+          pkg-manager: 
+            poetry
       - run:
           name: init .pypirc
           command: |
