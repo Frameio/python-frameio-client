@@ -76,7 +76,8 @@ jobs:
       - run:
           name: Install package
           command: |
-            poetry install '/tmp/artifact' --extras docs
+            cd /tmp/artifact
+            poetry install --extras docs
       - run:
           name: Run integration test
           command: |
@@ -90,10 +91,6 @@ jobs:
           at: /tmp/artifact
           name: Attach build artifact
       - run:
-          name: Install dependencies
-          command: |
-            pip install setuptools wheel twine
-      - run:
           name: init .pypirc
           command: |
             cd /tmp/artifact
@@ -104,4 +101,4 @@ jobs:
           name: Upload to pypi
           command: |
             cd /tmp/artifact
-            twine upload dist/*
+            poetry publish
