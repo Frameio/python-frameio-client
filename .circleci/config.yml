@@ -47,10 +47,13 @@ jobs:
       - checkout:
           name: Checkout Git
       - run:
+          command: |
+            pip install poetry
+      - run:
           name: Build Package
           command: |
             echo -e "Running sdist"
-            python setup.py sdist
+            poetry build
       - persist_to_workspace:
           root: /home/circleci/project/
           paths:
@@ -68,9 +71,12 @@ jobs:
           at: /tmp/artifact
           name: Attach build artifact
       - run:
+          command: |
+            pip install poetry
+      - run:
           name: Install package
           command: |
-            pip install --user '/tmp/artifact'
+            poetry install '/tmp/artifact' --extras 'docs'
       - run:
           name: Run integration test
           command: |
