@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  python: cimg/python@3.9.10
+  python: circleci/python@0.2.1
 
 workflows:
   version: 2
@@ -42,7 +42,7 @@ workflows:
 jobs:
   build:
     docker:
-      - image: circleci/python:latest
+      - image: cimg/python:latest
     steps:
       - checkout:
           name: Checkout Git
