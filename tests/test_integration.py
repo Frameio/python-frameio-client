@@ -13,9 +13,8 @@ from datetime import datetime
 from frameioclient import FrameioClient, Utils, KB, MB
 from frameioclient.lib.utils import FormatTypes
 
-from dotenv import load_dotenv
-
-load_dotenv('/Users/jeff/Code/developer-relations/python-frameio-client/.env')
+from dotenv import find_dotenv
+find_dotenv()
 
 token = os.getenv("FRAMEIO_TOKEN") # Your Frame.io token
 project_id = os.getenv("PROJECT_ID") # Project you want to upload files back into
