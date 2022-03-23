@@ -19,7 +19,7 @@ classifiers = [
 ]
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "^3.6.5"
 analytics-python = "^1.4.0"
 enlighten = "^1.10.2"
 importlib-metadata = "^4.11.3"
