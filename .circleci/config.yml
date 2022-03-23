@@ -70,7 +70,7 @@ jobs:
       - run:
           name: Install package
           command: |
-            poetry install --extras 'docs' '/tmp/artifact'
+            poetry install --extras docs '/tmp/artifact'
       - run:
           name: Run integration test
           command: |
