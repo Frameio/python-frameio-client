@@ -74,7 +74,7 @@ jobs:
       - run:
           name: Run integration test
           command: |
-            python /tmp/artifact/tests/integration.py
+            python /tmp/artifact/tests/test_integration.py
 
   deploy:
     docker:
