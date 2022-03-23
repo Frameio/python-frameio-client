@@ -47,6 +47,9 @@ jobs:
       - checkout:
           name: Checkout Git
       - run:
+          command: |
+            pip install poetry -U
+      - run:
           name: Build Package
           command: |
             echo -e "Running sdist"
@@ -67,6 +70,9 @@ jobs:
       - attach_workspace:
           at: /tmp/artifact
           name: Attach build artifact
+      - run:
+          command: |
+            pip install poetry -U  
       - run:
           name: Install package
           command: |
