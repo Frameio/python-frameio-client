@@ -1,7 +1,7 @@
 import concurrent.futures
 import threading
 import time
-from typing import Dict, Iterable, Optional
+from typing import Union, Dict, Iterable, Optional
 
 import requests
 from requests.adapters import HTTPAdapter
@@ -93,7 +93,7 @@ class APIClient(HTTPClient, object):
 
     def _api_call(
         self, method, endpoint: str, payload: Dict = {}, limit: Optional[int] = None
-    ):
+    ) -> Union[Dict, PaginatedResponse, None]:
         headers = {**self.shared_headers, **self.auth_header}
 
         r = self.session.request(
@@ -122,6 +122,12 @@ class APIClient(HTTPClient, object):
 
         if r.status_code == 422 and "presentation" in endpoint:
             raise PresentationException
+        
+        if r.status_code == 500 and 'audit' in endpoint:
+            print(f"Hit a 500 on page: {r.headers.get('page-number')}, url: {r.url}")
+            return []
+
+
 
         return r.raise_for_status()
 
@@ -138,11 +144,12 @@ class APIClient(HTTPClient, object):
             page (int): What page to get
         """
         if method == HTTPMethods.GET:
-            endpoint = "{endpoint}?page={page}"
+            endpoint = f"{endpoint}?page={page}"
             return self._api_call(method, endpoint)
 
         if method == HTTPMethods.POST:
             payload["page"] = page
+
         return self._api_call(method, endpoint, payload=payload)
 
     def exec_stream(callable, iterable: Iterable, sync=lambda _: False, capacity=10, rate=10):
