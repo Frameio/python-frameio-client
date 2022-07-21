@@ -74,6 +74,7 @@ fioctl \
 - https://www.sphinx-doc.org/en/master/usage/quickstart.html
 - https://www.geeksforgeeks.org/decorators-with-parameters-in-python/
 - https://stackoverflow.com/questions/43544954/why-does-sphinx-autodoc-output-a-decorators-docstring-when-there-are-two-decora
+- https://www.scaler.com/topics/python/python-decorators/
 
 
 ## Usage
