@@ -71,3 +71,21 @@ class Search(Service):
 
         endpoint = "/search/library"
         return self.client._api_call("post", endpoint, payload=payload)
+
+    def users(self, account_id: str, query: str):
+        """Search for users within a given account
+
+        Args:
+            account_id (str): UUID for the account you want to search within, must be one you have access to
+            query (str): The query string you want to seach with, usually an email or a name
+
+        Returns:
+            List[Dict]: List of user resources found via your search  
+        """
+ 
+        endpoint = "/search/users"
+        payload = {
+            "account_id": account_id,
+            "q": query
+        }
+        return self.client._api_call("post", endpoint, payload=payload)
