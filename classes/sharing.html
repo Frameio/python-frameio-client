@@ -1,14 +1,14 @@
 <!doctype html>
-<html class="no-js">
+<html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Search" href="search.html" /><link rel="prev" title="Teams" href="teams.html" />
 
-    <meta name="generator" content="sphinx-4.5.0, furo 2022.04.07"/>
+    <!-- Generated with Sphinx 6.1.3 and Furo 2022.12.07 -->
         <title>Sharing - Frame.io Python SDK 1.1.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=68f4518137b9aefe99b631505a2064c3c42c9852" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     
     
@@ -134,7 +134,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -149,7 +149,7 @@
   <span class="sidebar-brand-text">Frame.io Python SDK 1.1.0 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
-  <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form>
@@ -193,7 +193,9 @@
           </svg>
           <span>Back to top</span>
         </a>
-        <div class="content-icon-container"><div class="theme-toggle-container theme-toggle-content">
+        <div class="content-icon-container">
+          
+<div class="theme-toggle-container theme-toggle-content">
             <button class="theme-toggle">
               <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
               <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
@@ -201,14 +203,14 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main">
           <section id="sharing">
-<h1>Sharing<a class="headerlink" href="#sharing" title="Permalink to this headline">#</a></h1>
+<h1>Sharing<a class="headerlink" href="#sharing" title="Permalink to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="frameioclient.PresentationLink">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">frameioclient.</span></span><span class="sig-name descname"><span class="pre">PresentationLink</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#frameioclient.PresentationLink" title="Permalink to this definition">#</a></dt>
@@ -217,23 +219,25 @@
 <span class="sig-name descname"><span class="pre">create</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">asset_id</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#frameioclient.PresentationLink.create" title="Permalink to this definition">#</a></dt>
 <dd><p>Create a presentation link.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>asset_id</strong> (<em>string</em>) – The asset id.</p>
 </dd>
-<dt class="field-even">Keyword Arguments</dt>
+<dt class="field-even">Keyword Arguments<span class="colon">:</span></dt>
 <dd class="field-even"><p>kwargs: additional request parameters.</p>
 </dd>
 </dl>
 <p>Example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">client</span><span class="o">.</span><span class="n">presentation_links</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
-  <span class="n">asset_id</span><span class="o">=</span><span class="s2">"9cee7966-4066-b326-7db1-f9e6f5e929e4"</span><span class="p">,</span>
-  <span class="n">title</span><span class="o">=</span><span class="s2">"My fresh presentation"</span><span class="p">,</span>
-  <span class="n">password</span><span class="o">=</span><span class="s2">"abc123"</span>
+  <span class="n">asset_id</span><span class="o">=</span><span class="s2">&quot;9cee7966-4066-b326-7db1-f9e6f5e929e4&quot;</span><span class="p">,</span>
+  <span class="n">title</span><span class="o">=</span><span class="s2">&quot;My fresh presentation&quot;</span><span class="p">,</span>
+  <span class="n">password</span><span class="o">=</span><span class="s2">&quot;abc123&quot;</span>
 <span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
+
 </dd></dl>
+
 <dl class="py class">
 <dt class="sig sig-object py" id="frameioclient.ReviewLink">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">frameioclient.</span></span><span class="sig-name descname"><span class="pre">ReviewLink</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#frameioclient.ReviewLink" title="Permalink to this definition">#</a></dt>
@@ -242,102 +246,109 @@
 <span class="sig-name descname"><span class="pre">create</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_id</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#frameioclient.ReviewLink.create" title="Permalink to this definition">#</a></dt>
 <dd><p>Create a review link.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>project_id</strong> (<em>string</em>) – The project id.</p>
 </dd>
-<dt class="field-even">Keyword Arguments</dt>
+<dt class="field-even">Keyword Arguments<span class="colon">:</span></dt>
 <dd class="field-even"><p>kwargs: additional request parameters.</p>
 </dd>
 </dl>
 <p>Example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">client</span><span class="o">.</span><span class="n">review_links</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
-  <span class="n">project_id</span><span class="o">=</span><span class="s2">"123"</span><span class="p">,</span>
-  <span class="n">name</span><span class="o">=</span><span class="s2">"My Review Link"</span><span class="p">,</span>
-  <span class="n">password</span><span class="o">=</span><span class="s2">"abc123"</span>
+  <span class="n">project_id</span><span class="o">=</span><span class="s2">&quot;123&quot;</span><span class="p">,</span>
+  <span class="n">name</span><span class="o">=</span><span class="s2">&quot;My Review Link&quot;</span><span class="p">,</span>
+  <span class="n">password</span><span class="o">=</span><span class="s2">&quot;abc123&quot;</span>
 <span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="frameioclient.ReviewLink.get">
 <span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">link_id</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#frameioclient.ReviewLink.get" title="Permalink to this definition">#</a></dt>
 <dd><p>Get a single review link</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>link_id</strong> (<em>string</em>) – The review link id.</p>
 </dd>
 </dl>
 </dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="frameioclient.ReviewLink.get_assets">
 <span class="sig-name descname"><span class="pre">get_assets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">link_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#frameioclient.ReviewLink.get_assets" title="Permalink to this definition">#</a></dt>
 <dd><p>Get items from a single review link.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>link_id</strong> (<em>string</em>) – The review link id.</p>
 </dd>
 </dl>
 <p>Example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">client</span><span class="o">.</span><span class="n">review_links</span><span class="o">.</span><span class="n">get_assets</span><span class="p">(</span>
-  <span class="n">link_id</span><span class="o">=</span><span class="s2">"123"</span>
+  <span class="n">link_id</span><span class="o">=</span><span class="s2">&quot;123&quot;</span>
 <span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="frameioclient.ReviewLink.list">
 <span class="sig-name descname"><span class="pre">list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#frameioclient.ReviewLink.list" title="Permalink to this definition">#</a></dt>
 <dd><p>Get the review links of a project</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>asset_id</strong> (<em>string</em>) – The asset id.</p>
 </dd>
 </dl>
 </dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="frameioclient.ReviewLink.update_assets">
 <span class="sig-name descname"><span class="pre">update_assets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">link_id</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#frameioclient.ReviewLink.update_assets" title="Permalink to this definition">#</a></dt>
 <dd><p>Add or update assets for a review link.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>link_id</strong> (<em>string</em>) – The review link id.</p>
 </dd>
-<dt class="field-even">Keyword Arguments</dt>
+<dt class="field-even">Keyword Arguments<span class="colon">:</span></dt>
 <dd class="field-even"><p>kwargs: additional request parameters.</p>
 </dd>
 </dl>
 <p>Example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">client</span><span class="o">.</span><span class="n">review_links</span><span class="o">.</span><span class="n">update_assets</span><span class="p">(</span>
-  <span class="n">link_id</span><span class="o">=</span><span class="s2">"123"</span><span class="p">,</span>
-  <span class="n">asset_ids</span><span class="o">=</span><span class="p">[</span><span class="s2">"abc"</span><span class="p">,</span><span class="s2">"def"</span><span class="p">]</span>
+  <span class="n">link_id</span><span class="o">=</span><span class="s2">&quot;123&quot;</span><span class="p">,</span>
+  <span class="n">asset_ids</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;abc&quot;</span><span class="p">,</span><span class="s2">&quot;def&quot;</span><span class="p">]</span>
 <span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="frameioclient.ReviewLink.update_settings">
 <span class="sig-name descname"><span class="pre">update_settings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">link_id</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#frameioclient.ReviewLink.update_settings" title="Permalink to this definition">#</a></dt>
 <dd><p>Updates review link settings.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>link_id</strong> (<em>string</em>) – The review link id.</p>
 </dd>
-<dt class="field-even">Keyword Arguments</dt>
+<dt class="field-even">Keyword Arguments<span class="colon">:</span></dt>
 <dd class="field-even"><p>kwargs: additional request parameters.</p>
 </dd>
 </dl>
 <p>Example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">client</span><span class="o">.</span><span class="n">review_links</span><span class="o">.</span><span class="n">update_settings</span><span class="p">(</span>
   <span class="n">link_id</span><span class="p">,</span>
-  <span class="n">expires_at</span><span class="o">=</span><span class="s2">"2020-04-08T12:00:00+00:00"</span><span class="p">,</span>
+  <span class="n">expires_at</span><span class="o">=</span><span class="s2">&quot;2020-04-08T12:00:00+00:00&quot;</span><span class="p">,</span>
   <span class="n">is_active</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-  <span class="n">name</span><span class="o">=</span><span class="s2">"Review Link 123"</span><span class="p">,</span>
-  <span class="n">password</span><span class="o">=</span><span class="s2">"my_fun_password"</span><span class="p">,</span>
+  <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Review Link 123&quot;</span><span class="p">,</span>
+  <span class="n">password</span><span class="o">=</span><span class="s2">&quot;my_fun_password&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
+
 </dd></dl>
+
 </section>
 
         </article>
@@ -352,10 +363,10 @@
                 </div>
                 <div class="title">Search</div>
               </div>
-              <svg><use href="#svg-arrow-right"></use></svg>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
           <a class="prev-page" href="teams.html">
-              <svg><use href="#svg-arrow-right"></use></svg>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
@@ -377,24 +388,52 @@
             
           </div>
           <div class="right-details">
-            <div class="icons">
-              
-            </div>
+            
           </div>
         </div>
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Sharing</a><ul>
+<li><a class="reference internal" href="#frameioclient.PresentationLink"><code class="docutils literal notranslate"><span class="pre">PresentationLink</span></code></a><ul>
+<li><a class="reference internal" href="#frameioclient.PresentationLink.create"><code class="docutils literal notranslate"><span class="pre">PresentationLink.create()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#frameioclient.ReviewLink"><code class="docutils literal notranslate"><span class="pre">ReviewLink</span></code></a><ul>
+<li><a class="reference internal" href="#frameioclient.ReviewLink.create"><code class="docutils literal notranslate"><span class="pre">ReviewLink.create()</span></code></a></li>
+<li><a class="reference internal" href="#frameioclient.ReviewLink.get"><code class="docutils literal notranslate"><span class="pre">ReviewLink.get()</span></code></a></li>
+<li><a class="reference internal" href="#frameioclient.ReviewLink.get_assets"><code class="docutils literal notranslate"><span class="pre">ReviewLink.get_assets()</span></code></a></li>
+<li><a class="reference internal" href="#frameioclient.ReviewLink.list"><code class="docutils literal notranslate"><span class="pre">ReviewLink.list()</span></code></a></li>
+<li><a class="reference internal" href="#frameioclient.ReviewLink.update_assets"><code class="docutils literal notranslate"><span class="pre">ReviewLink.update_assets()</span></code></a></li>
+<li><a class="reference internal" href="#frameioclient.ReviewLink.update_settings"><code class="docutils literal notranslate"><span class="pre">ReviewLink.update_settings()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>
   </div>
 </div><script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/scripts/furo.js"></script>
     </body>
 </html>

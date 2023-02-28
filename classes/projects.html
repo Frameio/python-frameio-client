@@ -1,14 +1,14 @@
 <!doctype html>
-<html class="no-js">
+<html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Teams" href="teams.html" /><link rel="prev" title="Audit Logs" href="logs.html" />
 
-    <meta name="generator" content="sphinx-4.5.0, furo 2022.04.07"/>
+    <!-- Generated with Sphinx 6.1.3 and Furo 2022.12.07 -->
         <title>Projects - Frame.io Python SDK 1.1.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=68f4518137b9aefe99b631505a2064c3c42c9852" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     
     
@@ -134,7 +134,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -149,7 +149,7 @@
   <span class="sidebar-brand-text">Frame.io Python SDK 1.1.0 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
-  <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form>
@@ -193,7 +193,9 @@
           </svg>
           <span>Back to top</span>
         </a>
-        <div class="content-icon-container"><div class="theme-toggle-container theme-toggle-content">
+        <div class="content-icon-container">
+          
+<div class="theme-toggle-container theme-toggle-content">
             <button class="theme-toggle">
               <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
               <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
@@ -201,14 +203,14 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main">
           <section id="projects">
-<h1>Projects<a class="headerlink" href="#projects" title="Permalink to this headline">#</a></h1>
+<h1>Projects<a class="headerlink" href="#projects" title="Permalink to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="frameioclient.Project">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">frameioclient.</span></span><span class="sig-name descname"><span class="pre">Project</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#frameioclient.Project" title="Permalink to this definition">#</a></dt>
@@ -217,7 +219,7 @@
 <span class="sig-name descname"><span class="pre">add_collaborator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">email</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#frameioclient.Project.add_collaborator" title="Permalink to this definition">#</a></dt>
 <dd><p>Add Collaborator to a Project Collaborator.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>project_id</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">UUID</span></code>]) – The project id</p></li>
 <li><p><strong>email</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Email user’s e-mail address</p></li>
@@ -226,38 +228,40 @@
 </dl>
 <p>Example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">client</span><span class="o">.</span><span class="n">projects</span><span class="o">.</span><span class="n">add_collaborator</span><span class="p">(</span>
-  <span class="n">project_id</span><span class="o">=</span><span class="s2">"123"</span><span class="p">,</span>
-  <span class="n">email</span><span class="o">=</span><span class="s2">"janedoe@frame.io"</span><span class="p">,</span>
+  <span class="n">project_id</span><span class="o">=</span><span class="s2">&quot;123&quot;</span><span class="p">,</span>
+  <span class="n">email</span><span class="o">=</span><span class="s2">&quot;janedoe@frame.io&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="frameioclient.Project.create">
 <span class="sig-name descname"><span class="pre">create</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">team_id</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#frameioclient.Project.create" title="Permalink to this definition">#</a></dt>
 <dd><p>Create a project.</p>
 <dl class="field-list">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>team_id</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">UUID</span></code>]) – The team id.</p>
 </dd>
-<dt class="field-even">Kwargs</dt>
+<dt class="field-even">Kwargs<span class="colon">:</span></dt>
 <dd class="field-even"><p>kwargs (optional): additional request parameters.</p>
 <p>Example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">client</span><span class="o">.</span><span class="n">projects</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
-  <span class="n">team_id</span><span class="o">=</span><span class="s2">"123"</span><span class="p">,</span>
-  <span class="n">name</span><span class="o">=</span><span class="s2">"My Awesome Project"</span>
+  <span class="n">team_id</span><span class="o">=</span><span class="s2">&quot;123&quot;</span><span class="p">,</span>
+  <span class="n">name</span><span class="o">=</span><span class="s2">&quot;My Awesome Project&quot;</span>
 <span class="p">)</span>
 </pre></div>
 </div>
 </dd>
 </dl>
 </dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="frameioclient.Project.download">
 <span class="sig-name descname"><span class="pre">download</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">destination_directory</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'downloads'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#frameioclient.Project.download" title="Permalink to this definition">#</a></dt>
 <dd><p>Download the provided project to disk.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>project_id</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">UUID</span></code>]) – The project’s id.</p></li>
 <li><p><strong>destination_directory</strong> – Directory on disk that you want to download the project to.</p></li>
@@ -266,66 +270,70 @@
 </dl>
 <p>Example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">client</span><span class="o">.</span><span class="n">projects</span><span class="o">.</span><span class="n">download</span><span class="p">(</span>
-  <span class="n">project_id</span><span class="o">=</span><span class="s2">"123"</span><span class="p">,</span>
-  <span class="n">destination_directory</span><span class="o">=</span><span class="s2">"./downloads"</span>
+  <span class="n">project_id</span><span class="o">=</span><span class="s2">&quot;123&quot;</span><span class="p">,</span>
+  <span class="n">destination_directory</span><span class="o">=</span><span class="s2">&quot;./downloads&quot;</span>
 <span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="frameioclient.Project.get">
 <span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#frameioclient.Project.get" title="Permalink to this definition">#</a></dt>
 <dd><p>Get an individual project</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>project_id</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">UUID</span></code>]) – The project’s id</p>
 </dd>
 </dl>
 <p>Example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">client</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-  <span class="n">project_id</span><span class="o">=</span><span class="s2">"123"</span>
+  <span class="n">project_id</span><span class="o">=</span><span class="s2">&quot;123&quot;</span>
 <span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="frameioclient.Project.get_collaborators">
 <span class="sig-name descname"><span class="pre">get_collaborators</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_id</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#frameioclient.Project.get_collaborators" title="Permalink to this definition">#</a></dt>
 <dd><p>Get collaborators for a project</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>project_id</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">UUID</span></code>]) – The project’s id</p>
 </dd>
 </dl>
 <p>Example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">client</span><span class="o">.</span><span class="n">projects</span><span class="o">.</span><span class="n">get_collaborators</span><span class="p">(</span>
-  <span class="n">project_id</span><span class="o">=</span><span class="s2">"123"</span>
+  <span class="n">project_id</span><span class="o">=</span><span class="s2">&quot;123&quot;</span>
 <span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="frameioclient.Project.get_pending_collaborators">
 <span class="sig-name descname"><span class="pre">get_pending_collaborators</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_id</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#frameioclient.Project.get_pending_collaborators" title="Permalink to this definition">#</a></dt>
 <dd><p>Get pending collaborators for a project</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>project_id</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">UUID</span></code>]) – The project’s id</p>
 </dd>
 </dl>
 <p>Example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">client</span><span class="o">.</span><span class="n">projects</span><span class="o">.</span><span class="n">get_pending_collaborators</span><span class="p">(</span>
-  <span class="n">project_id</span><span class="o">=</span><span class="s2">"123"</span>
+  <span class="n">project_id</span><span class="o">=</span><span class="s2">&quot;123&quot;</span>
 <span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="frameioclient.Project.remove_collaborator">
 <span class="sig-name descname"><span class="pre">remove_collaborator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">email</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#frameioclient.Project.remove_collaborator" title="Permalink to this definition">#</a></dt>
 <dd><p>Remove Collaborator from Project.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>project_id</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">UUID</span></code>]) – The Project ID.</p></li>
 <li><p><strong>email</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – The user’s e-mail address</p></li>
@@ -334,18 +342,19 @@
 </dl>
 <p>Example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">client</span><span class="o">.</span><span class="n">projects</span><span class="o">.</span><span class="n">remove_collaborator</span><span class="p">(</span>
-  <span class="n">project_id</span><span class="o">=</span><span class="s2">"123"</span><span class="p">,</span>
-  <span class="n">email</span><span class="o">=</span><span class="s2">"janedoe@frame.io"</span>
+  <span class="n">project_id</span><span class="o">=</span><span class="s2">&quot;123&quot;</span><span class="p">,</span>
+  <span class="n">email</span><span class="o">=</span><span class="s2">&quot;janedoe@frame.io&quot;</span>
 <span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="frameioclient.Project.tree">
 <span class="sig-name descname"><span class="pre">tree</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#frameioclient.Project.tree" title="Permalink to this definition">#</a></dt>
 <dd><p>Fetch a tree representation of all files/folders in a project.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>project_id</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">UUID</span></code>]) – The project’s id</p></li>
 <li><p><strong>slim</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>]) – If true, fetch only the minimum information for the following:             filename,             filesize,             thumbnail,             creator_id,             inserted_at (date created),             path (represented like a filesystem)</p></li>
@@ -354,13 +363,15 @@
 </dl>
 <p>Example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">client</span><span class="o">.</span><span class="n">projects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-  <span class="n">project_id</span><span class="o">=</span><span class="s2">"123"</span><span class="p">,</span>
+  <span class="n">project_id</span><span class="o">=</span><span class="s2">&quot;123&quot;</span><span class="p">,</span>
   <span class="n">slim</span><span class="o">=</span><span class="kc">True</span>
 <span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
+
 </dd></dl>
+
 </section>
 
         </article>
@@ -375,10 +386,10 @@
                 </div>
                 <div class="title">Teams</div>
               </div>
-              <svg><use href="#svg-arrow-right"></use></svg>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
           <a class="prev-page" href="logs.html">
-              <svg><use href="#svg-arrow-right"></use></svg>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
@@ -400,24 +411,50 @@
             
           </div>
           <div class="right-details">
-            <div class="icons">
-              
-            </div>
+            
           </div>
         </div>
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Projects</a><ul>
+<li><a class="reference internal" href="#frameioclient.Project"><code class="docutils literal notranslate"><span class="pre">Project</span></code></a><ul>
+<li><a class="reference internal" href="#frameioclient.Project.add_collaborator"><code class="docutils literal notranslate"><span class="pre">Project.add_collaborator()</span></code></a></li>
+<li><a class="reference internal" href="#frameioclient.Project.create"><code class="docutils literal notranslate"><span class="pre">Project.create()</span></code></a></li>
+<li><a class="reference internal" href="#frameioclient.Project.download"><code class="docutils literal notranslate"><span class="pre">Project.download()</span></code></a></li>
+<li><a class="reference internal" href="#frameioclient.Project.get"><code class="docutils literal notranslate"><span class="pre">Project.get()</span></code></a></li>
+<li><a class="reference internal" href="#frameioclient.Project.get_collaborators"><code class="docutils literal notranslate"><span class="pre">Project.get_collaborators()</span></code></a></li>
+<li><a class="reference internal" href="#frameioclient.Project.get_pending_collaborators"><code class="docutils literal notranslate"><span class="pre">Project.get_pending_collaborators()</span></code></a></li>
+<li><a class="reference internal" href="#frameioclient.Project.remove_collaborator"><code class="docutils literal notranslate"><span class="pre">Project.remove_collaborator()</span></code></a></li>
+<li><a class="reference internal" href="#frameioclient.Project.tree"><code class="docutils literal notranslate"><span class="pre">Project.tree()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>
   </div>
 </div><script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/scripts/furo.js"></script>
     </body>
 </html>

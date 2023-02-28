@@ -1,14 +1,14 @@
 <!doctype html>
-<html class="no-js">
+<html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="FrameioHelpers" href="helpers.html" /><link rel="prev" title="FrameioDownloader" href="downloader.html" />
 
-    <meta name="generator" content="sphinx-4.5.0, furo 2022.04.07"/>
+    <!-- Generated with Sphinx 6.1.3 and Furo 2022.12.07 -->
         <title>FrameioUploader - Frame.io Python SDK 1.1.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=68f4518137b9aefe99b631505a2064c3c42c9852" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     
     
@@ -134,7 +134,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -149,7 +149,7 @@
   <span class="sidebar-brand-text">Frame.io Python SDK 1.1.0 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
-  <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form>
@@ -193,7 +193,9 @@
           </svg>
           <span>Back to top</span>
         </a>
-        <div class="content-icon-container"><div class="theme-toggle-container theme-toggle-content">
+        <div class="content-icon-container">
+          
+<div class="theme-toggle-container theme-toggle-content">
             <button class="theme-toggle">
               <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
               <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
@@ -201,14 +203,14 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main">
           <section id="frameiouploader">
-<h1>FrameioUploader<a class="headerlink" href="#frameiouploader" title="Permalink to this headline">#</a></h1>
+<h1>FrameioUploader<a class="headerlink" href="#frameiouploader" title="Permalink to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="frameioclient.FrameioUploader">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">frameioclient.</span></span><span class="sig-name descname"><span class="pre">FrameioUploader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">asset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#frameioclient.FrameioUploader" title="Permalink to this definition">#</a></dt>
@@ -217,55 +219,63 @@
 <span class="sig-name descname"><span class="pre">_calculate_chunks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">total_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunk_count</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#frameioclient.FrameioUploader._calculate_chunks" title="Permalink to this definition">#</a></dt>
 <dd><p>Calculate chunk size</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>total_size</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Total filesize in bytes</p></li>
 <li><p><strong>chunk_count</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Total number of URL’s we got back from the API</p></li>
 </ul>
 </dd>
-<dt class="field-even">Return chunk_offsets</dt>
+<dt class="field-even">Return chunk_offsets<span class="colon">:</span></dt>
 <dd class="field-even"><p>List of chunk offsets</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]</p>
 </dd>
 </dl>
 </dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="frameioclient.FrameioUploader._get_session">
 <span class="sig-name descname"><span class="pre">_get_session</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#frameioclient.FrameioUploader._get_session" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="frameioclient.FrameioUploader._smart_read_chunk">
 <span class="sig-name descname"><span class="pre">_smart_read_chunk</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chunk_offset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_final_chunk</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#frameioclient.FrameioUploader._smart_read_chunk" title="Permalink to this definition">#</a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></p>
 </dd>
 </dl>
 </dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="frameioclient.FrameioUploader._upload_chunk">
 <span class="sig-name descname"><span class="pre">_upload_chunk</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#frameioclient.FrameioUploader._upload_chunk" title="Permalink to this definition">#</a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></p>
 </dd>
 </dl>
 </dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="frameioclient.FrameioUploader.file_counter">
 <span class="sig-name descname"><span class="pre">file_counter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">folder</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#frameioclient.FrameioUploader.file_counter" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="frameioclient.FrameioUploader.recursive_upload">
 <span class="sig-name descname"><span class="pre">recursive_upload</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">folder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_asset_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#frameioclient.FrameioUploader.recursive_upload" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="frameioclient.FrameioUploader.upload">
 <span class="sig-name descname"><span class="pre">upload</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#frameioclient.FrameioUploader.upload" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
+
 </dd></dl>
+
 </section>
 
         </article>
@@ -280,10 +290,10 @@
                 </div>
                 <div class="title">FrameioHelpers</div>
               </div>
-              <svg><use href="#svg-arrow-right"></use></svg>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
           <a class="prev-page" href="downloader.html">
-              <svg><use href="#svg-arrow-right"></use></svg>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
@@ -305,24 +315,49 @@
             
           </div>
           <div class="right-details">
-            <div class="icons">
-              
-            </div>
+            
           </div>
         </div>
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">FrameioUploader</a><ul>
+<li><a class="reference internal" href="#frameioclient.FrameioUploader"><code class="docutils literal notranslate"><span class="pre">FrameioUploader</span></code></a><ul>
+<li><a class="reference internal" href="#frameioclient.FrameioUploader._calculate_chunks"><code class="docutils literal notranslate"><span class="pre">FrameioUploader._calculate_chunks()</span></code></a></li>
+<li><a class="reference internal" href="#frameioclient.FrameioUploader._get_session"><code class="docutils literal notranslate"><span class="pre">FrameioUploader._get_session()</span></code></a></li>
+<li><a class="reference internal" href="#frameioclient.FrameioUploader._smart_read_chunk"><code class="docutils literal notranslate"><span class="pre">FrameioUploader._smart_read_chunk()</span></code></a></li>
+<li><a class="reference internal" href="#frameioclient.FrameioUploader._upload_chunk"><code class="docutils literal notranslate"><span class="pre">FrameioUploader._upload_chunk()</span></code></a></li>
+<li><a class="reference internal" href="#frameioclient.FrameioUploader.file_counter"><code class="docutils literal notranslate"><span class="pre">FrameioUploader.file_counter()</span></code></a></li>
+<li><a class="reference internal" href="#frameioclient.FrameioUploader.recursive_upload"><code class="docutils literal notranslate"><span class="pre">FrameioUploader.recursive_upload()</span></code></a></li>
+<li><a class="reference internal" href="#frameioclient.FrameioUploader.upload"><code class="docutils literal notranslate"><span class="pre">FrameioUploader.upload()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>
   </div>
 </div><script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/scripts/furo.js"></script>
     </body>
 </html>

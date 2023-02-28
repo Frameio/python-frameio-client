@@ -1,14 +1,14 @@
 <!doctype html>
-<html class="no-js">
+<html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Sharing" href="sharing.html" /><link rel="prev" title="Projects" href="projects.html" />
 
-    <meta name="generator" content="sphinx-4.5.0, furo 2022.04.07"/>
+    <!-- Generated with Sphinx 6.1.3 and Furo 2022.12.07 -->
         <title>Teams - Frame.io Python SDK 1.1.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=68f4518137b9aefe99b631505a2064c3c42c9852" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     
     
@@ -134,7 +134,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -149,7 +149,7 @@
   <span class="sidebar-brand-text">Frame.io Python SDK 1.1.0 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
-  <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form>
@@ -193,7 +193,9 @@
           </svg>
           <span>Back to top</span>
         </a>
-        <div class="content-icon-container"><div class="theme-toggle-container theme-toggle-content">
+        <div class="content-icon-container">
+          
+<div class="theme-toggle-container theme-toggle-content">
             <button class="theme-toggle">
               <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
               <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
@@ -201,14 +203,14 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main">
           <section id="teams">
-<h1>Teams<a class="headerlink" href="#teams" title="Permalink to this headline">#</a></h1>
+<h1>Teams<a class="headerlink" href="#teams" title="Permalink to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="frameioclient.Team">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">frameioclient.</span></span><span class="sig-name descname"><span class="pre">Team</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#frameioclient.Team" title="Permalink to this definition">#</a></dt>
@@ -217,7 +219,7 @@
 <span class="sig-name descname"><span class="pre">add_members</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">team_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">emails</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#frameioclient.Team.add_members" title="Permalink to this definition">#</a></dt>
 <dd><p>Add a list of users via their e-mail address to a given team.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>team_id</strong> (<em>string</em>) – The team id.</p></li>
 <li><p><strong>emails</strong> (<em>list</em>) – The e-mails you want to add.</p></li>
@@ -225,82 +227,89 @@
 </dd>
 </dl>
 </dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="frameioclient.Team.create">
 <span class="sig-name descname"><span class="pre">create</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">account_id</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#frameioclient.Team.create" title="Permalink to this definition">#</a></dt>
 <dd><p>Create a Team</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>account_id</strong> (<em>string</em>) – The account id you want to create this team under.</p>
 </dd>
-<dt class="field-even">Keyword Arguments:</dt>
+<dt class="field-even">Keyword Arguments:<span class="colon">:</span></dt>
 <dd class="field-even"><p>(optional) kwargs: additional request parameters.</p>
 </dd>
 </dl>
 <p>Example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">client</span><span class="o">.</span><span class="n">teams</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
-  <span class="n">account_id</span><span class="o">=</span><span class="s2">"6bdcb4d9-4548-4548-4548-27a6c024ae6b"</span><span class="p">,</span>
-  <span class="n">name</span><span class="o">=</span><span class="s2">"My Awesome Project"</span><span class="p">,</span>
+  <span class="n">account_id</span><span class="o">=</span><span class="s2">&quot;6bdcb4d9-4548-4548-4548-27a6c024ae6b&quot;</span><span class="p">,</span>
+  <span class="n">name</span><span class="o">=</span><span class="s2">&quot;My Awesome Project&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="frameioclient.Team.get">
 <span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">team_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#frameioclient.Team.get" title="Permalink to this definition">#</a></dt>
 <dd><p>Get team by id</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>team_id</strong> (<em>string</em>) – the team’s id</p>
 </dd>
 </dl>
 </dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="frameioclient.Team.get_members">
 <span class="sig-name descname"><span class="pre">get_members</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">team_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#frameioclient.Team.get_members" title="Permalink to this definition">#</a></dt>
 <dd><p>Get the member list for a given team.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>team_id</strong> (<em>string</em>) – The team id.</p>
 </dd>
 </dl>
 </dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="frameioclient.Team.list">
 <span class="sig-name descname"><span class="pre">list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">account_id</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#frameioclient.Team.list" title="Permalink to this definition">#</a></dt>
 <dd><p>Get teams owned by the specified account.           (To return all teams, use list_all())</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>account_id</strong> (<em>string</em>) – The account id.</p>
 </dd>
 </dl>
 </dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="frameioclient.Team.list_all">
 <span class="sig-name descname"><span class="pre">list_all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#frameioclient.Team.list_all" title="Permalink to this definition">#</a></dt>
 <dd><p>Get all teams for the authenticated user.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>account_id</strong> (<em>string</em>) – The account id.</p>
 </dd>
 </dl>
 </dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="frameioclient.Team.list_projects">
 <span class="sig-name descname"><span class="pre">list_projects</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">team_id</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#frameioclient.Team.list_projects" title="Permalink to this definition">#</a></dt>
 <dd><p>Get projects owned by the team.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>team_id</strong> (<em>string</em>) – The team id.</p>
 </dd>
 </dl>
 </dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="frameioclient.Team.remove_members">
 <span class="sig-name descname"><span class="pre">remove_members</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">team_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">emails</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#frameioclient.Team.remove_members" title="Permalink to this definition">#</a></dt>
 <dd><p>Remove a list of users via their e-mail address from a given team.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>team_id</strong> (<em>string</em>) – The team id.</p></li>
 <li><p><strong>emails</strong> (<em>list</em>) – The e-mails you want to add.</p></li>
@@ -308,7 +317,9 @@
 </dd>
 </dl>
 </dd></dl>
+
 </dd></dl>
+
 </section>
 
         </article>
@@ -323,10 +334,10 @@
                 </div>
                 <div class="title">Sharing</div>
               </div>
-              <svg><use href="#svg-arrow-right"></use></svg>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
           <a class="prev-page" href="projects.html">
-              <svg><use href="#svg-arrow-right"></use></svg>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
@@ -348,24 +359,50 @@
             
           </div>
           <div class="right-details">
-            <div class="icons">
-              
-            </div>
+            
           </div>
         </div>
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Teams</a><ul>
+<li><a class="reference internal" href="#frameioclient.Team"><code class="docutils literal notranslate"><span class="pre">Team</span></code></a><ul>
+<li><a class="reference internal" href="#frameioclient.Team.add_members"><code class="docutils literal notranslate"><span class="pre">Team.add_members()</span></code></a></li>
+<li><a class="reference internal" href="#frameioclient.Team.create"><code class="docutils literal notranslate"><span class="pre">Team.create()</span></code></a></li>
+<li><a class="reference internal" href="#frameioclient.Team.get"><code class="docutils literal notranslate"><span class="pre">Team.get()</span></code></a></li>
+<li><a class="reference internal" href="#frameioclient.Team.get_members"><code class="docutils literal notranslate"><span class="pre">Team.get_members()</span></code></a></li>
+<li><a class="reference internal" href="#frameioclient.Team.list"><code class="docutils literal notranslate"><span class="pre">Team.list()</span></code></a></li>
+<li><a class="reference internal" href="#frameioclient.Team.list_all"><code class="docutils literal notranslate"><span class="pre">Team.list_all()</span></code></a></li>
+<li><a class="reference internal" href="#frameioclient.Team.list_projects"><code class="docutils literal notranslate"><span class="pre">Team.list_projects()</span></code></a></li>
+<li><a class="reference internal" href="#frameioclient.Team.remove_members"><code class="docutils literal notranslate"><span class="pre">Team.remove_members()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>
   </div>
 </div><script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/scripts/furo.js"></script>
     </body>
 </html>

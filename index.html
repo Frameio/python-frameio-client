@@ -1,14 +1,14 @@
 <!doctype html>
-<html class="no-js">
+<html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Classes" href="classes/index.html" />
 
-    <meta name="generator" content="sphinx-4.5.0, furo 2022.04.07"/>
+    <!-- Generated with Sphinx 6.1.3 and Furo 2022.12.07 -->
         <title>Frame.io Python SDK 1.1.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=68f4518137b9aefe99b631505a2064c3c42c9852" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     
     
@@ -134,7 +134,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -149,7 +149,7 @@
   <span class="sidebar-brand-text">Frame.io Python SDK 1.1.0 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="search.html" role="search">
-  <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form>
@@ -193,7 +193,9 @@
           </svg>
           <span>Back to top</span>
         </a>
-        <div class="content-icon-container"><div class="theme-toggle-container theme-toggle-content">
+        <div class="content-icon-container">
+          
+<div class="theme-toggle-container theme-toggle-content">
             <button class="theme-toggle">
               <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
               <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
@@ -201,91 +203,196 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main">
           <section id="welcome-to-frame-io-s-python-sdk-documentation">
-<h1>Welcome to Frame.io’s Python SDK documentation!<a class="headerlink" href="#welcome-to-frame-io-s-python-sdk-documentation" title="Permalink to this headline">#</a></h1>
+<h1>Welcome to Frame.io’s Python SDK documentation!<a class="headerlink" href="#welcome-to-frame-io-s-python-sdk-documentation" title="Permalink to this heading">#</a></h1>
 <div class="toctree-wrapper compound">
 </div>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>This sample documentation was generated on Jun 03, 2022, and is rebuilt weekly.</p>
+<p>This sample documentation was generated on Feb 28, 2023, and is rebuilt weekly.</p>
 </div>
 </section>
 <section id="frameioclient">
-<h1>FrameioClient<a class="headerlink" href="#frameioclient" title="Permalink to this headline">#</a></h1>
-<p>Frame.io API Client that handles automatic pagination, and lots of other nice things.</p>
-<dl class="field-list simple">
-<dt class="field-odd">param HTTPClient</dt>
-<dd class="field-odd"><p>HTTP Client base class</p>
-</dd>
-<dt class="field-even">type HTTPClient</dt>
-<dd class="field-even"><p>class</p>
-</dd>
-<dt class="field-odd">type token</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
-</dd>
-<dt class="field-even">param token</dt>
-<dd class="field-even"><p>Frame.io developer token, JWT, or OAuth access token.</p>
-</dd>
-<dt class="field-odd">type token</dt>
-<dd class="field-odd"><p>str</p>
-</dd>
-<dt class="field-even">type threads</dt>
-<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></p>
-</dd>
-<dt class="field-odd">param threads</dt>
-<dd class="field-odd"><p>Number of threads to concurrently use for uploads/downloads.</p>
-</dd>
-<dt class="field-even">type threads</dt>
-<dd class="field-even"><p>int</p>
-</dd>
-<dt class="field-odd">param progress</dt>
-<dd class="field-odd"><p>If True, show status bars in console.</p>
-</dd>
-<dt class="field-even">type progress</dt>
-<dd class="field-even"><p>bool</p>
-</dd>
-</dl>
+<h1>FrameioClient<a class="headerlink" href="#frameioclient" title="Permalink to this heading">#</a></h1>
 </section>
 <section id="classes">
-<h1>Classes<a class="headerlink" href="#classes" title="Permalink to this headline">#</a></h1>
+<h1>Classes<a class="headerlink" href="#classes" title="Permalink to this heading">#</a></h1>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="classes/index.html">Classes</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="classes/users.html">Users</a></li>
-<li class="toctree-l2"><a class="reference internal" href="classes/assets.html">Assets</a></li>
-<li class="toctree-l2"><a class="reference internal" href="classes/comments.html">Comments</a></li>
-<li class="toctree-l2"><a class="reference internal" href="classes/logs.html">Audit Logs</a></li>
-<li class="toctree-l2"><a class="reference internal" href="classes/projects.html">Projects</a></li>
-<li class="toctree-l2"><a class="reference internal" href="classes/teams.html">Teams</a></li>
-<li class="toctree-l2"><a class="reference internal" href="classes/sharing.html">Sharing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="classes/search.html">Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classes/users.html">Users</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="classes/users.html#frameioclient.User"><code class="docutils literal notranslate"><span class="pre">User</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="classes/users.html#frameioclient.User.get_accounts"><code class="docutils literal notranslate"><span class="pre">User.get_accounts()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="classes/users.html#frameioclient.User.get_me"><code class="docutils literal notranslate"><span class="pre">User.get_me()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="classes/assets.html">Assets</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="classes/assets.html#frameioclient.Asset"><code class="docutils literal notranslate"><span class="pre">Asset</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="classes/assets.html#frameioclient.Asset.add_version"><code class="docutils literal notranslate"><span class="pre">Asset.add_version()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="classes/assets.html#frameioclient.Asset.bulk_copy"><code class="docutils literal notranslate"><span class="pre">Asset.bulk_copy()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="classes/assets.html#frameioclient.Asset.copy"><code class="docutils literal notranslate"><span class="pre">Asset.copy()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="classes/assets.html#frameioclient.Asset.create"><code class="docutils literal notranslate"><span class="pre">Asset.create()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="classes/assets.html#frameioclient.Asset.create_folder"><code class="docutils literal notranslate"><span class="pre">Asset.create_folder()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="classes/assets.html#frameioclient.Asset.delete"><code class="docutils literal notranslate"><span class="pre">Asset.delete()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="classes/assets.html#frameioclient.Asset.download"><code class="docutils literal notranslate"><span class="pre">Asset.download()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="classes/assets.html#frameioclient.Asset.from_url"><code class="docutils literal notranslate"><span class="pre">Asset.from_url()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="classes/assets.html#frameioclient.Asset.get"><code class="docutils literal notranslate"><span class="pre">Asset.get()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="classes/assets.html#frameioclient.Asset.get_children"><code class="docutils literal notranslate"><span class="pre">Asset.get_children()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="classes/assets.html#frameioclient.Asset.update"><code class="docutils literal notranslate"><span class="pre">Asset.update()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="classes/assets.html#frameioclient.Asset.upload"><code class="docutils literal notranslate"><span class="pre">Asset.upload()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="classes/assets.html#frameioclient.Asset.upload_folder"><code class="docutils literal notranslate"><span class="pre">Asset.upload_folder()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="classes/comments.html">Comments</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="classes/comments.html#frameioclient.Comment"><code class="docutils literal notranslate"><span class="pre">Comment</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="classes/comments.html#frameioclient.Comment.create"><code class="docutils literal notranslate"><span class="pre">Comment.create()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="classes/comments.html#frameioclient.Comment.delete"><code class="docutils literal notranslate"><span class="pre">Comment.delete()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="classes/comments.html#frameioclient.Comment.get"><code class="docutils literal notranslate"><span class="pre">Comment.get()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="classes/comments.html#frameioclient.Comment.list"><code class="docutils literal notranslate"><span class="pre">Comment.list()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="classes/comments.html#frameioclient.Comment.reply"><code class="docutils literal notranslate"><span class="pre">Comment.reply()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="classes/comments.html#frameioclient.Comment.update"><code class="docutils literal notranslate"><span class="pre">Comment.update()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="classes/logs.html">Audit Logs</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="classes/logs.html#frameioclient.AuditLogs"><code class="docutils literal notranslate"><span class="pre">AuditLogs</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="classes/logs.html#frameioclient.AuditLogs.list"><code class="docutils literal notranslate"><span class="pre">AuditLogs.list()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="classes/projects.html">Projects</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="classes/projects.html#frameioclient.Project"><code class="docutils literal notranslate"><span class="pre">Project</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="classes/projects.html#frameioclient.Project.add_collaborator"><code class="docutils literal notranslate"><span class="pre">Project.add_collaborator()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="classes/projects.html#frameioclient.Project.create"><code class="docutils literal notranslate"><span class="pre">Project.create()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="classes/projects.html#frameioclient.Project.download"><code class="docutils literal notranslate"><span class="pre">Project.download()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="classes/projects.html#frameioclient.Project.get"><code class="docutils literal notranslate"><span class="pre">Project.get()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="classes/projects.html#frameioclient.Project.get_collaborators"><code class="docutils literal notranslate"><span class="pre">Project.get_collaborators()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="classes/projects.html#frameioclient.Project.get_pending_collaborators"><code class="docutils literal notranslate"><span class="pre">Project.get_pending_collaborators()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="classes/projects.html#frameioclient.Project.remove_collaborator"><code class="docutils literal notranslate"><span class="pre">Project.remove_collaborator()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="classes/projects.html#frameioclient.Project.tree"><code class="docutils literal notranslate"><span class="pre">Project.tree()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="classes/teams.html">Teams</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="classes/teams.html#frameioclient.Team"><code class="docutils literal notranslate"><span class="pre">Team</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="classes/teams.html#frameioclient.Team.add_members"><code class="docutils literal notranslate"><span class="pre">Team.add_members()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="classes/teams.html#frameioclient.Team.create"><code class="docutils literal notranslate"><span class="pre">Team.create()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="classes/teams.html#frameioclient.Team.get"><code class="docutils literal notranslate"><span class="pre">Team.get()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="classes/teams.html#frameioclient.Team.get_members"><code class="docutils literal notranslate"><span class="pre">Team.get_members()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="classes/teams.html#frameioclient.Team.list"><code class="docutils literal notranslate"><span class="pre">Team.list()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="classes/teams.html#frameioclient.Team.list_all"><code class="docutils literal notranslate"><span class="pre">Team.list_all()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="classes/teams.html#frameioclient.Team.list_projects"><code class="docutils literal notranslate"><span class="pre">Team.list_projects()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="classes/teams.html#frameioclient.Team.remove_members"><code class="docutils literal notranslate"><span class="pre">Team.remove_members()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="classes/sharing.html">Sharing</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="classes/sharing.html#frameioclient.PresentationLink"><code class="docutils literal notranslate"><span class="pre">PresentationLink</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="classes/sharing.html#frameioclient.PresentationLink.create"><code class="docutils literal notranslate"><span class="pre">PresentationLink.create()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="classes/sharing.html#frameioclient.ReviewLink"><code class="docutils literal notranslate"><span class="pre">ReviewLink</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="classes/sharing.html#frameioclient.ReviewLink.create"><code class="docutils literal notranslate"><span class="pre">ReviewLink.create()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="classes/sharing.html#frameioclient.ReviewLink.get"><code class="docutils literal notranslate"><span class="pre">ReviewLink.get()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="classes/sharing.html#frameioclient.ReviewLink.get_assets"><code class="docutils literal notranslate"><span class="pre">ReviewLink.get_assets()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="classes/sharing.html#frameioclient.ReviewLink.list"><code class="docutils literal notranslate"><span class="pre">ReviewLink.list()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="classes/sharing.html#frameioclient.ReviewLink.update_assets"><code class="docutils literal notranslate"><span class="pre">ReviewLink.update_assets()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="classes/sharing.html#frameioclient.ReviewLink.update_settings"><code class="docutils literal notranslate"><span class="pre">ReviewLink.update_settings()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="classes/search.html">Search</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="classes/search.html#frameioclient.Search"><code class="docutils literal notranslate"><span class="pre">Search</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="classes/search.html#frameioclient.Search.library"><code class="docutils literal notranslate"><span class="pre">Search.library()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
 </div>
 </section>
 <section id="modules">
-<h1>Modules<a class="headerlink" href="#modules" title="Permalink to this headline">#</a></h1>
+<h1>Modules<a class="headerlink" href="#modules" title="Permalink to this heading">#</a></h1>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="modules/index.html">Modules</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="modules/downloader.html">FrameioDownloader</a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/uploader.html">FrameioUploader</a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/helpers.html">FrameioHelpers</a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/utils.html">Utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/downloader.html">FrameioDownloader</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="modules/downloader.html#frameioclient.FrameioDownloader"><code class="docutils literal notranslate"><span class="pre">FrameioDownloader</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="modules/downloader.html#frameioclient.FrameioDownloader._create_file_stub"><code class="docutils literal notranslate"><span class="pre">FrameioDownloader._create_file_stub()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/downloader.html#frameioclient.FrameioDownloader._evaluate_asset"><code class="docutils literal notranslate"><span class="pre">FrameioDownloader._evaluate_asset()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/downloader.html#frameioclient.FrameioDownloader._get_checksum"><code class="docutils literal notranslate"><span class="pre">FrameioDownloader._get_checksum()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/downloader.html#frameioclient.FrameioDownloader._get_path"><code class="docutils literal notranslate"><span class="pre">FrameioDownloader._get_path()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/downloader.html#frameioclient.FrameioDownloader.download"><code class="docutils literal notranslate"><span class="pre">FrameioDownloader.download()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/downloader.html#frameioclient.FrameioDownloader.get_download_key"><code class="docutils literal notranslate"><span class="pre">FrameioDownloader.get_download_key()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/downloader.html#frameioclient.FrameioDownloader.get_path"><code class="docutils literal notranslate"><span class="pre">FrameioDownloader.get_path()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="modules/uploader.html">FrameioUploader</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="modules/uploader.html#frameioclient.FrameioUploader"><code class="docutils literal notranslate"><span class="pre">FrameioUploader</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="modules/uploader.html#frameioclient.FrameioUploader._calculate_chunks"><code class="docutils literal notranslate"><span class="pre">FrameioUploader._calculate_chunks()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/uploader.html#frameioclient.FrameioUploader._get_session"><code class="docutils literal notranslate"><span class="pre">FrameioUploader._get_session()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/uploader.html#frameioclient.FrameioUploader._smart_read_chunk"><code class="docutils literal notranslate"><span class="pre">FrameioUploader._smart_read_chunk()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/uploader.html#frameioclient.FrameioUploader._upload_chunk"><code class="docutils literal notranslate"><span class="pre">FrameioUploader._upload_chunk()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/uploader.html#frameioclient.FrameioUploader.file_counter"><code class="docutils literal notranslate"><span class="pre">FrameioUploader.file_counter()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/uploader.html#frameioclient.FrameioUploader.recursive_upload"><code class="docutils literal notranslate"><span class="pre">FrameioUploader.recursive_upload()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/uploader.html#frameioclient.FrameioUploader.upload"><code class="docutils literal notranslate"><span class="pre">FrameioUploader.upload()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="modules/helpers.html">FrameioHelpers</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="modules/helpers.html#frameioclient.FrameioHelpers"><code class="docutils literal notranslate"><span class="pre">FrameioHelpers</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="modules/helpers.html#frameioclient.FrameioHelpers.autoconfigure"><code class="docutils literal notranslate"><span class="pre">FrameioHelpers.autoconfigure()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/helpers.html#frameioclient.FrameioHelpers.build_project_tree"><code class="docutils literal notranslate"><span class="pre">FrameioHelpers.build_project_tree()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/helpers.html#frameioclient.FrameioHelpers.download_project"><code class="docutils literal notranslate"><span class="pre">FrameioHelpers.download_project()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/helpers.html#frameioclient.FrameioHelpers.get_assets_recursively"><code class="docutils literal notranslate"><span class="pre">FrameioHelpers.get_assets_recursively()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/helpers.html#frameioclient.FrameioHelpers.get_updated_assets"><code class="docutils literal notranslate"><span class="pre">FrameioHelpers.get_updated_assets()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/helpers.html#frameioclient.FrameioHelpers.load_config"><code class="docutils literal notranslate"><span class="pre">FrameioHelpers.load_config()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/helpers.html#frameioclient.FrameioHelpers.recursive_downloader"><code class="docutils literal notranslate"><span class="pre">FrameioHelpers.recursive_downloader()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/helpers.html#frameioclient.FrameioHelpers.save_config"><code class="docutils literal notranslate"><span class="pre">FrameioHelpers.save_config()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="modules/utils.html">Utils</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="modules/utils.html#frameioclient.Utils"><code class="docutils literal notranslate"><span class="pre">Utils</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="modules/utils.html#frameioclient.Utils.calculate_hash"><code class="docutils literal notranslate"><span class="pre">Utils.calculate_hash()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/utils.html#frameioclient.Utils.compare_items"><code class="docutils literal notranslate"><span class="pre">Utils.compare_items()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/utils.html#frameioclient.Utils.format_headers"><code class="docutils literal notranslate"><span class="pre">Utils.format_headers()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/utils.html#frameioclient.Utils.format_value"><code class="docutils literal notranslate"><span class="pre">Utils.format_value()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/utils.html#frameioclient.Utils.get_valid_filename"><code class="docutils literal notranslate"><span class="pre">Utils.get_valid_filename()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/utils.html#frameioclient.Utils.normalize_filename"><code class="docutils literal notranslate"><span class="pre">Utils.normalize_filename()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/utils.html#frameioclient.Utils.stream"><code class="docutils literal notranslate"><span class="pre">Utils.stream()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
 </div>
 </section>
 <section id="indices-and-tables">
-<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">#</a></h1>
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this heading">#</a></h1>
 <ul class="simple">
 <li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
 <li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
@@ -305,7 +412,7 @@
                 </div>
                 <div class="title">Classes</div>
               </div>
-              <svg><use href="#svg-arrow-right"></use></svg>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
           
         </div>
@@ -320,44 +427,21 @@
             
           </div>
           <div class="right-details">
-            <div class="icons">
-              
-            </div>
+            
           </div>
         </div>
         
       </footer>
     </div>
-    <aside class="toc-drawer">
+    <aside class="toc-drawer no-toc">
       
-      
-      <div class="toc-sticky toc-scroll">
-        <div class="toc-title-container">
-          <span class="toc-title">
-            Contents
-          </span>
-        </div>
-        <div class="toc-tree-container">
-          <div class="toc-tree">
-            <ul>
-<li><a class="reference internal" href="#">Welcome to Frame.io’s Python SDK documentation!</a></li>
-<li><a class="reference internal" href="#frameioclient">FrameioClient</a></li>
-<li><a class="reference internal" href="#classes">Classes</a></li>
-<li><a class="reference internal" href="#modules">Modules</a></li>
-<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
-</ul>
-
-          </div>
-        </div>
-      </div>
       
       
     </aside>
   </div>
 </div><script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-    <script src="_static/jquery.js"></script>
-    <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/scripts/furo.js"></script>
     </body>
 </html>
