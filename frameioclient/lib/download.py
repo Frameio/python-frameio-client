@@ -1,189 +1,187 @@
-import io
 import os
 import math
-import time
-import requests
-import threading
-import concurrent.futures
+from typing import Dict
 
 from .utils import Utils
-from .exceptions import DownloadException, WatermarkIDDownloadException, AssetNotFullyUploaded
 
-thread_local = threading.local()
+from .logger import SDKLogger
+from .transfer import AWSClient
+
+# from .telemetry import Event, ComparisonTest
+
+logger = SDKLogger("downloads")
+
+from .exceptions import (
+    DownloadException,
+    WatermarkIDDownloadException,
+    AssetNotFullyUploaded,
+)
+
 
 class FrameioDownloader(object):
-  def __init__(self, asset, download_folder, prefix, multi_part=False, concurrency=5):
-    self.multi_part = multi_part
-    self.asset = asset
-    self.asset_type = None
-    self.download_folder = download_folder
-    self.resolution_map = dict()
-    self.destination = None
-    self.watermarked = asset['is_session_watermarked'] # Default is probably false
-    self.file_size = asset["filesize"]
-    self.concurrency = concurrency
-    self.futures = list()
-    self.chunk_size = (25 * 1024 * 1024) # 25 MB chunk size
-    self.chunks = math.ceil(self.file_size/self.chunk_size)
-    self.prefix = prefix
-    self.filename = Utils.normalize_filename(asset["name"])
+    def __init__(
+        self,
+        asset: Dict,
+        download_folder: str,
+        prefix: str,
+        multi_part: bool = False,
+        replace: bool = False,
+    ):
+        self.multi_part = multi_part
+        self.asset = asset
+        self.asset_type = None
+        self.download_folder = download_folder
+        self.replace = replace
+        self.resolution_map = dict()
+        self.destination = None
+        self.watermarked = asset["is_session_watermarked"]  # Default is probably false
+        self.filesize = asset["filesize"]
+        self.futures = list()
+        self.checksum = None
+        self.original_checksum = None
+        self.checksum_verification = True
+        self.chunk_size = 25 * 1024 * 1024  # 25 MB chunk size
+        self.chunks = math.ceil(self.filesize / self.chunk_size)
+        self.prefix = prefix
+        self.bytes_started = 0
+        self.bytes_completed = 0
+        self.in_progress = 0
+        self.aws_client = None
+        self.session = None
+        self.filename = Utils.normalize_filename(asset["name"])
+        self.request_logs = list()
+        self.stats = True
 
-    self._evaluate_asset()
+        self._evaluate_asset()
+        self._get_path()
 
-  def _evaluate_asset(self):
-    if self.asset.get("_type") != "file":
-      raise DownloadException(message="Unsupport Asset type: {}".format(self.asset.get("_type")))
-    
-    if self.asset.get("upload_completed_at") == None:
-      raise AssetNotFullyUploaded
+    def _update_in_progress(self):
+        self.in_progress = self.bytes_started - self.bytes_completed
+        return self.in_progress  # Number of in-progress bytes
 
-  def _get_session(self):
-    if not hasattr(thread_local, "session"):
-        thread_local.session = requests.Session()
-    return thread_local.session
+    def get_path(self):
+        if self.prefix != None:
+            self.filename = self.prefix + self.filename
 
-  def _create_file_stub(self):
-    try:
-      fp = open(self.destination, "w")
-      # fp.write(b"\0" * self.file_size) # Disabled to prevent pre-allocatation of disk space
-      fp.close()
-    except FileExistsError as e:
-      print(e)
-      raise e
-    return True
+        if self.destination == None:
+            final_destination = os.path.join(self.download_folder, self.filename)
+            self.destination = final_destination
 
-  def get_download_key(self):
-    try:
-      url = self.asset['original']
-    except KeyError as e:
-      if self.watermarked == True:
-        resolution_list = list()
+        return self.destination
+
+    def _evaluate_asset(self):
+        if self.asset.get("_type") != "file":
+            raise DownloadException(
+                message=f"Unsupport Asset type: {self.asset.get('_type')}"
+            )
+
+        # This logic may block uploads that were started before this field was introduced
+        if self.asset.get("upload_completed_at") == None:
+            raise AssetNotFullyUploaded
+
         try:
-          for resolution_key, download_url in sorted(self.asset['downloads'].items()):
-            resolution = resolution_key.split("_")[1] # Grab the item at index 1 (resolution)
-            try:
-              resolution = int(resolution)
-            except ValueError:
-              continue
+            self.original_checksum = self.asset["checksums"]["xx_hash"]
+        except (TypeError, KeyError):
+            self.original_checksum = None
 
-            if download_url is not None:
-              resolution_list.append(download_url)
+    def _create_file_stub(self):
+        try:
+            fp = open(self.destination, "w")
+            # fp.write(b"\0" * self.file_size) # Disabled to prevent pre-allocatation of disk space
+            fp.close()
+        except FileExistsError as e:
+            if self.replace == True:
+                os.remove(self.destination)  # Remove the file
+                self._create_file_stub()  # Create a new stub
+            else:
+                raise e
+        return True
 
-          # Grab the highest resolution (first item) now
-          url = resolution_list[0]
-        except KeyError:
-          raise DownloadException
-      else:
-        raise WatermarkIDDownloadException
+    def _get_path(self):
+        logger.info(f"prefix: {self.prefix}")
+        if self.prefix != None:
+            self.filename = self.prefix + self.filename
 
-    return url
+        if self.destination == None:
+            final_destination = os.path.join(self.download_folder, self.filename)
+            self.destination = final_destination
 
-  def get_path(self):
-    if self.prefix != None:
-      self.filename = self.prefix + self.filename
+        return self.destination
 
-    if self.destination == None:
-      final_destination = os.path.join(self.download_folder, self.filename)
-      self.destination = final_destination
-      
-    return self.destination
+    def _get_checksum(self):
+        try:
+            self.original_checksum = self.asset["checksums"]["xx_hash"]
+        except (TypeError, KeyError):
+            self.original_checksum = None
 
-  def download_handler(self):
-    if os.path.isfile(self.get_path()):
-      print("File already exists at this location.")
-      return self.destination
-    else:
-      url = self.get_download_key()
+        return self.original_checksum
 
-      if self.watermarked == True:
-        return self.download(url)
-      else:
-        if self.multi_part == True:
-          return self.multi_part_download(url)
+    def get_download_key(self):
+        try:
+            url = self.asset["original"]
+        except KeyError as e:
+            if self.watermarked == True:
+                resolution_list = list()
+                try:
+                    for resolution_key, download_url in sorted(
+                        self.asset["downloads"].items()
+                    ):
+                        resolution = resolution_key.split("_")[
+                            1
+                        ]  # Grab the item at index 1 (resolution)
+                        try:
+                            resolution = int(resolution)
+                        except ValueError:
+                            continue
+
+                        if download_url is not None:
+                            resolution_list.append(download_url)
+
+                    # Grab the highest resolution (first item) now
+                    url = resolution_list[0]
+                except KeyError:
+                    raise DownloadException
+            else:
+                raise WatermarkIDDownloadException
+
+        return url
+
+    def download(self):
+        """Call this to perform the actual download of your asset!"""
+
+        # Check folders
+        if os.path.isdir(os.path.join(os.path.curdir, self.download_folder)):
+            logger.info("Folder exists, don't need to create it")
         else:
-          return self.download(url)
+            logger.info("Destination folder not found, creating")
+            os.mkdir(self.download_folder)
 
-  def download(self, url):
-    start_time = time.time()
-    print("Beginning download -- {} -- {}".format(self.asset["name"], Utils.format_bytes(self.file_size, type="size")))
+        # Check files
+        if os.path.isfile(self.get_path()) == False:
+            pass
 
-    # Downloading
-    r = requests.get(url)
-    open(self.destination, "wb").write(r.content)
+        if os.path.isfile(self.get_path()) and self.replace == True:
+            os.remove(self.get_path())
 
-    download_time = time.time() - start_time
-    download_speed = Utils.format_bytes(math.ceil(self.file_size/(download_time)))
-    print("Downloaded {} at {}".format(Utils.format_bytes(self.file_size, type="size"), download_speed))
+        if os.path.isfile(self.get_path()) and self.replace == False:
+            logger.info("File already exists at this location.")
+            return self.destination
 
-    return self.destination, download_speed
+        # Get URL
+        url = self.get_download_key()
 
-  def multi_part_download(self, url):
-    start_time = time.time()
+        # AWS Client
+        self.aws_client = AWSClient(downloader=self, concurrency=5)
 
-    # Generate stub
-    try:
-      self._create_file_stub()
+        # Handle watermarking
+        if self.watermarked == True:
+            return self.aws_client._download_whole(url)
 
-    except Exception as e:
-      raise DownloadException(message=e)
-
-    offset = math.ceil(self.file_size / self.chunks)
-    in_byte = 0 # Set initially here, but then override
-    
-    print("Multi-part download -- {} -- {}".format(self.asset["name"], Utils.format_bytes(self.file_size, type="size")))
-
-    # Queue up threads
-    with concurrent.futures.ThreadPoolExecutor(max_workers=self.concurrency) as executor:
-      for i in range(int(self.chunks)):
-        out_byte = offset * (i+1) # Increment by the iterable + 1 so we don't mutiply by zero
-        task = (url, in_byte, out_byte, i)
-
-        time.sleep(0.1) # Stagger start for each chunk by 0.1 seconds
-        self.futures.append(executor.submit(self.download_chunk, task))
-        in_byte = out_byte # Reset new in byte equal to last out byte
-    
-    # Wait on threads to finish
-    for future in concurrent.futures.as_completed(self.futures):
-      try:
-        status = future.result()
-        print(status)
-      except Exception as exc:
-        print(exc)
-    
-    # Calculate and print stats
-    download_time = time.time() - start_time
-    download_speed = Utils.format_bytes(math.ceil(self.file_size/(download_time)))
-    print("Downloaded {} at {}".format(Utils.format_bytes(self.file_size, type="size"), download_speed))
-
-    return self.destination
-
-  def download_chunk(self, task):
-    # Download a particular chunk
-    # Called by the threadpool executor
-
-    url = task[0]
-    start_byte = task[1]
-    end_byte = task[2]
-    chunk_number = task[3]
-
-    session = self._get_session()
-    print("Getting chunk {}/{}".format(chunk_number + 1, self.chunks))
-         
-    # Specify the starting and ending of the file 
-    headers = {"Range": "bytes=%d-%d" % (start_byte, end_byte)} 
-
-    # Grab the data as a stream
-    r = session.get(url, headers=headers, stream=True)
-
-    with open(self.destination, "r+b") as fp:
-      fp.seek(start_byte) # Seek to the right of the file
-      fp.write(r.content) # Write the data
-      print("Done writing chunk {}/{}".format(chunk_number + 1, self.chunks))
-
-    return "Complete!"
-
-  @staticmethod
-  def get_byte_range(url, start_byte=0, end_byte=2048):
-    headers = {"Range": "bytes=%d-%d" % (start_byte, end_byte)}
-    br = requests.get(url, headers=headers).content
-    return br
+        else:
+            # Don't use multi-part download for files below 25 MB
+            if self.asset["filesize"] < 26214400:
+                return self.aws_client._download_whole(url)
+            if self.multi_part == True:
+                return self.aws_client.multi_thread_download(url)
+            else:
+                return self.aws_client._download_whole(url)
