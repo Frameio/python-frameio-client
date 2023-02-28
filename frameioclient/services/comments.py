@@ -91,7 +91,7 @@ class Comment(Service):
         kwargs = {"text": text, "annotation": annotation, "timestamp": timestamp}
 
         endpoint = "/comments/{}".format(comment_id)
-        return self.client._api_call("post", endpoint, payload=kwargs)
+        return self.client._api_call("put", endpoint, payload=kwargs)
 
     @ApiReference(operation="#deleteComment")
     def delete(self, comment_id: Union[str, UUID]):
