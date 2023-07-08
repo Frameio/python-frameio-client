@@ -49,7 +49,7 @@ class HTTPClient(object):
             total=100,
             backoff_factor=2,
             status_forcelist=retryable_statuses,
-            method_whitelist=["GET", "POST", "PUT", "GET", "DELETE"],
+            allowed_methods=["GET", "POST", "PUT", "GET", "DELETE"],
         )
 
         # Create real thread
