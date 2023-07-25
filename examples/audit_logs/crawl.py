@@ -4,7 +4,6 @@ from pprint import pprint
 import time
 from typing import Optional
 from dotenv import find_dotenv, load_dotenv
-from frontmatter import load
 from frameioclient import FrameioClient, Utils
 
 # load_dotenv(find_dotenv())
