@@ -159,4 +159,4 @@ class FrameioUploader(object):
                 parent_asset_id=parent_asset_id, name=folder_name, type="folder"
             )["id"]
 
-            self.recursive_upload(client, new_folder, new_parent_asset_id)
+            self.upload_recursive(client, new_folder, new_parent_asset_id)
