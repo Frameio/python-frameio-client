@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "frameioclient"
-version = "2.0.1-alpha.2"
+version = "2.0.1-alpha.4"
 description='Client library for the Frame.io API'
 readme = "README.md"
 license='MIT'
@@ -27,6 +27,7 @@ requests = "^2.27.1"
 token-bucket = "^0.3.0"
 urllib3 = "^1.26.9"
 xxhash = "^3.0.0"
+furl = "^2.1.3"
 
 [tool.poetry.dev-dependencies]
 bump2version = "^1.0.1"
