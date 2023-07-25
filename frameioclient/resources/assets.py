@@ -410,6 +410,6 @@ class Asset(Service):
             # Then try to grab it as a project
             folder_id = Project(self.client).get(destination_id)["root_asset_id"]
         finally:
-            return FrameioUploader().recursive_upload(
+            return FrameioUploader().upload_recursive(
                 self.client, source_path, folder_id
             )
