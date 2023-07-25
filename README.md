@@ -103,7 +103,7 @@ client.assets.create_folder(
 client.assets.upload(destination_id, "video.mp4")
 ```
 
-### Developer information
+### Contributing
 Install the package into your development environment using Poetry. This should auto-link it within the current virtual-env that gets created during installation.
 
 ```sh
