@@ -13,22 +13,22 @@ Frame.io is a cloud-based collaboration hub that allows video professionals to s
 
 ### Installation
 
-via Pip
-```
+via `pip`
+```sh
 $ pip install frameioclient
 ```
 
-via Source
-```
+from source
+```sh
 $ git clone https://github.com/frameio/python-frameio-client
-$ pip install .
+$ pip install -e .
 ```
 
 ### Developing
-Install the package into your development environment and link to it by running the following:
+Install the package into your development environment using Poetry. This should auto-link it within the current virtual-env that gets created during installation.
 
 ```sh
-pipenv install -e . -pre
+poetry install
 ```
 
 ## Documentation
@@ -36,11 +36,11 @@ pipenv install -e . -pre
 [Frame.io API Documentation](https://developer.frame.io/docs)
 
 ### Use CLI
-When you install this package, a cli tool called `fioctl` will also be installed to your environment.
+When you install this package, a cli tool called `fioctfioclil` will also be installed to your environment.
 
 **To upload a file or folder**
 ```sh
-fioctl \
+fiocli \
 --token fio-u-YOUR_TOKEN_HERE  \
 --destination "YOUR TARGET FRAME.IO PROJECT OR FOLDER" \
 --target "YOUR LOCAL SYSTEM DIRECTORY" \
@@ -49,7 +49,7 @@ fioctl \
 
 **To download a file, project, or folder**
 ```sh
-fioctl \
+fiocli \
 --token fio-u-YOUR_TOKEN_HERE  \
 --destination "YOUR LOCAL SYSTEM DIRECTORY" \
 --target "YOUR TARGET FRAME.IO PROJECT OR FOLDER" \
@@ -87,9 +87,13 @@ In addition to the snippets below, examples are included in [/examples](/example
 Get basic info on the authenticated user.
 
 ```python
+import os
 from frameioclient import FrameioClient
 
-client = FrameioClient("TOKEN")
+# We always recommend passing the token you'll be using via an environment variable and accessing it using os.getenv("FRAMEIO_TOKEN")
+FRAMEIO_TOKEN = os.getenv("FRAMEIO_TOKEN")
+client = FrameioClient(FRAMEIO_TOKEN)
+
 me = client.users.get_me()
 print(me['id'])
 ```
@@ -102,12 +106,14 @@ Create a new asset and upload a file. For `parent_asset_id` you must have the ro
 import os
 from frameioclient import FrameioClient
 
-client = FrameioClient("TOKEN")
+# We always recommend passing the token you'll be using via an environment variable and accessing it using os.getenv("FRAMEIO_TOKEN")
+FRAMEIO_TOKEN = os.getenv("FRAMEIO_TOKEN")
+client = FrameioClient(FRAMEIO_TOKEN)
 
 
 # Create a new asset manually
-asset = client.assets.create(
-  parent_asset_id="1234abcd",
+client.assets.create(
+  parent_asset_id="0d98e024-d738-4d9a-ae89-19f02839116d",
   name="MyVideo.mp4",
   type="file",
   filetype="video/mp4",
@@ -115,10 +121,9 @@ asset = client.assets.create(
 )
 
 # Create a new folder
-client.assets.create(
-  parent_asset_id="",
+client.assets.create_folder(
+  parent_asset_id="63bfd7cc-8517-4a61-b655-0a59f5dec630",
   name="Folder name",
-  type="folder" # this kwarg is what makes it a folder
 )
 
 # Upload a file 
