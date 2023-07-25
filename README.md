@@ -24,13 +24,6 @@ $ git clone https://github.com/frameio/python-frameio-client
 $ pip install -e .
 ```
 
-### Developing
-Install the package into your development environment using Poetry. This should auto-link it within the current virtual-env that gets created during installation.
-
-```sh
-poetry install
-```
-
 ## Documentation
 
 [Frame.io API Documentation](https://developer.frame.io/docs)
@@ -55,26 +48,6 @@ fiocli \
 --target "YOUR TARGET FRAME.IO PROJECT OR FOLDER" \
 --threads 2
 ```
-
-### Links
-
-**Sphinx Documentation**
-- https://pythonhosted.org/sphinxcontrib-restbuilder/
-- https://www.npmjs.com/package/rst-selector-parser
-- https://sphinx-themes.org/sample-sites/furo/_sources/index.rst.txt
-- https://developer.mantidproject.org/Standards/DocumentationGuideForDevs.html
-- https://sublime-and-sphinx-guide.readthedocs.io/en/latest/code_blocks.html
-- https://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html
-- https://stackoverflow.com/questions/64451966/python-sphinx-how-to-embed-code-into-a-docstring
-- https://pythonhosted.org/an_example_pypi_project/sphinx.html
-
-**Decorators**
-- https://docs.python.org/3.7/library/functools.html
-- https://realpython.com/primer-on-python-decorators/
-- https://www.sphinx-doc.org/en/master/usage/quickstart.html
-- https://www.geeksforgeeks.org/decorators-with-parameters-in-python/
-- https://stackoverflow.com/questions/43544954/why-does-sphinx-autodoc-output-a-decorators-docstring-when-there-are-two-decora
-
 
 ## Usage
 
@@ -129,3 +102,30 @@ client.assets.create_folder(
 # Upload a file 
 client.assets.upload(destination_id, "video.mp4")
 ```
+
+### Developer information
+Install the package into your development environment using Poetry. This should auto-link it within the current virtual-env that gets created during installation.
+
+```sh
+poetry install
+```
+
+### Ancillary links
+
+**Sphinx Documentation**
+- https://pythonhosted.org/sphinxcontrib-restbuilder/
+- https://www.npmjs.com/package/rst-selector-parser
+- https://sphinx-themes.org/sample-sites/furo/_sources/index.rst.txt
+- https://developer.mantidproject.org/Standards/DocumentationGuideForDevs.html
+- https://sublime-and-sphinx-guide.readthedocs.io/en/latest/code_blocks.html
+- https://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html
+- https://stackoverflow.com/questions/64451966/python-sphinx-how-to-embed-code-into-a-docstring
+- https://pythonhosted.org/an_example_pypi_project/sphinx.html
+
+**Decorators**
+- https://docs.python.org/3.7/library/functools.html
+- https://realpython.com/primer-on-python-decorators/
+- https://www.sphinx-doc.org/en/master/usage/quickstart.html
+- https://www.geeksforgeeks.org/decorators-with-parameters-in-python/
+- https://stackoverflow.com/questions/43544954/why-does-sphinx-autodoc-output-a-decorators-docstring-when-there-are-two-decora
+
