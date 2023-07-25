@@ -1,13 +1,13 @@
-from frameioclient.lib.utils import FormatTypes, Utils
 import os
-from pathlib import Path
+from time import time
 
-import pdb
-from time import time,sleep
-from pprint import pprint
+from dotenv import find_dotenv, load_dotenv
 from frameioclient import FrameioClient
+from frameioclient.lib.utils import FormatTypes, Utils
 
-def get_folder_size(path='.'):
+load_dotenv(find_dotenv())
+
+def get_folder_size(path: str = '.'):
     total = 0
     for entry in os.scandir(path):
         if entry.is_file():
@@ -16,32 +16,26 @@ def get_folder_size(path='.'):
             total += get_folder_size(entry.path)
     return total
 
-def demo_project_download(project_id):
-	TOKEN = os.getenv("FRAMEIO_TOKEN")
-	client = FrameioClient(TOKEN)
+def demo_project_download(project_id: str, download_dir: str):
+    TOKEN = os.getenv("FRAMEIO_TOKEN")
+    client = FrameioClient(TOKEN)
 
-	start_time = time()
-	download_dir = '/Volumes/Jeff-EXT/Python Transfer Test'
-	item_count = client.projects.download(project_id, destination_directory=download_dir)
+    project_info = client.projects.get(project_id)
 
-	# item_count = client.projects.download(project_id, destination_directory='/Users/jeff/Temp/Transfer vs Python SDK/Python SDK')
+    start_time = time()
+    downloaded_item_count = client.projects.download(project_id, destination_directory=download_dir)
 
-	end_time = time()
-	elapsed = round((end_time - start_time), 2)
+    end_time = time()
+    elapsed = round((end_time - start_time), 2)
 
-	
-	folder_size = get_folder_size(download_dir)
-	# pdb.set_trace()
+    folder_size = get_folder_size(download_dir)
 
-	print(f"Found {item_count} items")
-	print(f"Took {elapsed} second to download {Utils.format_value(folder_size, type=FormatTypes.SIZE)} for project: {client.projects.get(project_id)['name']}")
-	print("\n")
+    print(f"Found {downloaded_item_count} items to download in the in the {project_info['name']} project")
+    print(f"Took {elapsed} second to download {Utils.format_value(folder_size, type=FormatTypes.SIZE)} for project: {project_info['name']}")
+    print("\n")
 
 if __name__ == "__main__":
-	# project_id = '2dfb6ce6-90d8-4994-881f-f02cd94b1c81'
-	# project_id='e2845993-7330-54c6-8b77-eafbd5144eac'
-	# project_id = '5d3ff176-ab1f-4c0b-a027-abe3d2a960e3'
-	project_id = 'ba1791e8-bf1e-46cb-bcad-5e4bb6431a08'
-	demo_project_download(project_id)
+    project_id = 'bb4d6293-514b-4097-a9aa-792d91916414'
 
-# Took 443.84 second to download 12.43 GB to USB HDD for project: HersheyPark Summer Campaign using Python SDK
+    destination_dir = '/Users/jeff/Movies/Assets/temp/Python SDK Test'
+    demo_project_download(project_id, destination_dir)
