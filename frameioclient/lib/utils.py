@@ -2,9 +2,10 @@ import enum
 import os
 import re
 import sys
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Generator, Optional
 
 import xxhash
+from furl import furl
 
 KB = 1024
 MB = KB * KB
@@ -31,26 +32,41 @@ class FormatTypes(enum.Enum):
 
 class Utils:
     @staticmethod
-    def stream(func, page=1, page_size=20):
+    def stream(func, page=1, page_size=50):
         """
         Accepts a lambda of a call to a client list method, and streams the results until \
         the list has been exhausted.
 
-      Args:
-        fun (function): A 1-arity function to apply during the stream
+        Args:
+            fun (function): A 1-arity function to apply during the stream
 
-      Example::
-      
-          stream(lambda pagination: client.get_collaborators(project_id, **pagination))
-      """
+        Example::
+        
+            stream(lambda pagination: client.get_collaborators(project_id, **pagination))
+        """
         total_pages = page
         while page <= total_pages:
             result_list = func(page=page, page_size=page_size)
-            total_pages = result_list.total_pages
-            for res in result_list:
+            if type(result_list) == PaginatedResponse:
+                total_pages = result_list.total_pages
+                for res in result_list:
+                    yield res
+            else:
                 yield res
 
             page += 1
+
+    @staticmethod
+    def stream_results(
+        endpoint, page=1, page_size=50, client=None, **_kwargs
+    ) -> Generator:
+        def fetch_page(page=1, page_size=50):
+            return client._api_call(
+                "get", furl(endpoint).add({"page": page, "page_size": page_size}).url
+            )
+
+        for result in Utils.stream(fetch_page, page=page, page_size=page_size):
+            yield result
 
     @staticmethod
     def format_value(value: int, type: FormatTypes = FormatTypes.SIZE) -> str:

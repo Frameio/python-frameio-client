@@ -11,20 +11,15 @@ import requests
 from .exceptions import (
     AssetChecksumMismatch,
     AssetChecksumNotPresent,
-    DownloadException,
-)
-from .logger import SDKLogger
-from .utils import FormatTypes, Utils
-
-logger = SDKLogger("downloads")
-
-from .bandwidth import DiskBandwidth, NetworkBandwidth
-from .exceptions import (
     AssetNotFullyUploaded,
     DownloadException,
     WatermarkIDDownloadException,
 )
+from .logger import SDKLogger
 from .transport import HTTPClient
+from .utils import FormatTypes, Utils
+
+logger = SDKLogger("frameioclient.transfer")
 
 
 class FrameioDownloader(object):
@@ -207,8 +202,6 @@ class AWSClient(HTTPClient, object):
         # Ensure this is a valid number before assigning
         if concurrency is not None and type(concurrency) == int and concurrency > 0:
             self.concurrency = concurrency
-        # else:
-        #     self.concurrency = self._optimize_concurrency()
 
     @staticmethod
     def check_cdn(url):
@@ -236,25 +229,6 @@ class AWSClient(HTTPClient, object):
             print(e)
             raise e
         return True
-
-    def _optimize_concurrency(self):
-        """
-        This method looks as the net_stats and disk_stats that we've run on \
-            the current environment in order to suggest the best optimized \
-            number of concurrent TCP connections.
-
-        Example::
-            AWSClient._optimize_concurrency()
-        """
-
-        net_stats = NetworkBandwidth
-        disk_stats = DiskBandwidth
-
-        # Algorithm ensues
-        #
-        #
-
-        return 5
 
     def _get_byte_range(
         self, url: str, start_byte: Optional[int] = 0, end_byte: Optional[int] = 2048
@@ -460,27 +434,3 @@ class AWSClient(HTTPClient, object):
             return dl_info
         else:
             return self.destination
-
-
-class TransferJob(AWSClient):
-    # These will be used to track the job and then push telemetry
-    def __init__(self, job_info):
-        self.job_info = job_info  # < - convert to JobInfo class
-        self.cdn = "S3"  # or 'CF' - use check_cdn to confirm
-        self.progress_manager = None
-
-
-class DownloadJob(TransferJob):
-    def __init__(self):
-        self.asset_type = "review_link"  # we should use a dataclass here
-        # Need to create a re-usable job schema
-        # Think URL -> output_path
-        pass
-
-
-class UploadJob(TransferJob):
-    def __init__(self, destination):
-        self.destination = destination
-        # Need to create a re-usable job schema
-        # Think local_file path and remote Frame.io destination
-        pass

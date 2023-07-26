@@ -1,8 +1,7 @@
 version: 2.1
 
 orbs:
-  python: circleci/python@0.2.1
-  win: circleci/windows@2.2.0
+  python: circleci/python@2.0.3
 
 workflows:
   version: 2
@@ -23,7 +22,7 @@ workflows:
                 - gh-pages
           matrix:
             parameters:
-              python-version: ["3.6.5", "3.7.7", "3.8.6", "3.9.3", "3.9.9", "3.9.10", "latest"]
+              python-version: ["3.6.9", "3.7.7", "3.8.6", "3.9.3", "3.9.9", "3.9.10", "latest"]
 
       - hold:
           type: approval
@@ -42,16 +41,18 @@ workflows:
 
 jobs:
   build:
-    docker:
-      - image: circleci/python:latest
+    executor: python/default
     steps:
       - checkout:
           name: Checkout Git
+      - python/install-packages:
+          pkg-manager: 
+            poetry
       - run:
           name: Build Package
           command: |
             echo -e "Running sdist"
-            python setup.py sdist
+            poetry build
       - persist_to_workspace:
           root: /home/circleci/project/
           paths:
@@ -63,31 +64,37 @@ jobs:
       python-version:
         type: string
     docker:
-      - image: circleci/python:<< parameters.python-version >>
+      - image: cimg/python:<< parameters.python-version >>
     steps:
       - attach_workspace:
           at: /tmp/artifact
           name: Attach build artifact
+      - python/install-packages:
+          pkg-manager: 
+            poetry
+      - run:
+          command: |
+            pip install poetry -U  
       - run:
           name: Install package
           command: |
-            pip install --user '/tmp/artifact'
+            cd /tmp/artifact
+            poetry install --extras docs
       - run:
           name: Run integration test
           command: |
-            python /tmp/artifact/tests/integration.py
+            python /tmp/artifact/tests/test_integration.py
 
   deploy:
     docker:
-      - image: circleci/python:latest
+      - image: cimg/python:3.10.2
     steps:
       - attach_workspace:
           at: /tmp/artifact
           name: Attach build artifact
-      - run:
-          name: Install dependencies
-          command: |
-            pip install setuptools wheel twine
+      - python/install-packages:
+          pkg-manager: 
+            poetry
       - run:
           name: init .pypirc
           command: |
@@ -99,4 +106,4 @@ jobs:
           name: Upload to pypi
           command: |
             cd /tmp/artifact
-            twine upload dist/*
+            poetry publish

@@ -13,6 +13,10 @@ from datetime import datetime
 from frameioclient import FrameioClient, Utils, KB, MB
 from frameioclient.lib.utils import FormatTypes
 
+from dotenv import find_dotenv, load_dotenv
+load_dotenv(find_dotenv())
+
+
 token = os.getenv("FRAMEIO_TOKEN") # Your Frame.io token
 project_id = os.getenv("PROJECT_ID") # Project you want to upload files back into
 download_asset_id = os.getenv("DOWNLOAD_FOLDER_ID") # Source folder on Frame.io (to then verify against)
@@ -122,18 +126,19 @@ def test_download(client: FrameioClient, override=False):
 
     return True
 
-# Test upload functionality       
+# Test upload functionality
 def test_upload(client: FrameioClient):
     print("Beginning upload test")
     # Create new parent asset
     project_info = client.projects.get(project_id)
     root_asset_id = project_info['root_asset_id']
     
-    print("Creating new folder to upload to")
-    new_folder = client.assets.create(
-            parent_asset_id=root_asset_id,  
-            name="{}_{}_Py{}_{}".format(socket.gethostname(), platform.system(), platform.python_version(), datetime.now().strftime("%B-%d-%Y")),
-            type="folder",
+    print(f"Creating new folder to upload to in project {project_id}")
+    test_run_name = "{}_{}_Py{}_{}".format(socket.gethostname(), platform.system(), platform.python_version(), datetime.now().strftime('%B-%d-%Y'))
+    print(f"Folder name: {test_run_name}")
+    new_folder = client.assets.create_folder(
+            parent_asset_id=root_asset_id, 
+            name=test_run_name,
         )
     
     new_parent_id = new_folder['id']

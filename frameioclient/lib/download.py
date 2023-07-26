@@ -1,21 +1,15 @@
-import os
 import math
+import os
 from typing import Dict
-
-from .utils import Utils
 
 from .logger import SDKLogger
 from .transfer import AWSClient
-
-# from .telemetry import Event, ComparisonTest
+from .utils import Utils
 
 logger = SDKLogger("downloads")
 
-from .exceptions import (
-    DownloadException,
-    WatermarkIDDownloadException,
-    AssetNotFullyUploaded,
-)
+from .exceptions import (AssetNotFullyUploaded, DownloadException,
+                         WatermarkIDDownloadException)
 
 
 class FrameioDownloader(object):

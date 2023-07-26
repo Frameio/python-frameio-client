@@ -1,7 +1,7 @@
 import concurrent.futures
 import threading
 import time
-from typing import Dict, Optional
+from typing import Union, Dict, Iterable, Optional
 
 import requests
 from requests.adapters import HTTPAdapter
@@ -43,6 +43,7 @@ class HTTPClient(object):
         self.thread_local = None
         self.client_version = ClientVersion.version()
         self.shared_headers = {"x-frameio-client": f"python/{self.client_version}"}
+        self.rate_limit_bypass_header = {"x-client-type": "Socket Service v2"}
 
         # Configure retry strategy (very broad right now)
         self.retry_strategy = Retry(
@@ -52,10 +53,7 @@ class HTTPClient(object):
             method_whitelist=["GET", "POST", "PUT", "GET", "DELETE"],
         )
 
-        # Create real thread
-        self._initialize_thread()
-
-    def _initialize_thread(self):
+        # Initialize thread
         self.thread_local = threading.local()
 
     def _get_session(self):
@@ -88,7 +86,6 @@ class APIClient(HTTPClient, object):
         self.token = token
         self.threads = threads
         self.progress = progress
-        self._initialize_thread()
         self.session = self._get_session()
         self.auth_header = {"Authorization": f"Bearer {self.token}"}
 
@@ -97,8 +94,8 @@ class APIClient(HTTPClient, object):
 
     def _api_call(
         self, method, endpoint: str, payload: Dict = {}, limit: Optional[int] = None
-    ):
-        headers = {**self.shared_headers, **self.auth_header}
+    ) -> Union[Dict, PaginatedResponse, None]:
+        headers = {**self.shared_headers, **self.auth_header, **self.rate_limit_bypass_header}
 
         r = self.session.request(
             method, self._format_api_call(endpoint), headers=headers, json=payload
@@ -126,6 +123,12 @@ class APIClient(HTTPClient, object):
 
         if r.status_code == 422 and "presentation" in endpoint:
             raise PresentationException
+        
+        if r.status_code == 500 and 'audit' in endpoint:
+            print(f"Hit a 500 on page: {r.headers.get('page-number')}, url: {r.url}")
+            return []
+
+
 
         return r.raise_for_status()
 
@@ -142,14 +145,15 @@ class APIClient(HTTPClient, object):
             page (int): What page to get
         """
         if method == HTTPMethods.GET:
-            endpoint = "{endpoint}?page={page}"
+            endpoint = f"{endpoint}?page={page}"
             return self._api_call(method, endpoint)
 
         if method == HTTPMethods.POST:
             payload["page"] = page
+
         return self._api_call(method, endpoint, payload=payload)
 
-    def exec_stream(callable, iterable, sync=lambda _: False, capacity=10, rate=10):
+    def exec_stream(callable, iterable: Iterable, sync=lambda _: False, capacity=10, rate=10):
         """
         Executes a stream according to a defined rate limit.
         """

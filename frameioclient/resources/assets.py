@@ -141,7 +141,7 @@ class Asset(Service):
         }
 
         endpoint = "/assets/{}/children".format(parent_asset_id)
-        return self.client._api_call("post", endpoint, payload=kwargs)
+        return self.client._api_call("post", endpoint, payload={**kwargs})
 
     @ApiReference(operation="#createAsset")
     def create_folder(self, parent_asset_id: str, name: str = "New Folder"):
@@ -259,6 +259,7 @@ class Asset(Service):
         endpoint = "/batch/assets/{}/copy".format(destination_folder_id)
         return self.client._api_call("post", endpoint, payload)
 
+    @ApiReference(operation="#addVersionToAsset")
     def add_version(
         self, target_asset_id: Union[str, UUID], new_version_id: Union[str, UUID]
     ):
@@ -378,9 +379,11 @@ class Asset(Service):
 
             client.assets.download(asset, "~./Downloads")
         """
+
         downloader = FrameioDownloader(
             asset, download_folder, prefix, multi_part, replace
         )
+
         return AWSClient(downloader, concurrency=5).multi_thread_download()
 
     def upload_folder(self, source_path: str, destination_id: Union[str, UUID]):
@@ -407,6 +410,6 @@ class Asset(Service):
             # Then try to grab it as a project
             folder_id = Project(self.client).get(destination_id)["root_asset_id"]
         finally:
-            return FrameioUploader().recursive_upload(
+            return FrameioUploader().upload_recursive(
                 self.client, source_path, folder_id
             )

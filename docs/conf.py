@@ -6,7 +6,7 @@ import frameioclient
 
 PACKAGE_TITLE = 'Frame.io Python SDK'
 PACKAGE_NAME = 'frameioclient'
-PACKAGE_DIR = '../frameioclient'
+PACKAGE_DIR = '../'
 AUTHOR_NAME = 'Frame.io'
 
 try:

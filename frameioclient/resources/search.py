@@ -22,8 +22,6 @@ class Search(Service):
         Search for assets using the library search endpoint, documented at https://developer.frame.io/docs/workflows-assets/search-for-assets.
         For more information check out https://developer.frame.io/api/reference/operation/librarySearchPost/.
 
-        # TODO, confirm that account_id is required or not, could we use self.me?
-
         :param query: The search keyword you want to search with.
         :param account_id: The frame.io account want you to contrain your search to (you may only have one, but some users have 20+ that they have acces to).
         :param type: The type of frame.io asset you want to search: [file, folder, review_link, presentation].
@@ -72,4 +70,22 @@ class Search(Service):
             payload["sort"] = sort
 
         endpoint = "/search/library"
+        return self.client._api_call("post", endpoint, payload=payload)
+
+    def users(self, account_id: str, query: str):
+        """Search for users within a given account
+
+        Args:
+            account_id (str): UUID for the account you want to search within, must be one you have access to
+            query (str): The query string you want to seach with, usually an email or a name
+
+        Returns:
+            List[Dict]: List of user resources found via your search  
+        """
+ 
+        endpoint = "/search/users"
+        payload = {
+            "account_id": account_id,
+            "q": query
+        }
         return self.client._api_call("post", endpoint, payload=payload)

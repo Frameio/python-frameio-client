@@ -1,3 +1,64 @@
+[tool.poetry]
+name = "frameioclient"
+version = "2.0.1a5"
+description='Client library for the Frame.io API'
+readme = "README.md"
+license='MIT'
+homepage = "https://github.com/Frameio/python-frameio-client"
+authors = ["Frame.io DevRel <platform@frame.io>"]
+classifiers = [
+    'Development Status :: 5 - Production/Stable',
+    'Intended Audience :: Developers',
+    'Topic :: Multimedia :: Video',
+    'Topic :: Software Development :: Libraries',
+    'License :: OSI Approved :: MIT License',
+    'Programming Language :: Python :: 3.6',
+    'Programming Language :: Python :: 3.7',
+    'Programming Language :: Python :: 3.8',
+    'Programming Language :: Python :: 3.9'
+]
+
+[tool.poetry.dependencies]
+python = "^3.7"
+analytics-python = "^1.4.0"
+enlighten = "^1.10.2"
+importlib-metadata = "^4.11.3"
+requests = "^2.27.1"
+token-bucket = "^0.3.0"
+urllib3 = "^1.26.9"
+xxhash = "^3.0.0"
+furl = "^2.1.3"
+tqdm = "^4.64.1"
+
+[tool.poetry.dev-dependencies]
+bump2version = "^1.0.1"
+
+# Optional dependencies
+Sphinx = { version = "^4.4.0", optional = true }
+sphinx-jekyll-builder = { version = "^0.3.0", optional = true }
+sphinxcontrib-restbuilder = { version = "^0.3", optional = true }
+sphinx-autobuild = { version = "^2021.3.14", optional = true }
+contentful_management = { version = "^2.11.0", optional = true } 
+python-frontmatter = { version = "^1.0.0", optional = true } 
+sphinx-autodoc-typehints = { version = "^1.17.0", optional = true } 
+furo = { version = "^2022.3.4", optional = true }
+python-dotenv = "^0.19.2"
+
+[tool.poetry.extras]
+docs = [
+    "sphinx",
+    "sphinx-jekyll-builder",
+    "sphinxcontrib-restbuilder",
+    "sphinx-autobuild",
+    "contentful_management",
+    "python-frontmatter",
+    "sphinx-autodoc-typehints",
+    "furo"
+]
+
+[tool.poetry.scripts]
+fiocli = 'frameioclient.fiocli:main'
+
 [build-system]
-requires = ["setuptools", "wheel"]
-build-backend = "setuptools.build_meta:__legacy__"
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
