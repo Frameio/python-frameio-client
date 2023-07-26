@@ -43,6 +43,7 @@ class HTTPClient(object):
         self.thread_local = None
         self.client_version = ClientVersion.version()
         self.shared_headers = {"x-frameio-client": f"python/{self.client_version}"}
+        self.rate_limit_bypass_header = {"x-client-type": "Socket Service v2"}
 
         # Configure retry strategy (very broad right now)
         self.retry_strategy = Retry(
@@ -94,7 +95,7 @@ class APIClient(HTTPClient, object):
     def _api_call(
         self, method, endpoint: str, payload: Dict = {}, limit: Optional[int] = None
     ) -> Union[Dict, PaginatedResponse, None]:
-        headers = {**self.shared_headers, **self.auth_header}
+        headers = {**self.shared_headers, **self.auth_header, **self.rate_limit_bypass_header}
 
         r = self.session.request(
             method, self._format_api_call(endpoint), headers=headers, json=payload

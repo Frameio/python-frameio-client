@@ -98,6 +98,8 @@ class Team(Service):
             emails (list): The e-mails you want to add.
         """
 
+        # TODO: Implement pagination here since the batch size is 20?
+
         payload = dict()
         payload["batch"] = list(map(lambda email: {"email": email}, emails))
 

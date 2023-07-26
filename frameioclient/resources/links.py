@@ -134,3 +134,24 @@ class PresentationLink(Service):
         """
         endpoint = "/assets/{}/presentations".format(asset_id)
         return self.client._api_call("post", endpoint, payload=kwargs)
+
+    def update(self, presentation_id: Union[str, UUID], **kwargs):
+        """
+        Update a presentation link.
+
+        Args:
+          presentation_id (string): The presentation id.
+
+        :Keyword Arguments:
+          kwargs: additional request parameters.
+
+        Example::
+
+          client.presentation_links.update(
+            presentation_id="9cee7966-4066-b326-7db1-f9e6f5e929e4",
+            name="My fresh presentation",
+            enabled=False
+          )
+        """
+        endpoint = "/presentations/{}".format(presentation_id)
+        return self.client._api_call("put", endpoint, payload=kwargs)
