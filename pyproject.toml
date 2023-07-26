@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "frameioclient"
-version = "2.0.1-alpha.4"
+version = "2.0.1a5"
 description='Client library for the Frame.io API'
 readme = "README.md"
 license='MIT'

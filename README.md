@@ -103,11 +103,27 @@ client.assets.create_folder(
 client.assets.upload(destination_id, "video.mp4")
 ```
 
-### Contributing
+## Contributing
 Install the package into your development environment using Poetry. This should auto-link it within the current virtual-env that gets created during installation.
 
 ```sh
 poetry install
+```
+
+### Publishing to PyPI
+
+```sh
+# Start by versioning
+poetry version prerelease
+
+# Then build
+poetry build
+
+# Now you can publish the new version
+poetry publish --username=__token__ --password=INSERT_TOKEN_FROM_PYPI_OR_PASS_VIA_ENV_VARIABLE
+
+# You can also build and publish in one go with
+poetry publish --build --username=__token__ --password=INSERT_TOKEN_FROM_PYPI_OR_PASS_VIA_ENV_VARIABLE
 ```
 
 ### Ancillary links
