@@ -47,8 +47,11 @@ class Utils:
         total_pages = page
         while page <= total_pages:
             result_list = func(page=page, page_size=page_size)
-            total_pages = result_list.total_pages
-            for res in result_list:
+            if type(result_list) == PaginatedResponse:
+                total_pages = result_list.total_pages
+                for res in result_list:
+                    yield res
+            else:
                 yield res
 
             page += 1
