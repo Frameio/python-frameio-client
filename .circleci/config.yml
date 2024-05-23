@@ -23,7 +23,7 @@ workflows:
                 - gh-pages
           matrix:
             parameters:
-              python-version: ["3.6.5", "3.7.7", "3.8.6", "3.9.3", "3.9.6", "3.9.9", "latest"]
+              python-version: ["3.6.5", "3.7.17", "3.8.17", "3.9.3", "3.9.18", "3.10.14",  "3.11.", "3.12.3", "latest"]
 
       - hold:
           type: approval
