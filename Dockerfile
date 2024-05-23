@@ -1,34 +1,18 @@
-FROM python:3.8.6-slim-buster as deps
-# Set work directory
-WORKDIR /home/speedtest
+FROM python:3.11-buster as builder
 
-# Copy files
-COPY Pipfile .
-COPY Pipfile.lock .
+RUN pip install poetry==1.8.3
 
-# Install pipenv
-RUN pip install pipenv
+ENV POETRY_NO_INTERACTION=1 \
+    POETRY_VIRTUALENVS_IN_PROJECT=1 \
+    POETRY_VIRTUALENVS_CREATE=1 \
+    POETRY_CACHE_DIR=/tmp/poetry_cache
 
-FROM deps as installer
-# Set work directory
-WORKDIR  /home/speedtest
+WORKDIR /frameio
 
-# Install deps
-RUN pipenv install --system --deploy --ignore-pipfile
-
-# Copy over the other pieces
+COPY README.md README.md
+COPY pyproject.toml poetry.lock ./
 COPY frameioclient frameioclient
-COPY setup.py .
-COPY README.md .
 
-# Install the local frameioclient
-RUN pipenv install -e . --skip-lock
+RUN --mount=type=cache,target=$POETRY_CACHE_DIR poetry install --without dev
 
-# Copy over scripts and tests
-COPY scripts scripts
-COPY tests tests
-
-ENV SEGMENT_WRITE_KEY=
-
-FROM installer as runtime
-ENTRYPOINT [ "pipenv", "run", "python", "scripts/benchmark/download.py" ]
+ENTRYPOINT [ "poetry", "run", "fiocli" ]
