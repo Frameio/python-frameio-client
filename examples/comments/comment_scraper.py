@@ -33,7 +33,7 @@ def build_comments_list(client, asset_id, comment_list):
             build_comments_list(client, asset['id'], comment_list)
 
         if asset.get('type') == 'file' and asset.get('comment_count') > 0:
-            comments = client.comments.get(asset['id'])
+            comments = client.comments.list(asset['id'])
             for comment in comments:
                 # The 'get_comments" call won't return the asset name
                 # So we'll add it to the dictionary now.
@@ -44,7 +44,7 @@ def build_comments_list(client, asset_id, comment_list):
             # Read about version stacks: https://docs.frame.io/docs/managing-version-stacks
             versions = client.assets.get_children(asset['id'])
             for v_asset in versions:
-                comments = client.comments.get(v_asset['id'])
+                comments = client.comments.list(v_asset['id'])
                 for comment in comments:
                     comment['asset'] = { 'name': asset['name'] }
                     comment_list.append(comment)

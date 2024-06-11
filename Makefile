@@ -15,3 +15,24 @@ bump-patch:
 
 clean:
 	find . -name "*.pyc" -exec rm -f {} \;
+
+test:
+	cd tests && pipenv run python integration.py
+
+package:
+	pipenv run python3 setup.py sdist bdist_wheel
+
+build-docker:
+	docker build . -t benchmark
+
+run-benchmark:
+	docker run -it -e $1 benchmark
+
+format:
+	black frameioclient
+
+view-docs:
+	cd docs && pip install -r requirements.txt && make dev
+
+publish-docs:
+	cd docs && pip install -r requirements.txt && make jekyll && make publish

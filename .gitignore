@@ -108,3 +108,6 @@ venv.bak/
 Pipfile
 Pipfile.lock
 .vscode/launch.json
+.vscode/settings.json
+
+pyproject.toml

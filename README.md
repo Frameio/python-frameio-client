@@ -24,11 +24,57 @@ $ git clone https://github.com/frameio/python-frameio-client
 $ pip install .
 ```
 
-_Note: The Frame.io Python client may not work correctly in Python 3.8+_
+### Developing
+Install the package into your development environment and link to it by running the following:
+
+```sh
+pipenv install -e . -pre
+```
 
 ## Documentation
 
 [Frame.io API Documentation](https://developer.frame.io/docs)
+
+### Use CLI
+When you install this package, a cli tool called `fioctl` will also be installed to your environment.
+
+**To upload a file or folder**
+```sh
+fioctl \
+--token fio-u-YOUR_TOKEN_HERE  \
+--destination "YOUR TARGET FRAME.IO PROJECT OR FOLDER" \
+--target "YOUR LOCAL SYSTEM DIRECTORY" \
+--threads 8
+```
+
+**To download a file, project, or folder**
+```sh
+fioctl \
+--token fio-u-YOUR_TOKEN_HERE  \
+--destination "YOUR LOCAL SYSTEM DIRECTORY" \
+--target "YOUR TARGET FRAME.IO PROJECT OR FOLDER" \
+--threads 2
+```
+
+### Links
+
+**Sphinx Documentation**
+- https://pythonhosted.org/sphinxcontrib-restbuilder/
+- https://www.npmjs.com/package/rst-selector-parser
+- https://sphinx-themes.org/sample-sites/furo/_sources/index.rst.txt
+- https://developer.mantidproject.org/Standards/DocumentationGuideForDevs.html
+- https://sublime-and-sphinx-guide.readthedocs.io/en/latest/code_blocks.html
+- https://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html
+- https://stackoverflow.com/questions/64451966/python-sphinx-how-to-embed-code-into-a-docstring
+- https://pythonhosted.org/an_example_pypi_project/sphinx.html
+
+**Decorators**
+- https://docs.python.org/3.7/library/functools.html
+- https://realpython.com/primer-on-python-decorators/
+- https://www.sphinx-doc.org/en/master/usage/quickstart.html
+- https://www.geeksforgeeks.org/decorators-with-parameters-in-python/
+- https://stackoverflow.com/questions/43544954/why-does-sphinx-autodoc-output-a-decorators-docstring-when-there-are-two-decora
+
 
 ## Usage
 
