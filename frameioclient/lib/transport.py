@@ -146,7 +146,7 @@ class APIClient(HTTPClient, object):
             page (int): What page to get
         """
         if method == HTTPMethods.GET:
-            endpoint = "{endpoint}?page={page}"
+            endpoint = f"{endpoint}?page={page}"
             return self._api_call(method, endpoint)
 
         if method == HTTPMethods.POST:
