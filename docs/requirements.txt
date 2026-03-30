@@ -10,3 +10,4 @@ analytics-python
 token-bucket
 sphinx-autobuild
 sphinx-autodoc-typehints
+pygments>=2.20.0 # not directly required, pinned by Snyk to avoid a vulnerability
